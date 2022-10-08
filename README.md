@@ -13,7 +13,31 @@
 * 流量控制框架选型Sentinel.
 * 分布式锁选型redisson.
 
-## 调整
+## 主要调整
+* 部门表调整，增加了一列 describes，主要作用于积木设置当前登录用户部门描述
+
+```
+    @Override
+    public Map<String, Object> getUserInfo(String token) {
+        // 将所有信息存放至map 解析sql会根据map的键值解析,可自定义其他值
+        Map<String, Object> map = new HashMap<>(20);
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        map.put("sysUserCode",loginUser.getUsername());
+        //设置当前日期（年月日）
+        map.put("sysData",DateUtils.getDate());
+        //设置昨天日期（年月日）
+        map.put("sysYesterDay",DateUtils.getyesterday());
+        //设置当前登录用户昵称
+        map.put("sysUserName",loginUser.getSysUser().getNickName());
+        //设置当前登录用户部门ID
+        map.put("deptId",loginUser.getSysUser().getDeptId());
+        //设置当前登录用户部门描述
+        map.put("describe",loginUser.getSysUser().getDept().getDescribes());
+        return map;
+    }
+```
+
+![输入图片说明](doc/preview/00.png.png)
 
 * 实现同一报表，不同角色的人看到的列数据不一样的结果，两个注解解决
 
@@ -56,6 +80,7 @@
         util.exportExcel(response, list, "客户组别信息",true,true);
     }
 ```
+
 
 ## 积木报表
 ![输入图片说明](doc/preview/01.jpg.png)
