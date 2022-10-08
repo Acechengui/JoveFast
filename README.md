@@ -13,6 +13,54 @@
 * 流量控制框架选型Sentinel.
 * 分布式锁选型redisson.
 
+## 调整
+
+* 实现同一报表，不同角色的人看到的列数据不一样的结果，两个注解解决
+
+```
+    /**
+     * 使用示例：在实现类方法上增加@ColAssign，用于标识需要返回修改的注入点
+     *
+     * @param params
+     */
+    @Override
+    @ColAssign
+    public List<PcbstatementVO> getPcbstatement(PcbstatementVO params) {
+        return engineeringMapper.selectPcbstatement(params);
+    }
+
+    /**
+     * 使用示例：在bean的属性上增加@Assign，其中roleCallout的值为角色代码，用逗号分割标识多个角色
+     *
+     * @param params
+     */
+    @Excel(name = "工程及其它费用",cellType = Excel.ColumnType.NUMERIC)
+    @Assign(roleCallout = "admin,confidential")
+    private Double amount;
+```
+
+* excel导出增强支持冻结首行以及开启筛选列<均为可选项>
+
+```
+    @Log(title = "客户组别管理", businessType = BusinessType.EXPORT)
+    @RequiresPermissions("auxiliary:customergroup:export")
+    @PostMapping("/customergroup/export")
+    public void export(HttpServletResponse response, Data9977 data9977)
+    {
+        List<Data9977> list = iErpSalesmoduleservice.getCustomerGroupList(data9977);
+        ExcelUtil<Data9977> util = new ExcelUtil<Data9977>(Data9977.class);
+        /**
+         第四个参数是否冻结首行
+         第五个参数是否筛选列
+         */
+        util.exportExcel(response, list, "客户组别信息",true,true);
+    }
+```
+
+## 积木报表
+![输入图片说明](doc/preview/image.png)
+![输入图片说明](doc/preview/image.png)
+
 ## 打包发布
 请进入bin目录的命令执行打包命令
 
