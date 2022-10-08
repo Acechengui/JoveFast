@@ -58,7 +58,7 @@
 ```
 
 ## 积木报表
-![输入图片说明](doc/preview/image.png)
+![输入图片说明](doc/preview/01.jpg.png)
 ![输入图片说明](doc/preview/image.png)
 
 ## 打包发布
