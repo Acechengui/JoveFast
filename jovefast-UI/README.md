@@ -4,7 +4,7 @@
 # 拉取项目
 
 # 进入项目目录
-cd jove-ui
+cd xxx
 
 # 安装依赖
 npm install
@@ -18,7 +18,7 @@ npm run dev
 
 浏览器访问 http://localhost:80
 
-开发人员登录:七位工号+密码(默认123456)
+登录:admin/Psitadmin
 
 ## 发布
 
