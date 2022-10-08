@@ -1,6 +1,7 @@
 
 <h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">jovefast v3.6.1</h1>
 <h4 align="center">基于若依Cloud的 Vue/Element UI 和 Spring Boot/Spring Cloud & Alibaba 前后端分离的分布式微服务架构</h4>
+<a href='https://gitee.com/wxjstudy/jove-fast'><img src='https://gitee.com/wxjstudy/jove-fast/widgets/widget_4.svg' alt='Fork me on Gitee'></img></a>
 
 
 ## 平台简介
@@ -10,6 +11,7 @@
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
 * 注册中心、配置中心选型Nacos，权限认证使用Redis。
 * 流量控制框架选型Sentinel.
+* 分布式锁选型redisson.
 
 ## 打包发布
 请进入bin目录的命令执行打包命令
