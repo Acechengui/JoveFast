@@ -16,6 +16,9 @@
 ## 打包发布
 请进入bin目录的命令执行打包命令
 
+## 若依Cloud
+地址：[传送门](https://gitee.com/y_project/RuoYi-Cloud)
+
 ## 注意事项
 1. 为区分 开发dev|测试test|生产prod 等不同环境 com.jovefast.common.core.constant类中的serviceid需要自行同步更改(后缀)
 2. 本地开发请务必使用dev环境!!!,切勿使用其他环境,造成不同开发人员数据冲突.
