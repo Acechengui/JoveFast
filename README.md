@@ -5,7 +5,7 @@
 
 
 ## 平台简介
-基于若依Cloud的Jove-Fast微服务平台，主要集成了 [积木报表](http://jimureport.com/)
+基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),已在公司内部项目中使用，本项目已脱敏并剔除了无关代码，就改了项目包名（无伤大雅）
 * 账号密码admin/Psitadmin
 * 采用前后端分离的模式
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
