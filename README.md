@@ -5,7 +5,7 @@
 
 ## 平台简介
 基于若依Cloud的Jove-Fast微服务平台
-
+* 账号密码admin/Psitadmin
 * 采用前后端分离的模式
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
 * 注册中心、配置中心选型Nacos，权限认证使用Redis。
@@ -22,6 +22,7 @@
 5. 本地启动项目时,一定要注意你自己当前环境,是dev,不要切换到了prod生产环境,忘了切回去,影响线上
 6. 本地启动无需启动jovefast-visual-monitor模块
 7. Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的分布式锁功能(已集成)。
+
 用法:
 ```markdown
 @Autowired
