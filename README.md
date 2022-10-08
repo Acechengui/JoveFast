@@ -93,13 +93,7 @@
 地址：[传送门](https://gitee.com/y_project/RuoYi-Cloud)
 
 ## 注意事项
-1. 为区分 开发dev|测试test|生产prod 等不同环境 com.jovefast.common.core.constant类中的serviceid需要自行同步更改(后缀)
-2. 本地开发请务必使用dev环境!!!,切勿使用其他环境,造成不同开发人员数据冲突.
-3. 请严格按照模块划分,包名划分,尽量解耦合  
-4. 提交代码时,请注意不要提交跟项目无关的文件或目录,如:.idea || target || logs
-5. 本地启动项目时,一定要注意你自己当前环境,是dev,不要切换到了prod生产环境,忘了切回去,影响线上
-6. 本地启动无需启动jovefast-visual-monitor模块
-7. Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的分布式锁功能(已集成)。
+1. Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的分布式锁功能(已集成)。
 
 用法:
 ```markdown
