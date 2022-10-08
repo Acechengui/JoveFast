@@ -1,0 +1,47 @@
+# Tomcat
+server:
+  port: 8088
+
+# Spring
+spring: 
+  application:
+    # 应用名称
+    name: @spring.application.name@
+  profiles:
+    # 环境配置
+    active: @spring.profile@
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: @nacos.server.address@
+      config:
+        namespace: @nacos.namespace@
+        # 配置中心地址
+        server-addr: @nacos.server.address@
+        # 配置文件格式
+        file-extension: yml
+        # 共享配置
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+    sentinel:
+      # 取消控制台懒加载
+      eager: true
+      transport:
+        # 控制台地址
+        dashboard: @sentinel.transport.dashboard@
+        port: 8719
+      # nacos配置持久化
+      datasource:
+        ds1:
+          nacos:
+            namespace: @nacos.namespace@
+            server-addr: @nacos.server.address@
+            dataId: sentinel-jove-gateway
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
+

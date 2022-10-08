@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jovefast.job.mapper.BoxLabelMapper">
+
+    <select id="selectUnboundBoxLabelList" resultType="UnboundBoxLabelDTO">
+        SELECT
+        wlb.custCode AS custCode,
+        wlb.custName AS custName,
+        wlb.custPn AS custPn,
+        wlb.custVer AS custVer,
+        wlb.pcsSet AS pcsSet,
+        wlb.mfg AS mfg,
+        wlb.plateThick AS plateThick,
+        wlb.surface AS surface,
+        wlb.mo AS mo,
+        wlb.custDesc AS custDesc,
+        wlh.qty AS qty,
+        wlh.dateCode AS dateCode,
+        wlh.lotNum AS lotNum,
+        wlh.plant AS plant,
+        wlh.operator AS operator,
+        wlh.printDate AS printDate,
+        wlh.printTime AS printTime,
+        wlh.labelId AS labelId
+        FROM
+        WarehouseLabelHistory wlh WITH ( nolock )
+        LEFT JOIN WarehouseLabelBase wlb WITH ( nolock ) ON wlh.wlbRkey = wlb.rkey
+        <where>
+            wlh.isDisabled = 0
+            AND wlh.isVirtualShelf = 0
+            <if test="plant != null and plant !=''">
+                AND wlh.plant = #{plant}
+            </if>
+            <if test="date != null and date !=''">
+                AND wlh.printDate = #{date}
+            </if>
+            AND wlh.labelId NOT IN ( SELECT boxID FROM WarehouseHistory WITH ( nolock ) )
+        </where>
+    </select>
+
+</mapper>

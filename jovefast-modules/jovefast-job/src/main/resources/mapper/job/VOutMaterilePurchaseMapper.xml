@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jovefast.job.mapper.VOutMaterilePurchaseMapper">
+	<select id="selectVRptWarehouseIn" resultType="VRptWarehouse">
+		SELECT
+		PRODUCT_NAME productName,
+		PROD_CODE productCode,
+		INV_PART_NUMBER invPartNumber,
+		INV_PART_DESCRIPTION invPartDescription,
+		PRICE_SUM pricesum,
+		inqty qtyIssued,
+		UNIT_NAME unitName
+		FROM
+		V_RPT_WAREHOUSE_IN
+		<where>
+			<if test="time1 != null and time1 !=''">
+				and tdate &gt;= #{time1}
+			</if>
+			<if test="time2 != null and time2 !=''">
+				and tdate &lt;= #{time2}
+			</if>
+			<choose>
+				<when test="location != null and location != '' and location != '全部'">
+					and LOCATION like '%${location}%'
+				</when>
+				<otherwise>
+					and LOCATION like '%[一二三]%'
+				</otherwise>
+			</choose>
+			<if test="queryCode != null and queryCode != ''">
+				<if test="queryCode = '1'">
+					and PRODUCT_NAME != '半成品'
+				</if>
+			</if>
+			ORDER BY D17_RKEY
+		</where>
+	</select>
+
+	<select id="selectVRptWarehouseOut" resultType="VRptWarehouse">
+		SELECT
+		PRODUCT_NAME productName,
+		PROD_CODE productCode,
+		INV_PART_NUMBER invPartNumber,
+		INV_PART_DESCRIPTION invPartDescription,
+		PRICE_SUM pricesum,
+		QTY_ISSUED qtyIssued,
+		unit_name unitName
+		FROM
+		V_OUT_MATERIEL_BARCODE
+		<where>
+			<if test="time1 != null and time1 !=''">
+				and date_required &gt;= #{time1}
+			</if>
+			<if test="time2 != null and time2 !=''">
+				and date_required &lt;= #{time2}
+			</if>
+			<choose>
+				<when test="location != null and location != '' and location != '全部'">
+					and LOCATION like '%${location}%'
+				</when>
+				<otherwise>
+					and LOCATION like '%[一二三]%'
+				</otherwise>
+			</choose>
+			<if test="queryCode != null and queryCode != ''">
+				<if test="queryCode = '1'">
+					and PRODUCT_NAME != '半成品'
+				</if>
+			</if>
+			ORDER BY D17_RKEY
+		</where>
+	</select>
+
+	<select id="selectPlanjobsTaskLastRunDate" resultType="java.lang.String">
+		SELECT
+			MAX(RUN_DATE)
+		FROM
+			PLANJOBS_RUN_LOG_LOG
+		WHERE
+				TASK_ID = ( SELECT TASK_ID FROM PLANJOBS_RUN_LOG_TASK WHERE TASK_NAME = #{taskName} )
+		  AND ERROR_CODE = '0'
+	</select>
+
+	<insert id="insertPlanjobsTaskRunLog">
+		INSERT INTO PLANJOBS_RUN_LOG_LOG ( TASK_ID, ERROR_CODE, TOKEN, AGENT_ID, TO_USERS, MEDIA_ID ) SELECT
+			TASK_ID,
+			#{ERROR_CODE},
+			#{TOKEN},
+			#{AGENT_ID},
+			#{TO_USERS},
+			#{MEDIA_ID}
+		FROM
+			PLANJOBS_RUN_LOG_TASK
+		WHERE
+			TASK_NAME = #{TASK_NAME}
+	</insert>
+</mapper> 
