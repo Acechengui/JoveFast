@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jovefast.job.mapper.PurchaseMapper">
+    <select id="selectProductionProcessOver" resultType="ProductionProcessOverDTO">
+        SELECT
+            WORK_ORDER_NUMBER AS workers,
+            WO_ENTTIME AS entTime,
+            STEP AS step,
+            REC_ROUTE AS recRoute,
+            RTRIM(DATA0034.DEPT_NAME) AS recName,
+            QTY_BACKLOG AS qtyBacklog,
+            QTY_PRODUCED AS qtyProduced,
+            QTY_REJECTED AS qtyRejected,
+            REC_TIME AS recTime,
+            RTRIM(DATA0005.EMPLOYEE_NAME) AS recEmp,
+            OUT_ROUTE AS outRoute,
+            RTRIM(D0034.DEPT_NAME) AS outName,
+            OUT_TIME AS outTime,
+            SALES_ORDER AS salesOrder,
+            PRODPLANT AS prodPlant,
+            STATUS AS status,
+            PARTS_ORDERED AS partsOrdered,
+            SCH_DATE AS schDate,
+            DUE_DATE AS dueDate,
+            CUST_CODE AS cutCode,
+            RTRIM(CUSTOMER_PART_NUMBER) AS number,
+            PNLL AS pnlLong,
+            PNLW AS pnlWidth,
+            SET_PNL AS setPnl,
+            SETL AS setLong,
+            SETW AS setWidth,
+            PCS_SET AS pcsSet,
+            REC_PLANT AS recPlant,
+            OUT_PLANT AS outPlant
+        FROM
+            V_RPT_SHOPFLOOR_LIST with(nolock)
+                LEFT OUTER JOIN data0034 with(nolock) ON data0034.rkey = v_rpt_shopfloor_list.rec_route
+                LEFT OUTER JOIN data0034 D0034 with(nolock) ON D0034.rkey = v_rpt_shopfloor_list.out_route
+                LEFT OUTER JOIN data0005 with(nolock) ON data0005.rkey = v_rpt_shopfloor_list.employee_ptr
+        WHERE
+            OUT_TIME &gt; #{from}
+          AND OUT_TIME &lt; #{arrive}
+          AND PATINDEX('W%', WORK_ORDER_NUMBER) = 0
+          AND DATA0034.DEPT_NAME &lt;&gt; D0034.DEPT_NAME
+        ORDER BY
+            work_order_number,
+            step
+    </select>
+    <select id="selectOutboundRecord" resultType="OutboundRecordDTO">
+        SELECT
+        mir_No AS mir_no,
+        WMNO AS wm_no,
+        mo AS mo,
+        RTRIM(PO_NUMBER) AS po_number,
+        inv_Part_Number AS part_number,
+        inv_Part_Description AS part_description,
+        RTRIM(SUPPLIER_NAME) AS supplier_name,
+        RTRIM(facno) AS fac_no,
+        RTRIM(location),
+        RTRIM(unit_Name) AS unit_name,
+        qty_Issued AS qty_issued,
+        batch_No AS batch_no,
+        ratio,
+        curr_Code AS curr_code,
+        RTRIM(curr_Name) AS curr_name,
+        price_Curr AS price_curr,
+        base_To_Other AS to_other,
+        price,
+        price_Sum AS price_sum,
+        date_Required AS date_required,
+        tax_2 AS tax_rate,
+        erp_Amount AS erp_amount,
+        pricenotax AS price_no_tax,
+        total_price_tax,
+        TRAN_DATE AS tran_date
+        FROM
+        V_OUT_MATERIEL_BARCODE with(nolock)
+        WHERE
+        TRAN_DATE &gt;= #{from}
+        AND TRAN_DATE &lt;= #{arrive}
+        ORDER BY
+        TRAN_DATE ASC
+    </select>
+</mapper>

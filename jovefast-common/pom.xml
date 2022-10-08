@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.jovefast</groupId>
+        <artifactId>jovefast</artifactId>
+        <version>3.6.1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>jovefast-common-log</module>
+        <module>jovefast-common-core</module>
+        <module>jovefast-common-redis</module>
+        <module>jovefast-common-swagger</module>
+        <module>jovefast-common-security</module>
+        <module>jovefast-common-datascope</module>
+		<module>jovefast-common-datasource</module>
+        <module>jovefast-common-seata</module>
+    </modules>
+
+    <artifactId>jovefast-common</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+	    jovefast-common通用模块
+    </description>
+
+</project>

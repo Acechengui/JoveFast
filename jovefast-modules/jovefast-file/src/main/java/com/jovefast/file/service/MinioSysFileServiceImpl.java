@@ -1,0 +1,76 @@
+package com.jovefast.file.service;
+
+import com.jovefast.file.utils.MinioFileInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import com.jovefast.file.config.MinioConfig;
+import com.jovefast.file.utils.FileUploadUtils;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+
+/**
+ * Minio 文件存储
+ * 
+ * @author Acechengui
+ */
+@Primary
+@Service
+public class MinioSysFileServiceImpl implements ISysFileService
+{
+    @Autowired
+    private MinioConfig minioConfig;
+
+    @Autowired
+    private MinioClient client;
+
+    @Autowired
+    private MinioFileInterface MinioFileInterface;
+
+    /**
+     * 文件上传接口
+     * 
+     * @param file 上传的文件
+     * @return 访问地址
+     * @throws Exception
+     */
+    @Override
+    public String uploadFile(MultipartFile file) throws Exception
+    {
+        String fileName = FileUploadUtils.extractFilename(file);
+        PutObjectArgs args = PutObjectArgs.builder()
+                .bucket(minioConfig.getBucketName())
+                .object(fileName)
+                .stream(file.getInputStream(), file.getSize(), -1)
+                .contentType(file.getContentType())
+                .build();
+        client.putObject(args);
+        return minioConfig.getUrl() + "/" + minioConfig.getBucketName() + "/" + fileName;
+    }
+
+    /**
+     * 删除文件接口
+     *
+     * @param path 文件地址
+     * @return 结果
+     * @throws Exception
+     */
+    @Override
+    public boolean delFile(String path) throws Exception {
+        MinioFileInterface.deleteObject(path.substring(path.indexOf(minioConfig.getBucketName())+minioConfig.getBucketName().length()+1));
+        return true;
+    }
+
+    /**
+     * 下载模板文件
+     * @param objectName 文件名（路径）
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public byte[] downloadTemplate(String objectName) throws Exception {
+        return MinioFileInterface.download(objectName);
+    }
+
+}

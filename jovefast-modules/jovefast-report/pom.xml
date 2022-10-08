@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>jovefast-modules</artifactId>
+        <groupId>com.jovefast</groupId>
+        <version>3.6.1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>jovefast-modules-report</artifactId>
+
+    <properties>
+        <jsqlparser.version>4.3</jsqlparser.version>
+        <mysql.connector.version>8.0.11</mysql.connector.version>
+        <mssql.jdbc.version>8.2.2.jre8</mssql.jdbc.version>
+        <jeccg.jimureport.version>1.5.2</jeccg.jimureport.version>
+    </properties>
+    <description>
+        jovefast-modules-report报表模块
+    </description>
+    <repositories>
+        <repository>
+            <id>aliyun</id>
+            <name>aliyun Repository</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jeecg</id>
+            <name>jeecg Repository</name>
+            <url>http://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <!-- https://mvnrepository.com/ 查找jar网站 -->
+    <dependencies>
+
+        <!-- SpringCloud Alibaba Nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Nacos Config -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Sentinel -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
+        <!-- SpringBoot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!--  Common DataSource -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-datasource</artifactId>
+        </dependency>
+
+        <!--  Common DataScope -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-datascope</artifactId>
+        </dependency>
+
+        <!--  Common Log -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-log</artifactId>
+        </dependency>
+
+        <!--  Common core -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-core</artifactId>
+        </dependency>
+
+        <!--  Common redis -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-redis</artifactId>
+        </dependency>
+
+        <!-- SpringBoot-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>${jsqlparser.version}</version>
+        </dependency>
+
+        <!-- sqlserver-->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${mssql.jdbc.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JimuReport -->
+        <dependency>
+            <groupId>org.jeecgframework.jimureport</groupId>
+            <artifactId>jimureport-spring-boot-starter</artifactId>
+            <version>${jeccg.jimureport.version}</version>
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>com.googlecode.aviator</groupId>-->
+<!--                    <artifactId>aviator</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+        </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <!--重要 如果不设置resource 会导致application.yaml中的@@找不到pom文件中的配置-->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <profiles>
+        <profile>
+            <!-- 本地环境 -->
+            <id>dev</id>
+            <properties>
+                <spring.profile>dev</spring.profile>
+                <spring.application.name>jove-report-dev</spring.application.name>
+                <nacos.server.address>127.0.0.1:8848</nacos.server.address>
+                <nacos.namespace/>
+            </properties>
+            <activation>
+                <!-- 是否默认激活 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <!-- 测试环境 -->
+            <id>test</id>
+            <properties>
+                <spring.profile>test</spring.profile>
+                <spring.application.name>jove-report-test</spring.application.name>
+                <nacos.server.address>192.168.2.210:5000,10.10.0.151:5000,10.10.0.115:8000,192.168.71.70:5000</nacos.server.address>
+                <nacos.namespace>6ffa6af4-6606-4f7c-91bd-5d09d669d61a</nacos.namespace>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <!-- 生产环境 -->
+            <id>prod</id>
+            <properties>
+                <spring.profile>prod</spring.profile>
+                <spring.application.name>jove-report-prod</spring.application.name>
+                <nacos.server.address>192.168.2.210:5000,10.10.0.151:5000,10.10.0.115:8000,192.168.71.70:5000</nacos.server.address>
+                <nacos.namespace>457ea067-0192-4a23-baab-cc1bc538522b</nacos.namespace>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
+
+</project>
