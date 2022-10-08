@@ -4,7 +4,7 @@
 <a href='https://gitee.com/wxjstudy/jove-fast'><img src='https://gitee.com/wxjstudy/jove-fast/widgets/widget_4.svg' alt='Fork me on Gitee'></img></a>
 
 
-## 平台简介
+## 项目简介
 基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),本项目已脱敏并剔除了所有跟公司相关代码，就改了项目包名（无伤大雅）
 * 账号密码admin/Psitadmin
 * 采用前后端分离的模式
