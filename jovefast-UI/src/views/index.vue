@@ -5,18 +5,18 @@
       <el-col :sm="48" :lg="24">
         <h2>公司简介</h2>
         <p>
-           中富电路成立于2004年，注册地址为：深圳市宝安区沙井街道和一社区和二工业区兴业西路8号。公司是一家专业从事印制电路板的研发、生产和销售的国家级高新技术企业。公司自创办以来，长期坚持质量为先、技术为核心、客户需求为导向的发展策略，专注于有优势、有前景的细分电路板市场，取得了多项国家技术专利，研发出多种特殊的产品工艺。
+           xxxx成立于2004年，注册地址为：xxxxxxxxxxxxxxx。公司是一家专业从事印制电路板的研发、生产和销售的国家级高新技术企业。公司自创办以来，长期坚持质量为先、技术为核心、客户需求为导向的发展策略，专注于有优势、有前景的细分电路板市场，取得了多项国家技术专利，研发出多种特殊的产品工艺。
 
       公司目前有三个生产基地，分别位于深圳市宝安区沙井街道、松岗街道以及鹤山市鹤城镇。公司产品广泛应用于通信、新能源、工业控制、消费电子、汽车电子及医疗电子等应用领域，主要客户为：华为、中兴、Vertiv（维谛）、Sumsung（三星）、Schneider（施耐德）、Asteelflash（飞旭）、LACROIX、LENZE（伦茨）、理邦等国内外知名企业。
 
-      中富电路始终肩负着“以科技和实业利益社会、富强中国”的时代使命，致力于成为全球电子电路制造行业的先进企业。
+      公司始终肩负着“以科技和实业利益社会、富强中国”的时代使命，致力于成为全球电子电路制造行业的先进企业。
         </p>
         <p>
           <el-button
             size="mini"
             icon="el-icon-s-home"
             plain
-            @click="goTarget('http://www.jovepcb.com/')"
+            @click="goTarget('http://www.xxxxx.com/')"
             >访问官网</el-button
           >
         </p>
@@ -32,15 +32,15 @@
           <div class="body">
             <p>
               <i class="el-icon-s-promotion"></i> 官网：<el-link
-                href="http://www.jovepcb.com"
+                href="http://www.xxxxx.com"
                 target="_blank"
-                >http://www.jovepcb.com</el-link
+                >http://www.xxxx.com</el-link
               >
             </p>
             <p>
               <i class="el-icon-chat-dot-round"></i> 开发者：<a
                 href="javascript:;"
-                >/ JOVEPCB-IT TEAM</a
+                >/ IT TEAM</a
               >
             </p>
           </div>

@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: '中富-云平台',
+      title: 'xxx-云平台',
       logo: logoImg
     }
   }

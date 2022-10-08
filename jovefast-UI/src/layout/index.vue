@@ -37,7 +37,7 @@ export default {
   mounted() {
   // 加载水印
   watermark.load({ 
-        watermark_txt:"中富电路",  //水印的内容
+        watermark_txt:"水印",  //水印的内容
         watermark_color:'#5579ee',            //水印字体颜色
         watermark_fontsize:'16px',          //水印字体大小
         watermark_alpha:0.4,               //水印透明度，要求设置在大于等于0.005

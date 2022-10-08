@@ -1,8 +1,8 @@
 {
   "name": "jovefast",
   "version": "3.6.1",
-  "description": "中富电路",
-  "author": "Acechengui",
+  "description": "xxxx",
+  "author": "xxxx",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
