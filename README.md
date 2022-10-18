@@ -5,7 +5,7 @@
 
 
 ## 项目简介
-基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),本项目已脱敏并剔除了所有跟公司相关代码，就改了项目包名（无伤大雅）
+基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),工作流flowable，就改了原项目包名（无伤大雅）
 * 账号密码admin/Psitadmin
 * 采用前后端分离的模式
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
@@ -13,7 +13,7 @@
 * 流量控制框架选型Sentinel.
 * 分布式锁选型redisson.
 
-## 主要调整
+## 表调整
 * 部门表调整，增加了一列 describes，主要作用于积木设置当前登录用户部门描述
 
 ```
@@ -83,17 +83,17 @@
 
 
 ## 积木报表
-![输入图片说明](doc/preview/01.jpg.png)
+
+![输入图片说明](doc/preview/01.png)
 ![输入图片说明](doc/preview/image.png)
 
-## 打包发布
-请进入bin目录的命令执行打包命令
+## 工作流引擎
+![输入图片说明](doc/preview/flowable01.png)
+![输入图片说明](doc/preview/flowable02.png)
+![输入图片说明](doc/preview/flowable03.png)
 
-## 若依Cloud
-地址：[传送门](https://gitee.com/y_project/RuoYi-Cloud)
-
-## 注意事项
-1. Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的分布式锁功能(已集成)。
+## 分布式锁
+Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的分布式锁功能。
 
 用法:
 ```markdown
@@ -109,12 +109,13 @@ redisLock.unlock(lockKey);
 redisLock.unlock(lock);
 ```
 
-## 系统
+## 目录结构
 
 ~~~
 com.jovefast     
 ├── jovefast-gateway         // 网关模块
 ├── jovefast-auth            // 认证中心
+├── jovefast-flowable        // 工作流中心
 ├── jovefast-api             // 接口模块
 │       └── jovefast-api-system                          // 系统接口
 ├── jovefast-common          // 通用模块
@@ -140,3 +141,10 @@ com.jovefast
 ## 架构图
 
 <img src="http://processon.com/chart_image/62ad7ff21efad41af041a1d6.png?_=1655888519650"/>
+
+
+## 摸鱼交流
+本人普通码农一枚，产生了想搞开源项目的想法，虽能力有限，但竭尽所能，说干就干~~
+欢迎大家进群交流，本项目将一直开源。
+点击链接加入群聊【Java/Vue摸鱼交流群】：
+[![加入QQ群](https://img.shields.io/badge/148794840-blue.svg)](https://jq.qq.com/?_wv=1027&k=Y2XSJ0BC) 
