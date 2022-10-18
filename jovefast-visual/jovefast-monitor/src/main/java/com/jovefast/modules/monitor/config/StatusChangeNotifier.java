@@ -27,7 +27,7 @@ public class StatusChangeNotifier extends AbstractStatusChangeNotifier
     /**
      * 企业微信群机器人KEY
      */
-    private final String robotID = "955405d8-f113-4319-a2d0-3c435cc6922c";
+    private final String robotID = "企业微信群机器人KEY";
 
     /**
      * 消息模板

@@ -1,7 +1,8 @@
 package com.jovefast.job.mapper;
 
-import java.util.List;
 import com.jovefast.job.domain.SysJob;
+
+import java.util.List;
 
 /**
  * 调度任务信息 数据层

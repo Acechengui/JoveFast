@@ -142,7 +142,7 @@
             <properties>
                 <spring.profile>test</spring.profile>
                 <spring.application.name>jove-gateway-test</spring.application.name>
-                <sentinel.transport.dashboard>120.24.47.78:6006</sentinel.transport.dashboard>
+                <sentinel.transport.dashboard>110.25.65.15:6006</sentinel.transport.dashboard>
                 <nacos.server.address>192.168.2.210:5000,10.10.0.151:5000,10.10.0.115:8000,192.168.71.70:5000</nacos.server.address>
                 <nacos.namespace>6ffa6af4-6606-4f7c-91bd-5d09d669d61a</nacos.namespace>
             </properties>

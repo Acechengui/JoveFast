@@ -7,9 +7,9 @@ import java.io.File;
 import java.util.Objects;
 
 /**
- * @Description 企业微信发送文件工具类
- * @Author Acechengui
- * @Date Created in 2022/8/2
+ * @description:  企业微信发送文件工具类
+ * @author Acechengui
+ * @date Created in 2022/8/2
  */
 public class QiWxUtil {
     /**

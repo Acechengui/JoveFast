@@ -3,6 +3,8 @@ package com.jovefast.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jovefast.common.core.domain.R;
+import com.jovefast.common.security.annotation.InnerAuth;
 import com.jovefast.system.api.domain.SysDept;
 import com.jovefast.system.service.ISysDeptService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,13 @@ public class SysRoleController extends BaseController
         List<SysRole> list = roleService.selectRoleList(role);
         return getDataTable(list);
     }
+    @RequiresPermissions("system:role:list")
+    @GetMapping("/alllist")
+    public TableDataInfo alllist(SysRole role)
+    {
+        List<SysRole> list = roleService.selectRoleList(role);
+        return getDataTable(list);
+    }
 
     @Log(title = "角色管理", businessType = BusinessType.EXPORT)
     @RequiresPermissions("system:role:export")
@@ -76,6 +85,30 @@ public class SysRoleController extends BaseController
     {
         roleService.checkRoleDataScope(roleId);
         return AjaxResult.success(roleService.selectRoleById(roleId));
+    }
+
+    /**
+     * 根据角色编号获取详细信息
+     */
+    @InnerAuth
+    @GetMapping("/getInfo/{roleId}")
+    public R<SysRole> getRole(@PathVariable("roleId") Long roleId)
+    {
+        SysRole role = roleService.selectRoleById(roleId);
+        if(role == null){
+            R.fail("根据角色ID获取信息失败!!!");
+        }
+        return R.ok(role);
+    }
+
+    /**
+     * 获取所有角色
+     */
+    @InnerAuth
+    @GetMapping("/getInfo/role/all")
+    public R<List<SysRole>> getRoleAll()
+    {
+        return R.ok(roleService.selectRoleAll());
     }
 
     /**

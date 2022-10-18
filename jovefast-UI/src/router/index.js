@@ -134,6 +134,47 @@ export const dynamicRoutes = [
       }
     ]
   },
+  {path: '/flowable',
+    component: Layout,
+    hidden: true,
+    permissions: ['flowable:definition:edit'],
+    children: [
+      {
+        path: 'definition/model/',
+        component: () => import('@/views/flowable/definition/model'),
+        name: 'Model',
+        meta: { title: '流程设计'}
+      }
+    ]
+  },
+  {
+    path: '/flowable',
+    component: Layout,
+    hidden: true,
+    permissions: ['flowable:task:handle'],
+    children: [
+      {
+        path: 'task/record/index',
+        component: () => import('@/views/flowable/task/record/index'),
+        name: 'Record',
+        meta: { title: '流程处理'}
+      }
+    ]
+  },
+  {
+    path: '/tool',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:build:list'],
+    children: [
+      {
+        path: 'build/index',
+        component: () => import('@/views/tool/build/index'),
+        name: 'FormBuild',
+        meta: { title: '表单配置'}
+      }
+    ]
+  },
   {
     path: '/monitor/job-log',
     component: Layout,

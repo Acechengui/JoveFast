@@ -1,6 +1,5 @@
 package com.jovefast.system.api.factory;
 
-import com.jovefast.system.api.domain.SysFileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -41,17 +40,6 @@ public class RemoteFileFallbackFactory implements FallbackFactory<RemoteFileServ
             @Override
             public R<Boolean> delByPath(String filePath) {
                 return R.fail("删除文件失败:" + throwable.getMessage());
-            }
-
-            /**
-             * 保存系统文件 测试Feign服务调用
-             *
-             * @param sysFileInfo 系统文件
-             * @return 结果
-             */
-            @Override
-            public R<Boolean> saveFile(SysFileInfo sysFileInfo) {
-                return R.fail("文件入库失败:" + throwable.getMessage());
             }
 
             @Override

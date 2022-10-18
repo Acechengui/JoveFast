@@ -72,7 +72,7 @@ export default {
     return {
       number: 0,
       uploadList: [],
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/file/upload", // 上传的文件服务器地址
+      uploadFileUrl: process.env.VUE_APP_BASE_API + "/file/upload", // 上传文件服务器地址
       headers: {
         Authorization: "Bearer " + getToken(),
       },
@@ -114,15 +114,9 @@ export default {
     handleBeforeUpload(file) {
       // 校检文件类型
       if (this.fileType) {
-        let fileExtension = "";
-        if (file.name.lastIndexOf(".") > -1) {
-          fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1);
-        }
-        const isTypeOk = this.fileType.some((type) => {
-          if (file.type.indexOf(type) > -1) return true;
-          if (fileExtension && fileExtension.indexOf(type) > -1) return true;
-          return false;
-        });
+        const fileName = file.name.split('.');
+        const fileExt = fileName[fileName.length - 1];
+        const isTypeOk = this.fileType.indexOf(fileExt) >= 0;
         if (!isTypeOk) {
           this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join("/")}格式文件!`);
           return false;
@@ -152,7 +146,7 @@ export default {
     // 上传成功回调
     handleUploadSuccess(res, file) {
       if (res.code === 200) {
-        this.uploadList.push({ name: res.fileName, url: res.fileName });
+        this.uploadList.push({ name: res.data.url, url: res.data.url });
         this.uploadedSuccessfully();
       } else {
         this.number--;

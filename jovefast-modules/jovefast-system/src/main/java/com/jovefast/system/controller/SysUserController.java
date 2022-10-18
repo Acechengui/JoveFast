@@ -1,7 +1,9 @@
 package com.jovefast.system.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -75,6 +77,17 @@ public class SysUserController extends BaseController
         return getDataTable(list);
     }
 
+    /**
+     * 获取全部用户列表用于工作流
+     */
+    @RequiresPermissions("system:user:list")
+    @GetMapping("/alllist")
+    public TableDataInfo alllist(SysUser user)
+    {
+        List<SysUser> list = userService.selectUserList(user);
+        return getDataTable(list);
+    }
+
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
     @RequiresPermissions("system:user:export")
     @PostMapping("/export")
@@ -144,6 +157,20 @@ public class SysUserController extends BaseController
             return R.fail("保存用户'" + username + "'失败，注册账号已存在");
         }
         return R.ok(userService.registerUser(sysUser));
+    }
+
+    /**
+     * 根据用户ID获取用户信息
+     */
+    @InnerAuth
+    @GetMapping("/getInfo/{id}")
+    public R<SysUser> getSysUser(@PathVariable("id") Long id)
+    {
+        SysUser user = userService.selectUserById(id);
+        if(user == null){
+            R.fail("根据用户ID获取信息失败!!!");
+        }
+        return R.ok(user);
     }
 
     /**

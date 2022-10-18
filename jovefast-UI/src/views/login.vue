@@ -7,7 +7,7 @@
           v-model="loginForm.username"
           type="text"
           auto-complete="off"
-          placeholder="七位工号"
+          placeholder="账户"
         >
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
@@ -56,7 +56,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2022 jovepcb All Rights Reserved.</span>
+      <span>Copyright © 2022 xxx All Rights Reserved.</span>
     </div>
   </div>
 </template>

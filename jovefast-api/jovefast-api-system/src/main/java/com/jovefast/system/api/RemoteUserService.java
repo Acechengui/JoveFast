@@ -1,5 +1,6 @@
 package com.jovefast.system.api;
 
+import com.jovefast.system.api.domain.SysRole;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,8 @@ import com.jovefast.common.core.domain.R;
 import com.jovefast.system.api.domain.SysUser;
 import com.jovefast.system.api.factory.RemoteUserFallbackFactory;
 import com.jovefast.system.api.model.LoginUser;
+
+import java.util.List;
 
 /**
  * 用户服务
@@ -40,4 +43,23 @@ public interface RemoteUserService
      */
     @PostMapping("/user/register")
     public R<Boolean> registerUserInfo(@RequestBody SysUser sysUser, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * @param sysUser 用户信息
+     * @return 结果
+     */
+    @PostMapping("/user/list")
+    public R<List<SysUser>> selectUserList(@RequestBody SysUser sysUser, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    @GetMapping("/user/getInfo/{id}")
+    public R<SysUser> selectUserInFoById(@PathVariable("id")Long id, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    @GetMapping("/role/getInfo/{id}")
+    public R<SysRole> selectRoleById(@PathVariable("id")Long id, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    @PostMapping("/role/list")
+    public R<List<SysRole>> selectRoleList(@RequestBody SysRole sysRole, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    @GetMapping("/getInfo/role/all")
+    public R<List<SysRole>> selectRoleAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

@@ -1,6 +1,5 @@
 package com.jovefast.system.api;
 
-import com.jovefast.system.api.domain.SysFileInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -35,15 +34,6 @@ public interface RemoteFileService
      */
     @RequestMapping(value = "/del")
     R<Boolean> delByPath(@RequestParam("filePath") String filePath);
-
-    /**
-     * 保存系统文件 测试Feign服务调用
-     *
-     * @param sysFileInfo 系统文件
-     * @return 结果
-     */
-    @PostMapping("/insertFile")
-    R<Boolean> saveFile(@RequestBody SysFileInfo sysFileInfo);
 
     /**
      * 下载模板文件

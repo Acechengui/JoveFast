@@ -1,8 +1,5 @@
 package com.jovefast.file.controller;
 
-import com.jovefast.common.core.web.domain.AjaxResult;
-import com.jovefast.system.api.domain.SysFileInfo;
-import com.jovefast.file.service.ISysFileInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +22,6 @@ public class SysFileController
 
     @Autowired
     private ISysFileService sysFileService;
-
-    @Autowired
-    private ISysFileInfoService sysFileInfoService;
 
     /**
      * 文件上传请求
@@ -69,14 +63,6 @@ public class SysFileController
             log.error("上传文件失败", e);
             return R.fail(e.getMessage());
         }
-    }
-
-    @PostMapping("/insertFile")
-     //测试案例 -分布式测试
-    public AjaxResult insertFile(@RequestBody SysFileInfo sysFileInfo)
-    {
-        sysFileInfoService.insertFile(sysFileInfo);
-        return AjaxResult.success();
     }
 
     @GetMapping("/downloadFile")

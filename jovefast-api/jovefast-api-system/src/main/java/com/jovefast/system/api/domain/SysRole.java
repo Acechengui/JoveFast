@@ -8,6 +8,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.jovefast.common.core.annotation.Excel;
 import com.jovefast.common.core.annotation.Excel.ColumnType;
 import com.jovefast.common.core.web.domain.BaseEntity;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 /**
  * 角色表 sys_role

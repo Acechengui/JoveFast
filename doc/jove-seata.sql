@@ -1,10 +1,10 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : mp.jovepcb.com
+ Source Server         :
  Source Server Type    : MySQL
  Source Server Version : 80024
- Source Host           : 120.24.47.78:8806
+ Source Host           : 110.25.65.15:8806
  Source Schema         : jove-seata
 
  Target Server Type    : MySQL

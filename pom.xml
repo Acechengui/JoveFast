@@ -38,9 +38,11 @@
         <easypoi.version>3.2.0</easypoi.version>
         <hutool.version>5.7.20</hutool.version>
         <guava.version>31.1-jre</guava.version>
-        <redisson.version>3.17.7</redisson.version>
+        <redisson.version>3.17.1</redisson.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <transmittable-thread-local.version>2.13.2</transmittable-thread-local.version>
+        <flowable.version>6.7.2</flowable.version>
+        <aviator.version>5.3.2</aviator.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -267,6 +269,28 @@
                 <version>${redisson.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.jovefast</groupId>
+                <artifactId>jovefast-flowable</artifactId>
+                <version>${jovefast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-basic</artifactId>
+                <version>${flowable.version}</version>
+                <exclusions><!-- 需要排除flowable的mybatis依赖，不然会跟mybatis冲突 -->
+                    <exclusion>
+                        <groupId>org.mybatis</groupId>
+                        <artifactId>mybatis</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-engine</artifactId>
+                <version>${flowable.version}</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -277,6 +301,7 @@
         <module>jovefast-modules</module>
         <module>jovefast-api</module>
         <module>jovefast-common</module>
+        <module>jovefast-flowable</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -47,15 +47,6 @@
           v-hasPermi="['system:role:remove']"
         >批量取消授权</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-close"
-          size="mini"
-          @click="handleClose"
-        >关闭</el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -148,11 +139,6 @@ export default {
           this.loading = false;
         }
       );
-    },
-    // 返回按钮
-    handleClose() {
-      const obj = { path: "/system/role" };
-      this.$tab.closeOpenPage(obj);
     },
     /** 搜索按钮操作 */
     handleQuery() {

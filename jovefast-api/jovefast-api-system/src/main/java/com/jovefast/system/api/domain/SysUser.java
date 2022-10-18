@@ -3,6 +3,8 @@ package com.jovefast.system.api.domain;
 import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.*;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,8 +22,8 @@ import com.jovefast.common.core.xss.Xss;
  */
 public class SysUser extends BaseEntity
 {
-    private static final long serialVersionUID = 1L;
 
+    private static final long serialVersionUID = -6151961546562175791L;
     /** 用户ID */
     @Excel(name = "用户序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
     private Long userId;
@@ -69,6 +71,7 @@ public class SysUser extends BaseEntity
 
     /** 最后登录时间 */
     @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Type.EXPORT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date loginDate;
 
     /** 部门对象 */
