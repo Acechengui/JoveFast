@@ -479,7 +479,7 @@ export const selectComponents = [
   },
   {
     __config__: {
-      label: '上传',
+      label: '附件',
       tag: 'el-upload',
       tagIcon: 'upload',
       layout: 'colFormItem',
@@ -492,17 +492,17 @@ export const selectComponents = [
       buttonText: '点击上传',
       regList: [],
       changeTag: true,
-      fileSize: 2,
+      fileSize: 10,
       sizeUnit: 'MB',
       document: 'https://element.eleme.cn/#/zh-CN/component/upload'
     },
     __slot__: {
       'list-type': true
     },
-    action: '',
+    action: 'http://localhost/dev-api/flowable/form/upload',
     disabled: false,
     accept: '',
-    name: 'file',
+    name: 'files',
     'auto-upload': true,
     'list-type': 'text',
     multiple: false

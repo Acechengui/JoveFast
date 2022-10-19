@@ -94,12 +94,6 @@ public interface IFlowTaskService {
      */
     AjaxResult stopProcess(FlowTaskVo flowTaskVo);
 
-    /**
-     * 撤回流程
-     * @param flowTaskVo
-     */
-    AjaxResult revokeProcess(FlowTaskVo flowTaskVo);
-
 
     /**
      * 代办任务列表

@@ -54,14 +54,6 @@ public class FlowTaskController extends BaseController {
         return flowTaskService.stopProcess(flowTaskVo);
     }
 
-    @ApiOperation(value = "撤回流程", response = FlowTaskDto.class)
-    @PostMapping(value = "/revokeProcess")
-    @Log(title = "撤回流程", businessType = BusinessType.UPDATE)
-    @RequiresPermissions("flowable:task:revokeProcess")
-    public AjaxResult revokeProcess(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.revokeProcess(flowTaskVo);
-    }
-
     @ApiOperation(value = "获取待办列表", response = FlowTaskDto.class)
     @GetMapping(value = "/todoList")
     @RequiresPermissions("flowable:task:todoList")

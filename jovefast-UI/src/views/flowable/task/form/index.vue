@@ -233,20 +233,10 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      // this.reset();
-      // this.open = true;
-      // this.title = "添加流程表单";
       this.$router.push({ path: '/tool/build/index', query: {formId: null }})
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      // this.reset();
-      // const formId = row.formId || this.ids
-      // getForm(formId).then(response => {
-      //   this.form = response.data;
-      //   this.open = true;
-      //   this.title = "修改流程表单";
-      // });
       this.$router.push({ path: '/tool/build/index', query: {formId: row.formId }})
     },
     /** 提交按钮 */

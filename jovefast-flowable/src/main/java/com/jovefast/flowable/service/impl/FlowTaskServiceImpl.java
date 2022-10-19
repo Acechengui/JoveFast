@@ -35,6 +35,7 @@ import org.flowable.common.engine.api.FlowableException;
 import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.ProcessEngineConfiguration;
+import org.flowable.engine.RepositoryService;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
@@ -506,56 +507,6 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         return AjaxResult.success();
     }
 
-    /**
-     * 撤回流程  目前存在错误
-     *
-     * @param flowTaskVo 参数
-     */
-    @Override
-    @Transactional
-    public AjaxResult revokeProcess(FlowTaskVo flowTaskVo) {
-        Task task = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).singleResult();
-        if (task == null) {
-            throw new CheckedException("流程未启动或已执行完成，无法撤回");
-        }
-        SysUser loginUser = SecurityUtils.getLoginUser().getSysUser();
-        List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(task.getProcessInstanceId())
-                .orderByTaskCreateTime()
-                .asc()
-                .list();
-        String myTaskId = null;
-        HistoricTaskInstance myTask = null;
-        for (HistoricTaskInstance hti : htiList) {
-            if (loginUser.getUserId().toString().equals(hti.getAssignee())) {
-                myTaskId = hti.getId();
-                myTask = hti;
-                break;
-            }
-        }
-        if (null == myTaskId) {
-            throw new CheckedException("该任务非当前用户提交，无法撤回");
-        }
-
-        String processDefinitionId = myTask.getProcessDefinitionId();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-
-        String myActivityId = null;
-        List<HistoricActivityInstance> haiList = historyService.createHistoricActivityInstanceQuery()
-                .executionId(myTask.getExecutionId()).finished().list();
-        for (HistoricActivityInstance hai : haiList) {
-            if (myTaskId.equals(hai.getTaskId())) {
-                myActivityId = hai.getActivityId();
-                break;
-            }
-        }
-        FlowNode myFlowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(myActivityId);
-        Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
-        String activityId = execution.getActivityId();
-        FlowNode flowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(activityId);
-
-        return AjaxResult.success();
-    }
 
     /**
      * 待办任务列表
@@ -674,7 +625,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             if(startUser.getCode() == HttpStatus.ERROR){
                 throw new CheckedException("获取用户信息失败");
             }
-            flowTask.setStartUserId(startUser.getData().getNickName());
+            flowTask.setStartUserId(String.valueOf(startUser.getData().getUserId()));
             flowTask.setStartUserName(startUser.getData().getNickName());
             flowTask.setStartDeptName(startUser.getData().getDept().getDeptName());
             hisTaskList.add(flowTask);

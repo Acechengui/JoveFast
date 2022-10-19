@@ -19,6 +19,9 @@ public class FlowServiceFactory {
     protected RepositoryService repositoryService;
 
     @Resource
+    protected DynamicBpmnService dynamicBpmnService;
+
+    @Resource
     protected RuntimeService runtimeService;
 
     @Resource

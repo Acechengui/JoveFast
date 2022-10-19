@@ -39,7 +39,7 @@ public interface IFlowDefinitionService {
      * @param deployId
      * @return
      */
-    AjaxResult readXml(String deployId) throws IOException;
+    String readXml(String deployId) throws IOException;
 
     /**
      * 根据流程定义ID启动流程实例

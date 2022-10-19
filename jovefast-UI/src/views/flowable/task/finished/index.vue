@@ -25,25 +25,14 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:deployment:remove']"
-        >删除</el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="finishedList" border @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table v-loading="loading" :data="finishedList" border>
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
       <el-table-column label="任务节点" align="center" prop="taskName" />
+      <el-table-column label="发起人ID" align="center" prop="startUserId" />
       <el-table-column label="流程发起人" align="center">
         <template slot-scope="scope">
           <label>{{scope.row.startUserName}} <el-tag type="info" size="mini" v-if="scope.row.startDeptName">{{scope.row.startDeptName}}</el-tag></label>
@@ -60,14 +49,6 @@
             icon="el-icon-tickets"
             @click="handleFlowRecord(scope.row)"
           >流转记录</el-button>
-           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-tickets"
-            v-hasPermi="['flowable:task:revokeProcess']"
-            @click="handleRevoke(scope.row)"
-          >撤回
-          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -83,7 +64,7 @@
 </template>
 
 <script>
-import { finishedList, getDeployment, delDeployment, addDeployment, updateDeployment, exportDeployment, revokeProcess } from "@/api/flowable/finished";
+import { finishedList } from "@/api/flowable/finished";
 
 export default {
   name: "Deploy",
@@ -93,23 +74,12 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
       total: 0,
       // 已办任务列表数据
       finishedList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      src: "",
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -149,22 +119,6 @@ export default {
       this.open = false;
       this.reset();
     },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        name: null,
-        category: null,
-        key: null,
-        tenantId: null,
-        deployTime: null,
-        derivedFrom: null,
-        derivedFromRoot: null,
-        parentDeploymentId: null,
-        engineVersion: null
-      };
-      this.resetForm("form");
-    },
     setIcon(val){
       if (val){
         return "el-icon-check";
@@ -191,18 +145,6 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加流程定义";
-    },
     /** 流程流转记录 */
     handleFlowRecord(row){
       this.$router.push({ path: '/flowable/task/record/index',
@@ -212,73 +154,6 @@ export default {
           taskId: row.taskId,
           finished: false
       }})
-    },
-    /** 撤回任务 */
-    handleRevoke(row){
-      const params = {
-        instanceId: row.procInsId
-      }
-      revokeProcess(params).then( res => {
-        this.$modal.msgSuccess(res.msg);
-        this.getList();
-      });
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getDeployment(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改流程定义";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$confirm('是否确认删除流程定义编号为"' + ids + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function() {
-        return delDeployment(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      })
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有流程定义数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function() {
-        return exportDeployment(queryParams);
-      }).then(response => {
-        this.download(response.msg);
-      })
     }
   }
 };

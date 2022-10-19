@@ -20,10 +20,8 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -79,7 +77,7 @@ public class FlowDefinitionController extends BaseController {
     @GetMapping("/readXml/{deployId}")
     @RequiresPermissions("flowable:definition:edit")
     public AjaxResult readXml(@ApiParam(value = "流程定义id") @PathVariable(value = "deployId") String deployId) throws IOException {
-            return flowDefinitionService.readXml(deployId);
+            return AjaxResult.success("读取成功",flowDefinitionService.readXml(deployId));
     }
 
     @ApiOperation(value = "读取图片文件")
@@ -134,7 +132,7 @@ public class FlowDefinitionController extends BaseController {
     @ApiOperation(value = "根据流程定义id启动流程实例")
     @PostMapping("/start/{procDefId}")
     public AjaxResult start(@ApiParam(value = "流程定义id") @PathVariable(value = "procDefId") String procDefId,
-                            @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables,HttpServletRequest request) {
+                            @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables) {
         boolean b = flowDefinitionService.startProcessInstanceById(procDefId, variables);
         if(b){
             return AjaxResult.success("流程启动成功");

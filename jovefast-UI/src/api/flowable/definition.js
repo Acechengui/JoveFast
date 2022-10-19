@@ -68,24 +68,6 @@ export function saveXml(data) {
   })
 }
 
-// 新增流程定义
-export function addDeployment(data) {
-  return request({
-    url: '/system/deployment',
-    method: 'post',
-    data: data
-  })
-}
-
-// 修改流程定义
-export function updateDeployment(data) {
-  return request({
-    url: '/system/deployment',
-    method: 'put',
-    data: data
-  })
-}
-
 // 删除流程定义
 export function delDeployment(query) {
   return request({
@@ -94,11 +76,3 @@ export function delDeployment(query) {
   })
 }
 
-// 导出流程定义
-export function exportDeployment(query) {
-  return request({
-    url: '/system/deployment/export',
-    method: 'get',
-    params: query
-  })
-}

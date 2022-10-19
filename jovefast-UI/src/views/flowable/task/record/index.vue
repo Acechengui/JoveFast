@@ -5,15 +5,14 @@
         <span class="el-icon-document">基础信息</span>
         <el-button style="float: right;" type="primary" @click="goBack">返回</el-button>
       </div>
-
       <!--流程处理表单模块-->
       <el-col :span="16" :offset="6" v-if="variableOpen">
         <div>
           <parser :key="new Date().getTime()" :form-conf="variablesData" />
         </div>
-        <div style="margin-left:10%;margin-bottom: 20px">
+        <div style="margin-left:2%;margin-bottom: 20px">
           <!--对上传文件进行显示处理 -->
-          <el-upload :on-preview="handleFilePreview" :file-list="fileList" v-if="fileDisplay" />
+          <el-tag type="success" effect="plain">附件列表:</el-tag><el-upload :on-preview="handleFilePreview" :file-list="fileList" v-if="fileDisplay" />
         </div>
         <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
           <el-button icon="el-icon-edit-outline" type="success" size="mini" @click="handleComplete">审批</el-button>
@@ -249,20 +248,8 @@ export default {
       checkSendUser: false // 是否展示选择人员模块
     };
   },
-  mounted() {
-    if (this.variablesData.length > 0) {
-      //表单数据回填，模拟异步请求场景
-      alert('表单数据回填，模拟异步请求场景'+ this.variablesData.fields)
-      setTimeout(() => {
-        // 回填数据,这里主要是处理文件显示
-        this.fillFormData(this.variablesData.fields, this.variablesData)
-        // 更新表单
-        this.key = +new Date().getTime()
-      }, 1000)
-    }
-
-  },
   created() {
+    this.$modal.loading("正在加载数据中，请稍候...");
     this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
     this.taskForm.taskId = this.$route.query && this.$route.query.taskId;
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
@@ -271,9 +258,7 @@ export default {
     // 初始化表单
     this.taskForm.procDefId = this.$route.query && this.$route.query.procDefId;
     // 回显流程记录
-    if (this.taskForm.procInsId && this.taskForm.executionId) {
-      this.getFlowViewer(this.taskForm.procInsId, this.taskForm.executionId);
-    }
+    this.getFlowViewer(this.taskForm.procInsId, this.taskForm.executionId);
     this.getModelDetail(this.taskForm.deployId);
     // 流程任务重获取变量表单
     if (this.taskForm.taskId) {
@@ -282,7 +267,8 @@ export default {
       this.taskForm.deployId = null
     }
     this.getFlowRecordList(this.taskForm.procInsId, this.taskForm.deployId);
-    this.finished = this.$route.query && this.$route.query.finished
+    this.finished = this.$route.query && this.$route.query.finished;
+    this.$modal.closeLoading();
   },
   methods: {
     /** 查询部门下拉树结构 */
@@ -342,11 +328,11 @@ export default {
         const selectVal = selection.map(item => item.userId);
         if (selectVal instanceof Array) {
           this.taskForm.values = {
-            "approval": 'test'
+            "approval": selectVal.join(',')
           }
         } else {
           this.taskForm.values = {
-            "approval": 'test'
+            "approval": selectVal
           }
         }
       }
@@ -386,26 +372,24 @@ export default {
     handleFilePreview(file) {
       var a = document.createElement('a');
       var event = new MouseEvent('click');
+      a.target="_blank";
       a.download = file.name;
       a.href = file.url;
       a.dispatchEvent(event);
     },
     fillFormData(fields, formConf) {
-      const { formModel, formRef } = formConf
       fields.forEach((item, i) => {
-        const vModel = item.__vModel__
         const val = item.__config__.defaultValue
-        alert('fillFormData==>' + item.__config__.tag)
         // 特殊处理el-upload，包括 回显图片
         if (item.__config__.tag === 'el-upload') {
           // 回显图片
           this.fileDisplay = true
           if (item['list-type'] != 'text') {
-            this.fileList = ''    //隐藏加的el-upload文件列表
+            this.fileList = [];    //隐藏加的el-upload文件列表
             item['file-list'] = JSON.parse(val)
           }else {  //图片
             this.fileList = JSON.parse(val)
-            item['file-list'] = '' //隐藏加的表单设计器的文件列表
+            item['file-list'] = [] //隐藏加的表单设计器的文件列表
           }
         }
         // 设置各表单项的默认值（回填表单），包括el-upload的默认值
@@ -423,6 +407,8 @@ export default {
         // 提交流程申请时填写的表单存入了流程变量中后续任务处理时需要展示
         getProcessVariables(taskId).then(res => {
           this.variablesData = res.data.variables;
+          // 回填数据,这里主要是处理文件显示
+          this.fillFormData(this.variablesData.fields, this.variablesData)
           this.variableOpen = true
         });
       }

@@ -53,7 +53,7 @@ public class FlowFormController extends BaseController {
         }
         String uploadfile = sysFormService.uploadfiles(file);
         if(StringUtils.isNotNull(uploadfile)){
-            return AjaxResult.success(uploadfile);
+            return AjaxResult.success("上传成功",uploadfile);
         }
         return AjaxResult.error("上传失败");
     }

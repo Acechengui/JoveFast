@@ -141,8 +141,8 @@ function setUpload(config, scheme, response, file, fileList) {
     this.$modal.msgError(response.msg);
     return;
   } else {
-    var filename = response.msg.substring(response.msg.lastIndexOf("/") + 1); //获取文件名称
-    let fileObj = { name: filename, url: response.msg };
+    var filename = response.data.substring(response.data.lastIndexOf("/") + 1); //获取文件名称
+    let fileObj = { name: filename, url: response.data };
     let oldValue = JSON.parse(this[this.formConf.formModel][scheme.__vModel__]);
     if (oldValue) {
       oldValue.push(fileObj);

@@ -21,6 +21,7 @@ import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.engine.task.Attachment;
 import org.flowable.image.impl.DefaultProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
@@ -100,11 +101,13 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
      * @param deployId
      */
     @Override
-    public AjaxResult readXml(String deployId) throws IOException {
+    public String readXml(String deployId) throws IOException {
         ProcessDefinition definition = repositoryService.createProcessDefinitionQuery().deploymentId(deployId).singleResult();
+        if(Objects.isNull(definition)){
+            throw new CheckedException("读取不到流程xml文件");
+        }
         InputStream inputStream = repositoryService.getResourceAsStream(definition.getDeploymentId(), definition.getResourceName());
-        String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
-        return AjaxResult.success("", result);
+        return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 
     /**
@@ -140,7 +143,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
      * @param variables 流程变量，表单参数
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean startProcessInstanceById(String procDefId, Map<String, Object> variables) {
         try {
             ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(procDefId)
@@ -156,7 +159,10 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题？
             Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
             if (Objects.nonNull(task)) {
+                //往意见表增加记录
                 taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), sysUser.getNickName() + "发起流程申请");
+                //往附件表里增加记录,注意:这里会自动往意见表里再增加记录, type值为event,此处暂时用不到先注释
+                //taskService.createAttachment(FlowComment.NORMAL.getType(), task.getId(), processInstance.getProcessInstanceId(), sysUser.getNickName() + "的附件", sysUser.getNickName() + "上传的附件",variables.get("files").toString());
                 taskService.complete(task.getId(), variables);
             }
             return true;
@@ -198,6 +204,13 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         for (String d: deployId){
             // true 允许级联删除 ,不设置会导致数据库外键关联异常
             repositoryService.deleteDeployment(d, true);
+            /** 与流程实例关联的附件列表 */
+            List<Attachment> instanceAttachments = taskService.getProcessInstanceAttachments(d);
+            for (Attachment attachment : instanceAttachments) {
+                /** 删除附件 */
+                taskService.deleteAttachment(attachment.getId());
+            }
+
         }
     }
 
