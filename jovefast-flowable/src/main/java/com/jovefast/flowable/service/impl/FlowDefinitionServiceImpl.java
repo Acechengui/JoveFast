@@ -204,12 +204,6 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         for (String d: deployId){
             // true 允许级联删除 ,不设置会导致数据库外键关联异常
             repositoryService.deleteDeployment(d, true);
-            /** 与流程实例关联的附件列表 */
-            List<Attachment> instanceAttachments = taskService.getProcessInstanceAttachments(d);
-            for (Attachment attachment : instanceAttachments) {
-                /** 删除附件 */
-                taskService.deleteAttachment(attachment.getId());
-            }
 
         }
     }
