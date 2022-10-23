@@ -8,6 +8,7 @@
       :modeler="modeler"
       :users="users"
       :groups="groups"
+      :forms="forms"
       :categorys="categorys"
       @dataType="dataType"
     />
@@ -31,6 +32,10 @@ export default {
       required: true
     },
     groups: {
+      type: Array,
+      required: true
+    },
+    forms: {
       type: Array,
       required: true
     },

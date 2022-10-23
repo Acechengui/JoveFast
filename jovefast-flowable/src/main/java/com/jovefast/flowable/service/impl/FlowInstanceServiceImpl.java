@@ -1,7 +1,6 @@
 package com.jovefast.flowable.service.impl;
 
 
-import com.jovefast.common.core.web.domain.AjaxResult;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.flowable.domain.vo.FlowTaskVo;
 import com.jovefast.flowable.factory.FlowServiceFactory;
@@ -31,17 +30,6 @@ public class FlowInstanceServiceImpl extends FlowServiceFactory implements IFlow
     public List<Task> queryListByInstanceId(String instanceId) {
         List<Task> list = taskService.createTaskQuery().processInstanceId(instanceId).active().list();
         return list;
-    }
-
-    /**
-     * 结束流程实例
-     *
-     * @param vo
-     */
-    @Override
-    public void stopProcessInstance(FlowTaskVo vo) {
-        String taskId = vo.getTaskId();
-
     }
 
     /**
@@ -109,18 +97,17 @@ public class FlowInstanceServiceImpl extends FlowServiceFactory implements IFlow
      * @return
      */
     @Override
-    public AjaxResult startProcessInstanceById(String procDefId, Map<String, Object> variables) {
-
+    public boolean startProcessInstanceById(String procDefId, Map<String, Object> variables) {
         try {
             // 设置流程发起人Id到流程中
             Long userId = SecurityUtils.getLoginUser().getUserid();
             variables.put("initiator",userId);
             variables.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);
             runtimeService.startProcessInstanceById(procDefId, variables);
-            return AjaxResult.success("流程启动成功");
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return AjaxResult.error("流程启动错误");
+            return false;
         }
     }
 }

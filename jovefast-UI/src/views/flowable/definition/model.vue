@@ -5,6 +5,7 @@
       :xml="xml"
       :users="users"
       :groups="groups"
+      :forms="forms"
       :categorys="categorys"
       :is-view="false"
       @save="save"
@@ -27,6 +28,7 @@
 import {readXml, saveXml} from "@/api/flowable/definition";
 import {listUserAll} from "@/api/system/user";
 import {listRoleAll} from "@/api/system/role";
+import {listFormAll} from "@/api/flowable/form";
 import bpmnModeler from '@/components/Process/index'
 import vkbeautify from 'vkbeautify'
 import Hljs from 'highlight.js'
@@ -56,6 +58,7 @@ export default {
       xmlContent: '',
       users: [],
       groups: [],
+      forms: [],
       categorys: []
 
     };
@@ -89,13 +92,13 @@ export default {
       }
       saveXml(params).then(res => {
         this.$message(res.msg)
-        // 关闭当前标签页并返回上个页面
+        // 关闭当前标签页
         this.$store.dispatch("tagsView/delView", this.$route);
         this.$router.go(-1)
       })
     },
     /** 指定流程办理人员列表 */
-    getDataList() {
+   async getDataList() {
       listUserAll().then(res =>{
         this.users = res.rows;
         let arr = {nickName: "流程发起人", userId: "${INITIATOR}"}
@@ -104,6 +107,10 @@ export default {
       listRoleAll().then(res =>{
         this.groups = res.rows;
       });
+      listFormAll().then(res =>{
+        this.forms = res.data;
+      });
+      
     },
     /** 展示xml */
     showXML(data){

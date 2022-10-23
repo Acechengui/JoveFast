@@ -131,16 +131,19 @@ function buildListeners(scheme) {
     deleteUpload.call(this, config, scheme, file, fileList)
   listeners.errorUpload = (file, fileList) =>
     errorUpload.call(this, config, scheme, file, fileList);
+  listeners.progressUpload = (file, fileList) =>
+    progressUpload.call(this, config, scheme, file, fileList);
   return listeners;
 }
 
 //获取上传表单元素组件 上传的文件
 function setUpload(config, scheme, response, file, fileList) {
+  this.$modal.closeLoading();
   //response: 上传接口返回的数据
   if (response.code != 200) {
-    this.$modal.msgError(response.msg);
-    return;
+    this.$modal.alertError('文件:'+file.name+'上传失败');
   } else {
+    this.$modal.msgSuccess('文件:'+file.name+'上传成功');
     var filename = response.data.substring(response.data.lastIndexOf("/") + 1); //获取文件名称
     let fileObj = { name: filename, url: response.data };
     let oldValue = JSON.parse(this[this.formConf.formModel][scheme.__vModel__]);
@@ -162,17 +165,21 @@ function deleteUpload(config, scheme, file, fileList) {
   let oldValue = JSON.parse(this[this.formConf.formModel][scheme.__vModel__]);
   //file 删除的文件
   //过滤掉删除的文件
-  let newValue = oldValue.filter((item) => item.name !== file.name);
-  this.$set(config, "defaultValue", JSON.stringify(newValue));
-  this.$set(
-    this[this.formConf.formModel],
-    scheme.__vModel__,
-    JSON.stringify(newValue)
-  );
+  if(oldValue){
+    let newValue = oldValue.filter((item) => item.name !== file.name);
+    this.$set(config, "defaultValue", JSON.stringify(newValue));
+    this.$set(
+      this[this.formConf.formModel],
+      scheme.__vModel__,
+      JSON.stringify(newValue)
+    );
+  }
+  
 }
 
 //文件上传失败的回调
 function errorUpload(config, scheme, file, fileList) {
+  this.$modal.closeLoading();
   //file 失败的文件
   let newValue =[];
   this.$set(config, "defaultValue", newValue);
@@ -183,13 +190,9 @@ function errorUpload(config, scheme, file, fileList) {
   );
 }
 
-//点击进行下载文件
-function download(file) {
-  var a = document.createElement("a");
-  var event = new MouseEvent("click");
-  a.download = file.name;
-  a.href = file.url;
-  a.dispatchEvent(event);
+//文件上传中的回调
+function progressUpload(config, scheme, event, file) {
+  this.$modal.loading('文件：'+ file.name +'上传中，请稍候...');
 }
 
 export default {

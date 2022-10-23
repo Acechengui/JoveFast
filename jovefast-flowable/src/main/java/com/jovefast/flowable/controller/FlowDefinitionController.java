@@ -119,7 +119,8 @@ public class FlowDefinitionController extends BaseController {
             in = new ByteArrayInputStream(vo.getXml().getBytes(StandardCharsets.UTF_8));
             flowDefinitionService.importFile(vo.getName(), vo.getCategory(), in);
         } catch (Exception e) {
-            return AjaxResult.success(e.getMessage());
+            e.printStackTrace();
+            return AjaxResult.error(e.getMessage());
         } finally {
                 if (in != null) {
                     in.close();

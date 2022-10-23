@@ -1,7 +1,7 @@
 package com.jovefast.flowable.service.impl;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Lists;
 import com.jovefast.common.core.constant.HttpStatus;
 import com.jovefast.common.core.constant.SecurityConstants;
@@ -35,7 +35,6 @@ import org.flowable.common.engine.api.FlowableException;
 import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.ProcessEngineConfiguration;
-import org.flowable.engine.RepositoryService;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
@@ -606,6 +605,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setProcDefId(histTask.getProcessDefinitionId());
             flowTask.setTaskDefKey(histTask.getTaskDefinitionKey());
             flowTask.setTaskName(histTask.getName());
+            flowTask.setExecutionId(histTask.getExecutionId());
 
             // 流程定义信息
             ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
@@ -641,11 +641,12 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     /**
      * 流程历史流转记录
      *
-     * @param procInsId 流程实例Id
+     * @param procInsId 流程实例ID
+     * @param deployId 部署id
      */
     @Override
     public Map<String, Object> flowRecord(String procInsId, String deployId) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (StringUtils.isNotBlank(procInsId)) {
             List<HistoricActivityInstance> list = historyService
                     .createHistoricActivityInstanceQuery()
@@ -707,14 +708,25 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             }
             map.put("flowList", hisFlowList);
         }
-        // 第一次申请获取初始化表单
-        if (StringUtils.isNotBlank(deployId)) {
+        // 如果是第一次流程发起，获取初始化配置的表单
+        if(StringUtils.isNotBlank(deployId)) {
             SysForm sysForm = sysInstanceFormService.selectSysDeployFormByDeployId(deployId);
             if (Objects.isNull(sysForm)) {
-                throw new CheckedException("请先配置流程表单");
+                throw new CheckedException("请先配置流程发起默认需要的流程表单");
             }
             map.put("formData", JSONObject.parseObject(sysForm.getFormContent()));
         }
+        //如果是流程已在进行中，可以根据流程节点中formKey切换不同表单
+        /* if(StringUtils.isNotBlank(procInsId)){
+            // Step 1. 根据流程实例ID获取当前任务
+            Task task = this.processEngine.getTaskService().createTaskQuery().processInstanceId(procInsId).active().singleResult();
+            SysForm sysForm;
+            if(task != null){
+                // Step 2. 拿到formKey获取表单
+                sysForm = sysInstanceFormService.selectSysFormByFormId(task.getFormKey());
+                map.put("businessFormData", JSONObject.parseObject(sysForm.getFormContent()));
+            }
+        }*/
         return map;
     }
 

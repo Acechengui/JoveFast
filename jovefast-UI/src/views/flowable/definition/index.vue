@@ -70,7 +70,7 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="业务表单" align="center" :show-overflow-tooltip="true">
+      <el-table-column label="初始化表单" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button v-if="scope.row.formId" type="text" @click="handleForm(scope.row.formId)">
             <span>{{ scope.row.formName }}</span>
@@ -125,21 +125,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改流程定义对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="看看" prop="name">
-          <el-input v-model="form.name" placeholder="请输入看看" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
-
     <!-- bpmn20.xml导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
       <el-upload
@@ -173,7 +158,6 @@
 
     <!-- 流程图 -->
     <el-dialog :title="readImage.title" :visible.sync="readImage.open" width="70%" append-to-body>
-      <!-- <el-image :src="readImage.src"></el-image> -->
        <flow :xmlData="xmlData"/>
     </el-dialog>
 
@@ -225,7 +209,7 @@
 </template>
 
 <script>
-import { listDefinition, updateState, delDeployment, addDeployment, updateDeployment,definitionStart, readXml} from "@/api/flowable/definition";
+import { listDefinition, updateState, delDeployment,definitionStart, readXml} from "@/api/flowable/definition";
 import { getToken } from "@/utils/auth";
 import { getForm, addDeployForm ,listForm } from "@/api/flowable/form";
 import Parser from '@/components/parser/Parser'
@@ -253,10 +237,6 @@ export default {
       total: 0,
       // 流程定义表格数据
       definitionList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
       formConfOpen: false,
       formTitle: "",
       formDeployOpen: false,
@@ -309,12 +289,7 @@ export default {
       currentRow: null,
       showCurrent:false,
       // xml
-      xmlData:"",
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-      }
+      xmlData:""
     };
   },
   created() {
@@ -329,27 +304,6 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        name: null,
-        category: null,
-        key: null,
-        tenantId: null,
-        deployTime: null,
-        derivedFrom: null,
-        derivedFromRoot: null,
-        parentDeploymentId: null,
-        engineVersion: null
-      };
-      this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -367,12 +321,6 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加流程定义";
-    },
     /** 跳转到流程设计页面 */
     handleLoadXml(row){
       this.$router.push({ path: '/flowable/definition/model',query: { deployId: row.deploymentId }})
@@ -381,7 +329,6 @@ export default {
     handleReadImage(deploymentId){
       this.readImage.title = "流程图";
       this.readImage.open = true;
-      // this.readImage.src = process.env.VUE_APP_BASE_API + "/flowable/definition/readImage/" + deploymentId;
        // 发送请求，获取xml
       readXml(deploymentId).then(res =>{
         this.xmlData = res.data
@@ -393,6 +340,7 @@ export default {
         this.formTitle = "表单详情";
         this.formConfOpen = true;
         this.formConf = JSON.parse(res.data.formContent)
+        this.formConf.disabled = true;
       })
     },
     /** 启动流程 */
@@ -432,6 +380,7 @@ export default {
       }else{
         this.showCurrent=true;
         this.currentRow = JSON.parse(data.formContent);
+        this.currentRow.disabled = true;
       }
       
     },
@@ -446,37 +395,11 @@ export default {
         state: state
       }
       updateState(params).then(res => {
-        this.$modal.msgSuccess(res.msg);
-        this.getList();
-      });
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.deploymentId || this.ids
-      getDeployment(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改流程定义";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
+        if(res.code == 200){
+          this.$modal.msgSuccess(res.msg);
+          row.suspensionState=state;
+        }else{
+          this.$modal.msgError(res.msg);
         }
       });
     },

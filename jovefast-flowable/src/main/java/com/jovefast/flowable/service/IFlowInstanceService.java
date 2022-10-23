@@ -16,13 +16,6 @@ public interface IFlowInstanceService {
     List<Task> queryListByInstanceId(String instanceId);
 
     /**
-     * 结束流程实例
-     *
-     * @param vo
-     */
-    void stopProcessInstance(FlowTaskVo vo);
-
-    /**
      * 激活或挂起流程实例
      *
      * @param state      状态
@@ -53,5 +46,5 @@ public interface IFlowInstanceService {
      * @param variables 流程变量
      * @return
      */
-    AjaxResult startProcessInstanceById(String procDefId, Map<String, Object> variables);
+    boolean startProcessInstanceById(String procDefId, Map<String, Object> variables);
 }

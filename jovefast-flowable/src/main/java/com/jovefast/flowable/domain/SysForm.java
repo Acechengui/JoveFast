@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * 流程表单对象 sys_task_form
+ * 流程表单对象
  * 
  * @author Acecehgnui
  */
@@ -25,7 +25,7 @@ public class SysForm extends BaseEntity
     @Excel(name = "表单内容")
     private String formContent;
 
-    public void setFormId(Long formId) 
+    public void setFormId(Long formId)
     {
         this.formId = formId;
     }

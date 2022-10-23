@@ -143,9 +143,7 @@
 <script>
 import {
   getDeployment,
-  delDeployment,
-  addDeployment,
-  updateDeployment
+  delDeployment
 } from "@/api/flowable/finished";
 import { myProcessList,stopProcess } from "@/api/flowable/process";
 import {listDefinition} from "@/api/flowable/definition";
@@ -317,26 +315,6 @@ export default {
         this.form = response.data;
         this.open = true;
         this.title = "修改流程定义";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
       });
     },
     /** 删除按钮操作 */

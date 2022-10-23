@@ -68,6 +68,10 @@ export default {
       type: Array,
       required: true,
     },
+    forms: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -209,10 +213,17 @@ export default {
             show: !!_this.showConfig.priority,
           },
           {
-            xType: "input",
-            name: "formKey",
-            label: "表单标识key",
-            show: !!_this.showConfig.formKey,
+            // xType: "input",
+            // name: "formKey",
+            // label: "表单标识key",
+            // show: !!_this.showConfig.formKey,
+            xType: 'select',
+            name: 'formKey',
+            label: '表单标识',
+            filterable: true,
+            allowCreate: true,
+            dic:  { data: _this.forms, label: "formName", value: "formId" },
+
           },
           {
             xType: "input",

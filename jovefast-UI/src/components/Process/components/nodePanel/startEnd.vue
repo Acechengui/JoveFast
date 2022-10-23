@@ -74,7 +74,6 @@ export default {
     'formData.initiator': function(val) {
       if (val === '') val = null
       // 默认设置流程发起人
-      // if (val === '') val = 'INITIATOR'
       this.updateProperties({ 'flowable:initiator': val })
     },
     'formData.formKey': function(val) {
@@ -83,7 +82,6 @@ export default {
     }
   },
   created() {
-    // this.updateProperties({ 'flowable:initiator': 'INITIATOR' })
     this.formData = commonParse(this.element)
   }
 }

@@ -10,9 +10,9 @@
         <div>
           <parser :key="new Date().getTime()" :form-conf="variablesData" />
         </div>
-        <div style="margin-left:2%;margin-bottom: 20px">
+        <div style="margin-left:2%;margin-bottom: 20px" v-if="fileDisplay">
           <!--对上传文件进行显示处理 -->
-          <el-tag type="success" effect="plain">附件列表:</el-tag><el-upload :on-preview="handleFilePreview" :file-list="fileList" v-if="fileDisplay" />
+          <el-tag type="success" effect="plain" v-if="fileList">附件列表:</el-tag><el-upload :on-preview="handleFilePreview" :file-list="fileList" />
         </div>
         <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
           <el-button icon="el-icon-edit-outline" type="success" size="mini" @click="handleComplete">审批</el-button>
@@ -98,8 +98,14 @@
                   style="margin-bottom: 20px" />
               </div>
               <div class="head-container">
-                <el-tree :data="deptOptions" :props="defaultProps" :expand-on-click-node="false"
-                  :filter-node-method="filterNode" ref="tree" default-expand-all @node-click="handleNodeClick" />
+                <el-tree 
+                :data="deptOptions" 
+                :props="defaultProps" 
+                :expand-on-click-node="false"
+                :filter-node-method="filterNode"
+                ref="tree"
+                highlight-current
+                @node-click="handleNodeClick" />
               </div>
             </el-col>
             <el-col :span="10" :xs="24">
@@ -110,6 +116,13 @@
                 <el-table-column label="用户名" align="center" prop="nickName" />
                 <el-table-column label="部门" align="center" prop="dept.deptName" />
               </el-table>
+              <pagination
+                v-show="total>0"
+                :total="total"
+                :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize"
+                @pagination="getList"
+              />
             </el-col>
             <el-col :span="8" :xs="24">
               <h6>已选人员</h6>
@@ -172,10 +185,9 @@ import Parser from '@/components/parser/Parser'
 import { definitionStart, getProcessVariables, readXml, getFlowViewer } from "@/api/flowable/definition";
 import { complete, rejectTask, returnList, returnTask, getNextFlowNode, delegate } from "@/api/flowable/todo";
 import flow from '@/views/flowable/task/record/flow'
-import { treeselect } from "@/api/system/dept";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Treeselect from "@riophae/vue-treeselect";
-import { listUser } from "@/api/system/user";
+import { listUser,deptTreeSelect } from "@/api/system/user";
 
 export default {
   name: "Record",
@@ -248,6 +260,12 @@ export default {
       checkSendUser: false // 是否展示选择人员模块
     };
   },
+  watch: {
+    // 根据名称筛选部门树
+    deptName(val) {
+      this.$refs.tree.filter(val);
+    }
+  },
   created() {
     this.$modal.loading("正在加载数据中，请稍候...");
     this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
@@ -273,7 +291,7 @@ export default {
   methods: {
     /** 查询部门下拉树结构 */
     getTreeselect() {
-      treeselect().then(response => {
+      deptTreeSelect().then(response => {
         this.deptOptions = response.data;
       });
     },

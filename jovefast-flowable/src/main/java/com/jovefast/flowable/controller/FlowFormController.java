@@ -70,11 +70,21 @@ public class FlowFormController extends BaseController {
     }
 
     /**
+     * 查询全部表单
+     */
+    @RequiresPermissions("flowable:form:list")
+    @GetMapping("/list/all")
+    public AjaxResult listAll(SysForm sysForm) {
+        List<SysForm> list = sysFormService.selectSysFormList(sysForm);
+        return AjaxResult.success(list);
+    }
+
+    /**
      * 导出流程表单列表
      */
     @RequiresPermissions("flowable:form:export")
     @Log(title = "流程表单", businessType = BusinessType.EXPORT)
-    @GetMapping("/export")
+    @PostMapping("/export")
     public void export(HttpServletResponse response, SysForm sysForm) {
         List<SysForm> list = sysFormService.selectSysFormList(sysForm);
         ExcelUtil<SysForm> util = new ExcelUtil<SysForm>(SysForm.class);

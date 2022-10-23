@@ -16,10 +16,15 @@ keys.forEach(key => {
 
 function vModel(dataObject, defaultValue) {
   if (this.conf.__config__.tag === 'el-upload') {
-    // 上传表单元素组件 的成功和移除事件;
+    // 文件上传成功的钩子
     dataObject.attrs['on-success'] = (response, file, fileList) => {
       this.$emit('upload', response, file, fileList)
     }
+    // 文件上传时的钩子
+    dataObject.attrs['on-progress'] = (event, file, fileList) => {
+      this.$emit('progressUpload', event, file, fileList)
+    }
+    // 文件上失败时的钩子
     dataObject.attrs['on-error'] = (err, file, fileList) => {
       this.$emit('errorUpload', err, file, fileList)
     }

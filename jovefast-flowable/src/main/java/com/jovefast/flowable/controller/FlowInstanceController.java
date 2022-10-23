@@ -6,7 +6,6 @@ import com.jovefast.common.core.web.domain.AjaxResult;
 import com.jovefast.common.log.annotation.Log;
 import com.jovefast.common.log.enums.BusinessType;
 import com.jovefast.common.security.annotation.RequiresPermissions;
-import com.jovefast.flowable.domain.vo.FlowTaskVo;
 import com.jovefast.flowable.service.IFlowInstanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +34,11 @@ public class FlowInstanceController extends BaseController {
     @PostMapping("/startBy/{procDefId}")
     public AjaxResult startById(@ApiParam(value = "流程定义id") @PathVariable(value = "procDefId") String procDefId,
                                 @ApiParam(value = "变量集合,json对象") @RequestBody Map<String, Object> variables) {
-        return flowInstanceService.startProcessInstanceById(procDefId, variables);
+        boolean b = flowInstanceService.startProcessInstanceById(procDefId, variables);
+        if(b){
+            return AjaxResult.success("流程启动成功");
+        }
+        return AjaxResult.error("流程启动失败");
 
     }
 
@@ -49,13 +52,6 @@ public class FlowInstanceController extends BaseController {
         return AjaxResult.success();
     }
 
-    @ApiOperation("结束流程实例")
-    @PostMapping(value = "/stopProcessInstance")
-    @Log(title = "结束流程实例", businessType = BusinessType.UPDATE)
-    public AjaxResult stopProcessInstance(@RequestBody FlowTaskVo flowTaskVo) {
-        flowInstanceService.stopProcessInstance(flowTaskVo);
-        return AjaxResult.success();
-    }
 
     @ApiOperation(value = "删除流程实例")
     @DeleteMapping(value = "/delete")

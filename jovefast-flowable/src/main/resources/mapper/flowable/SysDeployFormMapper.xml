@@ -32,6 +32,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where t2.deploy_id = #{deployId}
     </select>
 
+    <select id="selectSysFormByFormId" resultType="SysForm">
+        SELECT
+            t1.form_content AS formContent,
+            t1.form_name AS formName,
+            t1.form_id AS formId
+        FROM
+            sys_form t1
+        WHERE
+            t1.form_id= #{formId}
+    </select>
+
     <insert id="insertSysDeployForm" parameterType="SysDeployForm" useGeneratedKeys="true" keyProperty="id">
         insert into sys_deploy_form
         <trim prefix="(" suffix=")" suffixOverrides=",">

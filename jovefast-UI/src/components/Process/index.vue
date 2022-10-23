@@ -41,7 +41,7 @@
           <div ref="canvas" class="canvas" />
         </el-main>
         <el-aside style="width: 30%; background-color: #f0f2f5">
-          <panel v-if="modeler" :modeler="modeler" :users="users" :groups="groups" :categorys="categorys" @dataType="dataType" />
+          <panel v-if="modeler" :modeler="modeler" :users="users" :forms="forms" :groups="groups" :categorys="categorys" @dataType="dataType" />
         </el-aside>
       </el-container>
     </el-container>
@@ -71,6 +71,10 @@ export default {
       type: Array,
       default: () => []
     },
+    forms: {
+      type: Array,
+      default: () => []
+    },
     groups: {
       type: Array,
       default: () => []
@@ -91,7 +95,6 @@ export default {
   data() {
     return {
       modeler: null,
-      // taskList: [],
       zoom: 1
     }
   },
@@ -151,7 +154,6 @@ export default {
     },
     async createNewDiagram(data) {
       // 将字符串转换成图显示出来
-      // data = data.replace(/<!\[CDATA\[(.+?)]]>/g, '&lt;![CDATA[$1]]&gt;')
       data = data.replace(/<!\[CDATA\[(.+?)]]>/g, function(match, str) {
         return str.replace(/</g, '&lt;')
       })

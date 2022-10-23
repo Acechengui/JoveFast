@@ -90,7 +90,7 @@ public interface IFlowTaskService {
 
     /**
      * 取消申请
-     * @param flowTaskVo
+     * @param flowTaskVo 参数
      */
     AjaxResult stopProcess(FlowTaskVo flowTaskVo);
 
@@ -110,7 +110,6 @@ public interface IFlowTaskService {
      *
      * @param pageNum  当前页码
      * @param pageSize 每页条数
-     * @return
      */
     List<FlowTaskDto> finishedList(Integer pageNum, Integer pageSize);
 
@@ -118,7 +117,7 @@ public interface IFlowTaskService {
      * 流程历史流转记录
      *
      * @param procInsId 流程实例Id
-     * @return
+     * @param deployId 部署id
      */
     Map<String, Object> flowRecord(String procInsId, String deployId);
 
@@ -126,35 +125,30 @@ public interface IFlowTaskService {
      * 根据任务ID查询挂载的表单信息
      *
      * @param taskId 任务Id
-     * @return
      */
     Task getTaskForm(String taskId);
 
     /**
      * 获取流程过程图
-     * @param processId
-     * @return
+     * @param processId 流程ID
      */
     InputStream diagram(String processId);
 
     /**
      * 获取流程执行过程
-     * @param procInsId
-     * @return
+     * @param procInsId 流程实例ID
      */
     List<FlowViewerDto> getFlowViewer(String procInsId, String executionId);
 
     /**
      * 获取流程变量
-     * @param taskId
-     * @return
+     * @param taskId 任务ID
      */
     AjaxResult processVariables(String taskId);
 
     /**
      * 获取下一节点
      * @param flowTaskVo 任务
-     * @return
      */
     AjaxResult getNextFlowNode(FlowTaskVo flowTaskVo);
 }

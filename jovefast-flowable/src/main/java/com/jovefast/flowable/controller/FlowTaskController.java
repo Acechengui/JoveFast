@@ -204,7 +204,7 @@ public class FlowTaskController extends BaseController {
      * 生成流程图
      *
      * @param procInsId 流程实例编号
-     * @param procInsId 任务执行编号
+     * @param executionId 任务执行编号
      */
     @RequestMapping("/flowViewer/{procInsId}/{executionId}")
     public AjaxResult getFlowViewer(@PathVariable("procInsId") String procInsId,

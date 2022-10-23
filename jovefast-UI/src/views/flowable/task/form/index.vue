@@ -131,7 +131,7 @@
 </template>
 
 <script>
-import { listForm, getForm, delForm, addForm, updateForm, exportForm } from "@/api/flowable/form";
+import { listForm, delForm, addForm, updateForm } from "@/api/flowable/form";
 import Editor from '@/components/Editor';
 import Parser from '@/components/parser/Parser'
 export default {
@@ -230,6 +230,7 @@ export default {
       this.formConfOpen = true;
       this.formTitle = "流程表单配置详细";
       this.formConf = JSON.parse(row.formContent)
+      this.formConf.disabled = true;
     },
     /** 新增按钮操作 */
     handleAdd() {

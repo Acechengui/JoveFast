@@ -98,7 +98,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
     /**
      * 读取xml
      *
-     * @param deployId
+     * @param deployId 部署ID
      */
     @Override
     public String readXml(String deployId) throws IOException {
@@ -156,7 +156,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             identityService.setAuthenticatedUserId(sysUser.getUserId().toString());
             variables.put(ProcessConstants.PROCESS_INITIATOR, "");
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
-            // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题？
+            // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题
             Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
             if (Objects.nonNull(task)) {
                 //往意见表增加记录
@@ -170,6 +170,23 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             e.printStackTrace();
             throw new CheckedException("流程启动错误:"+e.getMessage());
         }
+    }
+
+    /**
+     * 根据流程定义ID更新流程实例中的流程变量
+     *
+     * @param procDefId 实例ID
+     * @param variables 流程变量
+     * @return 结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean editProcessInstanceById(String procDefId, Map<String, Object> variables) {
+        /*注意:
+        1.只要在act_ru_*表中存在,那么在act_hi_*表中一定会存在,反之,不一定会存在.
+        2.key名相同,值会被覆盖.例:比如说key为"save-key",值为1,第二次存入"save-key",值为2,之后的值一直都会是2*/
+        runtimeService.setVariables(procDefId,variables);
+        return true;
     }
 
 
@@ -204,7 +221,6 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         for (String d: deployId){
             // true 允许级联删除 ,不设置会导致数据库外键关联异常
             repositoryService.deleteDeployment(d, true);
-
         }
     }
 

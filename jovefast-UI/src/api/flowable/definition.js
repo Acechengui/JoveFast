@@ -18,6 +18,15 @@ export function definitionStart(procDefId, data) {
   })
 }
 
+// 修改流程实例，更新流程变量
+export function definitionEdit(procDefId, data) {
+  return request({
+    url: '/flowable/definition/edit/' + procDefId,
+    method: 'post',
+    data: data
+  })
+}
+
 // 获取流程变量
 export function getProcessVariables(taskId) {
   return request({

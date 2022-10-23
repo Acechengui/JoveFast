@@ -101,11 +101,20 @@ public class SysDeployFormServiceImpl implements ISysDeployFormService
     /**
      * 查询流程挂着的表单
      *
-     * @param deployId
-     * @return
+     * @param deployId 部署id
      */
     @Override
     public SysForm selectSysDeployFormByDeployId(String deployId) {
         return sysDeployFormMapper.selectSysDeployFormByDeployId(deployId);
+    }
+
+    /**
+     * 查询任务挂着的表单
+     *
+     * @param formId 表单ID
+     */
+    @Override
+    public SysForm selectSysFormByFormId(String formId) {
+        return sysDeployFormMapper.selectSysFormByFormId(formId);
     }
 }

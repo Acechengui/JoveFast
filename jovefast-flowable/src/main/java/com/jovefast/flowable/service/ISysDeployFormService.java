@@ -62,8 +62,13 @@ public interface ISysDeployFormService
 
     /**
      * 查询流程挂着的表单
-     * @param deployId
-     * @return
+     * @param deployId 部署ID
      */
     SysForm selectSysDeployFormByDeployId(String deployId);
+
+    /**
+     * 查询任务挂着的表单
+     * @param formId 表单ID
+     */
+    SysForm selectSysFormByFormId(String formId);
 }

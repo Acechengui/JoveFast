@@ -36,20 +36,28 @@ public interface IFlowDefinitionService {
 
     /**
      * 读取xml
-     * @param deployId
-     * @return
+     * @param deployId 部署ID
      */
     String readXml(String deployId) throws IOException;
 
     /**
      * 根据流程定义ID启动流程实例
      *
-     * @param procDefId
-     * @param variables
-     * @return
+     * @param procDefId 实例ID
+     * @param variables 流程变量
+     * @return 结果
      */
-
     boolean startProcessInstanceById(String procDefId, Map<String, Object> variables);
+
+
+    /**
+     * 根据流程定义ID更新流程实例中的流程变量
+     *
+     * @param procDefId 实例ID
+     * @param variables 流程变量
+     * @return 结果
+     */
+    boolean editProcessInstanceById(String procDefId, Map<String, Object> variables);
 
 
     /**
