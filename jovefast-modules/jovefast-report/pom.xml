@@ -40,6 +40,7 @@
     </repositories>
 
     <!-- https://mvnrepository.com/ 查找jar网站 -->
+    <!-- https://mvnrepository.com/ 查找jar网站 -->
     <dependencies>
 
         <!-- SpringCloud Alibaba Nacos -->
@@ -72,18 +73,6 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
-        <!--  Common DataSource -->
-        <dependency>
-            <groupId>com.jovefast</groupId>
-            <artifactId>jovefast-common-datasource</artifactId>
-        </dependency>
-
-        <!--  Common DataScope -->
-        <dependency>
-            <groupId>com.jovefast</groupId>
-            <artifactId>jovefast-common-datascope</artifactId>
-        </dependency>
-
         <!--  Common Log -->
         <dependency>
             <groupId>com.jovefast</groupId>
@@ -107,6 +96,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
@@ -131,12 +121,12 @@
             <groupId>org.jeecgframework.jimureport</groupId>
             <artifactId>jimureport-spring-boot-starter</artifactId>
             <version>${jeccg.jimureport.version}</version>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>com.googlecode.aviator</groupId>-->
-<!--                    <artifactId>aviator</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
+            <!--            <exclusions>-->
+            <!--                <exclusion>-->
+            <!--                    <groupId>com.googlecode.aviator</groupId>-->
+            <!--                    <artifactId>aviator</artifactId>-->
+            <!--                </exclusion>-->
+            <!--            </exclusions>-->
         </dependency>
 
 
