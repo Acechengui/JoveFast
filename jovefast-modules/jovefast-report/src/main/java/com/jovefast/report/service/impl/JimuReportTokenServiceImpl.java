@@ -1,6 +1,7 @@
 package com.jovefast.report.service.impl;
 
 import com.jovefast.common.core.utils.DateUtils;
+import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.security.service.TokenService;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.system.api.model.LoginUser;
@@ -8,8 +9,12 @@ import org.jeecg.modules.jmreport.api.JmReportTokenServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,6 +76,31 @@ public class JimuReportTokenServiceImpl implements JmReportTokenServiceI {
         HttpHeaders header = new HttpHeaders();
         header.add("X-Access-Token", SecurityUtils.getToken());
         return header;
+    }
+
+    /**
+     * 获取多租户id
+     * @return tenantId
+     */
+    public String getTenantId() {
+        String token = SecurityUtils.getCurrentRequestInfo().getParameter("token");
+        String header = SecurityUtils.getCurrentRequestInfo().getHeader("X-Access-Token");
+        LoginUser loginUser = null;
+        if(StringUtils.isNotBlank(token)){
+            loginUser =  tokenService.getLoginUser(token);
+        }else if(StringUtils.isNotBlank(header)){
+            loginUser =  tokenService.getLoginUser(header);
+        }else {
+            //都不具备则不能访问
+            return "NO";
+        }
+        //具备admin或者管理员权限才可访问所有报表
+        if(SecurityUtils.isAdmin(loginUser.getUserid())
+                || loginUser.getRoles().contains("it")
+                || loginUser.getRoles().contains("manger")){
+            return "";
+        }
+        return loginUser.getUsername();
     }
 
     @Override
