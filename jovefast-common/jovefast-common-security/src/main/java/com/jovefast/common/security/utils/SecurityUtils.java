@@ -8,12 +8,14 @@ import com.jovefast.common.core.context.SecurityContextHolder;
 import com.jovefast.common.core.utils.ServletUtils;
 import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.system.api.model.LoginUser;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Objects;
 
 /**
  * 权限获取工具类
- * 
+ *
  * @author Acechengui
  */
 public class SecurityUtils
@@ -59,6 +61,14 @@ public class SecurityUtils
     }
 
     /**
+     * 获取当前请求信息
+     */
+    public static HttpServletRequest getCurrentRequestInfo()
+    {
+        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    }
+
+    /**
      * 根据request获取请求token
      */
     public static String getToken(HttpServletRequest request)
@@ -82,8 +92,8 @@ public class SecurityUtils
     }
 
     /**
-     * 是否为管理员
-     * 
+     * 是否为admin(超级管理员)
+     *
      * @param userId 用户ID
      * @return 结果
      */
