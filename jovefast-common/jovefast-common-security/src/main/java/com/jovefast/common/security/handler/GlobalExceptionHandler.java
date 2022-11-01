@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.jovefast.common.core.exception.CheckedException;
 import com.jovefast.common.core.exception.auth.NotLoginException;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
+import feign.RetryableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -64,6 +65,16 @@ public class GlobalExceptionHandler
     {
         log.error("sql执行失败:{}",e.getMessage());
         return AjaxResult.error(HttpStatus.ERROR, "服务内部出现错误,请联系管理员");
+    }
+
+    /**
+     * feign 远程调用异常
+     */
+    @ExceptionHandler(RetryableException.class)
+    public AjaxResult retryableException(RetryableException e, HttpServletRequest request)
+    {
+        log.error("feign远程调用异常:{}",e.getMessage());
+        return AjaxResult.error(HttpStatus.ERROR, "服务调用超时");
     }
 
     /**

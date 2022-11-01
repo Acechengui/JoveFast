@@ -350,7 +350,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     /**
      获取昨天日期
      */
-    public Map<String, Integer> productionDate() {
+    public static Map<String, Integer> productionDate() {
         Map<String, Integer> pram = new HashMap<>();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);

@@ -39,8 +39,7 @@ public class WeixinApiConfig {
             //1.1输入输出设置
             httpUrlConn.setDoInput(true);
             httpUrlConn.setDoOutput(true);
-            // post方式不能使用缓存
-            httpUrlConn.setUseCaches(false);
+            httpUrlConn.setUseCaches(false); // post方式不能使用缓存
 
             //1.2设置请求头信息
             httpUrlConn.setRequestProperty("Connection", "Keep-Alive");
@@ -53,8 +52,7 @@ public class WeixinApiConfig {
             // 第一部分：
             // 2.将文件头输出到微信服务器
             StringBuilder sb = new StringBuilder();
-            // 必须多两道线
-            sb.append("--");
+            sb.append("--"); // 必须多两道线
             sb.append(BOUNDARY);
             sb.append("\r\n");
             sb.append("Content-Disposition: form-data;name=\"media\";filelength=\"").append(file.length()).append("\";filename=\"").append(file.getName()).append("\"\r\n");
@@ -75,8 +73,7 @@ public class WeixinApiConfig {
             }
             in.close();
             //4.将结尾部分输出到微信服务器
-            // 定义最后数据分隔线
-            byte[] foot = ("\r\n--" + BOUNDARY + "--\r\n").getBytes(StandardCharsets.UTF_8);
+            byte[] foot = ("\r\n--" + BOUNDARY + "--\r\n").getBytes(StandardCharsets.UTF_8);// 定义最后数据分隔线
             outputStream.write(foot);
             outputStream.flush();
             outputStream.close();
@@ -123,6 +120,7 @@ public class WeixinApiConfig {
             URL url = type == 0 ? new URL(ROBOT_SEND_FILE + key) : new URL(WEIXIN_SEND_FILE + access_token);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
+            //System.out.println("access_token======"+access_token);
             // 设定请求的方法为"POST"，默认是GET
             conn.setRequestProperty("content-type", "application/json;charset=utf-8");
             conn.setRequestProperty("contentType", "utf-8");

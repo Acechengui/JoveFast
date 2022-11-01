@@ -15,7 +15,7 @@ import java.util.Objects;
 
 /**
  * 权限获取工具类
- *
+ * 
  * @author Acechengui
  */
 public class SecurityUtils
@@ -93,7 +93,7 @@ public class SecurityUtils
 
     /**
      * 是否为admin(超级管理员)
-     *
+     * 
      * @param userId 用户ID
      * @return 结果
      */
