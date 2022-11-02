@@ -2,18 +2,15 @@ package com.jovefast.flowable.service.impl;
 
 import com.jovefast.common.core.exception.CheckedException;
 import com.jovefast.common.core.utils.DateUtils;
-import com.jovefast.common.core.web.domain.AjaxResult;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.flowable.common.constant.ProcessConstants;
 import com.jovefast.flowable.common.enums.FlowComment;
-import com.jovefast.flowable.domain.SysForm;
 import com.jovefast.flowable.domain.dto.FlowProcDefDto;
 import com.jovefast.flowable.mapper.FlowDeployMapper;
+import com.jovefast.flowable.mapper.SysDeployFormMapper;
 import com.jovefast.system.api.domain.SysUser;
 import com.jovefast.flowable.factory.FlowServiceFactory;
 import com.jovefast.flowable.service.IFlowDefinitionService;
-import com.jovefast.flowable.service.ISysDeployFormService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.api.FlowableException;
@@ -21,7 +18,6 @@ import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.engine.task.Attachment;
 import org.flowable.image.impl.DefaultProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
@@ -39,14 +35,13 @@ import java.util.*;
  * @author Acecehgnui
  */
 @Service
-@Slf4j
 public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFlowDefinitionService {
 
     @Resource
-    private ISysDeployFormService sysDeployFormService;
+    private FlowDeployMapper flowDeployMapper;
 
     @Resource
-    private FlowDeployMapper flowDeployMapper;
+    private SysDeployFormMapper sysDeployFormMapper;
 
     private static final String BPMN_FILE_SUFFIX = ".bpmn";
 
@@ -67,16 +62,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
      */
     @Override
     public List<FlowProcDefDto> list(String name) {
-        List<FlowProcDefDto> dataList = flowDeployMapper.selectDeployList(name);
-        // 加载挂表单
-        for (FlowProcDefDto procDef : dataList) {
-            SysForm sysForm = sysDeployFormService.selectSysDeployFormByDeployId(procDef.getDeploymentId());
-            if (Objects.nonNull(sysForm)) {
-                procDef.setFormName(sysForm.getFormName());
-                procDef.setFormId(sysForm.getFormId());
-            }
-        }
-        return dataList;
+        return flowDeployMapper.selectDeployList(name);
     }
 
 
@@ -218,6 +204,8 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(String[] deployId) {
+        //删除流程绑定的表单信息
+        sysDeployFormMapper.deleteSysDeployFormByDeployIds(deployId);
         for (String d: deployId){
             // true 允许级联删除 ,不设置会导致数据库外键关联异常
             repositoryService.deleteDeployment(d, true);

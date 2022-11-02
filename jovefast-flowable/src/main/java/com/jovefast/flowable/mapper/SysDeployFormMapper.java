@@ -62,7 +62,7 @@ public interface SysDeployFormMapper
      */
     public int deleteSysDeployFormByIds(Long[] ids);
 
-
+    public int deleteSysDeployFormByDeployIds(String[] deployIds);
 
     /**
      * 查询流程挂载的表单

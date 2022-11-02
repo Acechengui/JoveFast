@@ -74,4 +74,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <delete id="deleteSysDeployFormByDeployIds" parameterType="String">
+        delete from sys_deploy_form where deploy_id in
+        <foreach item="deployId" collection="array" open="(" separator="," close=")">
+            #{deployId}
+        </foreach>
+    </delete>
 </mapper>
