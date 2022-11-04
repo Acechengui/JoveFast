@@ -292,7 +292,7 @@ export default {
 <style lang="scss" scoped>
 .key-form {
   margin: 15px auto;
-  width: 800px;
+  width: 95%;
   padding: 15px;
 }
 </style>
