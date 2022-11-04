@@ -11,7 +11,7 @@ import com.jovefast.common.core.utils.poi.ExcelHandlerAdapter;
 
 /**
  * 自定义导出Excel数据注解
- * 
+ *
  * @author Acechengui
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -84,6 +84,11 @@ public @interface Excel
     public String[] combo() default {};
 
     /**
+     * 是否需要纵向合并单元格,应对需求:含有list集合单元格)
+     */
+    public boolean needMerge() default false;
+
+    /**
      * 是否导出数据,应对需求:有时我们需要导出一份模板,这是标题需要但内容需要用户手工填写.
      */
     public boolean isExport() default true;
@@ -119,7 +124,7 @@ public @interface Excel
     public IndexedColors backgroundColor() default IndexedColors.WHITE;
 
     /**
-     * 导出字体颜色
+     * 导出单元格字体颜色
      */
     public IndexedColors color() default IndexedColors.BLACK;
 
@@ -145,9 +150,6 @@ public @interface Excel
 
     public enum Type
     {
-        /**
-         * 字段类型
-         */
         ALL(0), EXPORT(1), IMPORT(2);
         private final int value;
 
@@ -164,9 +166,6 @@ public @interface Excel
 
     public enum ColumnType
     {
-        /**
-         * 字段类型
-         */
         NUMERIC(0), STRING(1), IMAGE(2);
         private final int value;
 

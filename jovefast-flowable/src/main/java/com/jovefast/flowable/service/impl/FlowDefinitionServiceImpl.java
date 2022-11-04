@@ -140,7 +140,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             // 设置流程发起人Id到流程中
             SysUser sysUser = SecurityUtils.getLoginUser().getSysUser();
             identityService.setAuthenticatedUserId(sysUser.getUserId().toString());
-            variables.put(ProcessConstants.PROCESS_INITIATOR, "");
+            variables.put(ProcessConstants.PROCESS_INITIATOR, sysUser.getNickName());
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
             // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题
             Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
