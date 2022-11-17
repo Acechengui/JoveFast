@@ -6,7 +6,7 @@
   >
     <template v-for="(item, index) in topMenus">
       <el-menu-item :style="{'--theme': theme}" :index="item.path" :key="index" v-if="index < visibleNumber"
-        ><svg-icon :icon-class="item.meta.icon" />
+      ><svg-icon :icon-class="item.meta.icon" />
         {{ item.meta.title }}</el-menu-item
       >
     </template>
@@ -19,7 +19,7 @@
           :index="item.path"
           :key="index"
           v-if="index >= visibleNumber"
-          ><svg-icon :icon-class="item.meta.icon" />
+        ><svg-icon :icon-class="item.meta.icon" />
           {{ item.meta.title }}</el-menu-item
         >
       </template>
@@ -53,9 +53,9 @@ export default {
         if (menu.hidden !== true) {
           // 兼容顶部栏一级菜单内部跳转
           if (menu.path === "/") {
-              topMenus.push(menu.children[0]);
+            topMenus.push(menu.children[0]);
           } else {
-              topMenus.push(menu);
+            topMenus.push(menu);
           }
         }
       });
@@ -92,7 +92,9 @@ export default {
       if (path !== undefined && path.lastIndexOf("/") > 0 && hideList.indexOf(path) === -1) {
         const tmpPath = path.substring(1, path.length);
         activePath = "/" + tmpPath.substring(0, tmpPath.indexOf("/"));
-        this.$store.dispatch('app/toggleSideBarHide', false);
+        if (!this.$route.meta.link) {
+          this.$store.dispatch('app/toggleSideBarHide', false);
+        }
       } else if(!this.$route.children) {
         activePath = path;
         this.$store.dispatch('app/toggleSideBarHide', true);
@@ -145,6 +147,8 @@ export default {
       }
       if(routes.length > 0) {
         this.$store.commit("SET_SIDEBAR_ROUTERS", routes);
+      } else {
+        this.$store.dispatch('app/toggleSideBarHide', true);
       }
     },
     ishttp(url) {
