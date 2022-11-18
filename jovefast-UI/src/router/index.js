@@ -25,6 +25,7 @@ import Layout from '@/layout'
     icon: 'svg-name'                // 设置该路由的图标，对应路径src/assets/icons/svg
     breadcrumb: false               // 如果设置为false，则不会在breadcrumb面包屑中显示
     activeMenu: '/system/user'      // 当路由设置了该属性，则会高亮相对应的侧边栏。
+    isBlank: '1'                    // 是否新窗口打开（0是 1否）
   }
  */
 

@@ -77,7 +77,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button 
+          <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -117,7 +117,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <el-col :span="14">
             <el-form-item label="菜单类型" prop="menuType">
               <el-radio-group v-model="form.menuType">
                 <el-radio label="M">目录</el-radio>
@@ -126,6 +126,22 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+
+          <el-col :span="10" v-if="form.menuType != 'F'">
+            <el-form-item prop="isBlank">
+              <span slot="label">
+                <el-tooltip content="选择是则会以新开浏览器窗口访问" placement="top">
+                <i class="el-icon-question"></i>
+                </el-tooltip>
+                是否新窗口
+              </span>
+              <el-radio-group v-model="form.isBlank">
+                <el-radio label="0">是</el-radio>
+                <el-radio label="1">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+
           <el-col :span="24" v-if="form.menuType != 'F'">
             <el-form-item label="菜单图标" prop="icon">
               <el-popover
@@ -375,6 +391,7 @@ export default {
         orderNum: undefined,
         isFrame: "1",
         isCache: "0",
+        isBlank: "1",
         visible: "0",
         status: "0"
       };
@@ -402,9 +419,9 @@ export default {
         }
         this.open = true;
         this.title = "添加菜单";
-    })
+      })
 
-      
+
     },
     /** 展开/折叠操作 */
     toggleExpandAll() {

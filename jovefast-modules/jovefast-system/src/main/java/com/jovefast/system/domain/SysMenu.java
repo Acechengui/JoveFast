@@ -11,7 +11,7 @@ import com.jovefast.common.core.web.domain.BaseEntity;
 
 /**
  * 菜单权限表 sys_menu
- * 
+ *
  * @author Acechengui
  */
 public class SysMenu extends BaseEntity
@@ -48,6 +48,9 @@ public class SysMenu extends BaseEntity
     /** 是否缓存（0缓存 1不缓存） */
     private String isCache;
 
+    /** 是否新窗口打开（0是 1否） */
+    private String isBlank;
+
     /** 类型（M目录 C菜单 F按钮） */
     private String menuType;
 
@@ -81,6 +84,14 @@ public class SysMenu extends BaseEntity
     public String getMenuName()
     {
         return menuName;
+    }
+
+    public String getIsBlank() {
+        return isBlank;
+    }
+
+    public void setIsBlank(String isBlank) {
+        this.isBlank = isBlank;
     }
 
     public void setMenuName(String menuName)
@@ -232,28 +243,29 @@ public class SysMenu extends BaseEntity
     {
         this.children = children;
     }
-    
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("menuId", getMenuId())
-            .append("menuName", getMenuName())
-            .append("parentId", getParentId())
-            .append("orderNum", getOrderNum())
-            .append("path", getPath())
-            .append("component", getComponent())
-            .append("isFrame", getIsFrame())
-            .append("IsCache", getIsCache())
-            .append("menuType", getMenuType())
-            .append("visible", getVisible())
-            .append("status ", getStatus())
-            .append("perms", getPerms())
-            .append("icon", getIcon())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("remark", getRemark())
-            .toString();
+                .append("menuId", getMenuId())
+                .append("menuName", getMenuName())
+                .append("parentId", getParentId())
+                .append("orderNum", getOrderNum())
+                .append("path", getPath())
+                .append("component", getComponent())
+                .append("isFrame", getIsFrame())
+                .append("IsCache", getIsCache())
+                .append("IsBlank", getIsBlank())
+                .append("menuType", getMenuType())
+                .append("visible", getVisible())
+                .append("status ", getStatus())
+                .append("perms", getPerms())
+                .append("icon", getIcon())
+                .append("createBy", getCreateBy())
+                .append("createTime", getCreateTime())
+                .append("updateBy", getUpdateBy())
+                .append("updateTime", getUpdateTime())
+                .append("remark", getRemark())
+                .toString();
     }
 }

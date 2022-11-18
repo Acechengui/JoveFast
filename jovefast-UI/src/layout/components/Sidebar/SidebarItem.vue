@@ -10,6 +10,7 @@
       <app-link
         v-if="onlyOneChild.meta"
         :to="resolvePath(onlyOneChild.path, onlyOneChild.query)"
+        :target="onlyOneChild.meta.isBlank == '0' ? '_blank' : ''"
       >
         <el-menu-item
           :index="resolvePath(onlyOneChild.path)"

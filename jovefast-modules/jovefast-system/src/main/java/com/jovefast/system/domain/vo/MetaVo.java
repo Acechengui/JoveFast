@@ -4,7 +4,7 @@ import com.jovefast.common.core.utils.StringUtils;
 
 /**
  * 路由显示信息
- * 
+ *
  * @author Acechengui
  */
 public class MetaVo
@@ -28,6 +28,9 @@ public class MetaVo
      * 内链地址（http(s)://开头）
      */
     private String link;
+
+    /** 是否新窗口打开（0是 1否） */
+    private String isBlank;
 
     public MetaVo()
     {
@@ -53,7 +56,7 @@ public class MetaVo
         this.link = link;
     }
 
-    public MetaVo(String title, String icon, boolean noCache, String link)
+    public MetaVo(String title, String icon, boolean noCache, String link ,String isBlank)
     {
         this.title = title;
         this.icon = icon;
@@ -62,6 +65,15 @@ public class MetaVo
         {
             this.link = link;
         }
+        this.isBlank = isBlank;
+    }
+
+    public String getIsBlank() {
+        return isBlank;
+    }
+
+    public void setIsBlank(String isBlank) {
+        this.isBlank = isBlank;
     }
 
     public boolean isNoCache()
