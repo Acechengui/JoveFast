@@ -93,124 +93,135 @@
 ![输入图片说明](doc/preview/flowable03.png)
 
 ## 分布式锁
-Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的分布式锁功能。
+Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的分布式锁功能。使用:
+1. 在需要引入分布式锁的模块中pom引入,yml增加配置
 ```markdown
-package com.jovefast.common.redis.redisson;
+    <!-- Redisson 锁功能 -->
+    <dependency>
+        <groupId>org.redisson</groupId>
+        <artifactId>redisson-spring-boot-starter</artifactId>
+    </dependency>
 
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import java.util.concurrent.TimeUnit;
+
+# yml配置 redisson
+redisson:
+    address: redis://127.0.0.1:6379
+    # 选哪个库
+    database: 15  
+    # 密码,若无密码可删除
+    password: joveadmin 
+``` 
+2. 在相应的模块中增加工具类
+```markdown
 
 /**
-* redis锁工具类
-*
-* @author Acechengui
-  */
-  @Component
-  public class RedisLock
-  {
-  @Autowired
-  private RedissonClient redissonClient;
+ * redis锁工具类
+ *
+ * @author Acechengui
+ */
+@Component
+public class RedisLock
+{
+    @Autowired
+    private RedissonClient redissonClient;
 
-  /**
-    * 获取锁
-    *
-    * @param lockKey 锁实例key
-    * @return 锁信息
-      */
-      public RLock getRLock(String lockKey)
-      {
-      return redissonClient.getLock(lockKey);
-      }
+    /**
+     * 获取锁
+     *
+     * @param lockKey 锁实例key
+     * @return 锁信息
+     */
+    public RLock getRLock(String lockKey)
+    {
+        return redissonClient.getLock(lockKey);
+    }
 
-  /**
-    * 加锁
-    *
-    * @param lockKey 锁实例key
-    * @return 锁信息
-      */
-      public RLock lock(String lockKey)
-      {
-      RLock lock = getRLock(lockKey);
-      lock.lock();
-      return lock;
-      }
+    /**
+     * 加锁
+     * 
+     * @param lockKey 锁实例key
+     * @return 锁信息
+     */
+    public RLock lock(String lockKey)
+    {
+        RLock lock = getRLock(lockKey);
+        lock.lock();
+        return lock;
+    }
 
-  /**
-    * 加锁
-    *
-    * @param lockKey 锁实例key
-    * @param leaseTime 上锁后自动释放锁时间
-    * @return true=成功；false=失败
-      */
-      public Boolean tryLock(String lockKey, long leaseTime)
-      {
-      return tryLock(lockKey, 0, leaseTime, TimeUnit.SECONDS);
-      }
+    /**
+     * 加锁
+     * 
+     * @param lockKey 锁实例key
+     * @param leaseTime 上锁后自动释放锁时间
+     * @return true=成功；false=失败
+     */
+    public Boolean tryLock(String lockKey, long leaseTime)
+    {
+        return tryLock(lockKey, 0, leaseTime, TimeUnit.SECONDS);
+    }
 
-  /**
-    * 加锁
-    *
-    * @param lockKey 锁实例key
-    * @param leaseTime 上锁后自动释放锁时间
-    * @param unit 时间颗粒度
-    * @return true=加锁成功；false=加锁失败
-      */
-      public Boolean tryLock(String lockKey, long leaseTime, TimeUnit unit)
-      {
-      return tryLock(lockKey, 0, leaseTime, unit);
-      }
+    /**
+     * 加锁
+     * 
+     * @param lockKey 锁实例key
+     * @param leaseTime 上锁后自动释放锁时间
+     * @param unit 时间颗粒度
+     * @return true=加锁成功；false=加锁失败
+     */
+    public Boolean tryLock(String lockKey, long leaseTime, TimeUnit unit)
+    {
+        return tryLock(lockKey, 0, leaseTime, unit);
+    }
 
-  /**
-    * 加锁
-    *
-    * @param lockKey 锁实例key
-    * @param waitTime 最多等待时间
-    * @param leaseTime 上锁后自动释放锁时间
-    * @param unit 时间颗粒度
-    * @return true=加锁成功；false=加锁失败
-      */
-      public Boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit unit)
-      {
-      RLock rLock = getRLock(lockKey);
-      boolean tryLock = false;
-      try
-      {
-      tryLock = rLock.tryLock(waitTime, leaseTime, unit);
-      }
-      catch (InterruptedException e)
-      {
-      return false;
-      }
-      return tryLock;
-      }
+    /**
+     * 加锁
+     * 
+     * @param lockKey 锁实例key
+     * @param waitTime 最多等待时间
+     * @param leaseTime 上锁后自动释放锁时间
+     * @param unit 时间颗粒度
+     * @return true=加锁成功；false=加锁失败
+     */
+    public Boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit unit)
+    {
+        RLock rLock = getRLock(lockKey);
+        boolean tryLock = false;
+        try
+        {
+            tryLock = rLock.tryLock(waitTime, leaseTime, unit);
+        }
+        catch (InterruptedException e)
+        {
+            return false;
+        }
+        return tryLock;
+    }
 
-  /**
-    * 释放锁
-    *
-    * @param lockKey 锁实例key
-      */
-      public void unlock(String lockKey)
-      {
-      RLock lock = getRLock(lockKey);
-      lock.unlock();
-      }
+    /**
+     * 释放锁
+     * 
+     * @param lockKey 锁实例key
+     */
+    public void unlock(String lockKey)
+    {
+        RLock lock = getRLock(lockKey);
+        lock.unlock();
+    }
 
-  /**
-    * 释放锁
-    *
-    * @param lock 锁信息
-      */
-      public void unlock(RLock lock)
-      {
-      lock.unlock();
-      }
-      }
+    /**
+     * 释放锁
+     * 
+     * @param lock 锁信息
+     */
+    public void unlock(RLock lock)
+    {
+        lock.unlock();
+    }
+}
+
 ```
-
-用法:
+3.调用
 ```markdown
 @Autowired
 private RedisLock redisLock;
@@ -222,8 +233,7 @@ redisLock.tryLock(lockKey, leaseTime, unit);
 redisLock.tryLock(lockKey, waitTime, leaseTime, unit);
 redisLock.unlock(lockKey);
 redisLock.unlock(lock);
-```
-
+``` 
 ## 目录结构
 
 ~~~
