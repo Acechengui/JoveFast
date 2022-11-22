@@ -21,8 +21,8 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          :default-time="['00:00:00', '23:59:59']"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -268,7 +268,7 @@ export default {
           this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
         });
       } else {
-        this.$download.zip("/code/gen/batchGenCode?tables=" + tableNames, "jove");
+        this.$download.zip("/code/gen/batchGenCode?tables=" + tableNames, "jove.zip");
       }
     },
     /** 同步数据库操作 */
@@ -306,7 +306,7 @@ export default {
       return result.value || '&nbsp;';
     },
     /** 复制代码成功 */
-    clipboardSuccess(){
+    clipboardSuccess() {
       this.$modal.msgSuccess("复制成功");
     },
     // 多选框选中数据
