@@ -5,7 +5,10 @@
 
 
 ## 项目简介
-基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),工作流flowable，就改了原项目包名（无伤大雅）
+基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),工作流[flowable](https://www.flowable.com/)
+
+预览地址:[https://acechengui.github.io/jove-fast-ui/](https://acechengui.github.io/jove-fast-ui/)
+
 * 账号密码admin/Psitadmin
 * 采用前后端分离的模式
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
