@@ -213,7 +213,7 @@ Router.prototype.push = function push(location) {
 }
 
 export default new Router({
-  mode: 'history', // 去掉url中的#
+  mode: 'history', // 去掉url中的#  用github page部署需要注释,否则访问静态资源404
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
