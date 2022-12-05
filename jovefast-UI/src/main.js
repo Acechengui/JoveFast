@@ -7,7 +7,7 @@ import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
 
 import '@/assets/styles/index.scss' // global css
-import '@/assets/styles/jovepcb.scss' // jovepcb css
+import '@/assets/styles/jove.scss' // jove css
 import App from './App'
 import store from './store'
 import router from './router'
