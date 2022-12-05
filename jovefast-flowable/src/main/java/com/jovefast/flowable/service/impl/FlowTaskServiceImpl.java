@@ -28,6 +28,7 @@ import com.jovefast.system.api.RemoteUserService;
 import com.jovefast.system.api.domain.SysRole;
 import com.jovefast.system.api.domain.SysUser;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
@@ -399,14 +400,23 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      *
      * @param pageNum 当前页
      * @param pageSize 页大小
+     * @param params 参数
      */
     @Override
-    public List<FlowTaskDto> myProcess(Integer pageNum, Integer pageSize) {
+    public List<FlowTaskDto> myProcess(Integer pageNum, Integer pageSize,FlowTaskDto params) {
         Long userId = SecurityUtils.getLoginUser().getSysUser().getUserId();
         HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery()
-                .startedBy(userId.toString())
-                .orderByProcessInstanceStartTime()
-                .desc();
+                .startedBy(userId.toString());
+        if(StringUtils.isNotBlank(params.getProcDefName())){
+            historicProcessInstanceQuery.processDefinitionName(params.getProcDefName());
+        }
+        if(ObjectUtils.isNotEmpty(params.getParams().get("beginTime"))){
+            historicProcessInstanceQuery.startedAfter(DateUtils.parseDate(params.getParams().get("beginTime")));
+        }
+        if(ObjectUtils.isNotEmpty(params.getParams().get("endTime"))){
+            historicProcessInstanceQuery.startedBefore(DateUtils.parseDate(params.getParams().get("endTime")));
+        }
+        historicProcessInstanceQuery.orderByProcessInstanceStartTime().desc();
         List<HistoricProcessInstance> historicProcessInstances = historicProcessInstanceQuery.listPage(pageSize * (pageNum - 1), pageSize);
         List<FlowTaskDto> flowList = new ArrayList<>();
         for (HistoricProcessInstance hisIns : historicProcessInstances) {
@@ -474,7 +484,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @param flowTaskVo 参数
      */
     @Override
-    public AjaxResult stopProcess(FlowTaskVo flowTaskVo) {
+    public boolean stopProcess(FlowTaskVo flowTaskVo) {
         List<Task> task = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).list();
         if (CollectionUtils.isEmpty(task)) {
             throw new CheckedException("流程未启动或已执行完成，取消申请失败");
@@ -503,7 +513,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             }
         }
 
-        return AjaxResult.success();
+        return true;
     }
 
 
@@ -512,15 +522,26 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      *
      * @param pageNum  当前页码
      * @param pageSize 每页条数
+     * @param flowtaskdto 参数
      */
     @Override
-    public List<FlowTaskDto> todoList(Integer pageNum, Integer pageSize) {
+    public List<FlowTaskDto> todoList(Integer pageNum, Integer pageSize,FlowTaskDto flowtaskdto) {
         SysUser sysUser = SecurityUtils.getLoginUser().getSysUser();
         List<String> roleList=new ArrayList<>();
         TaskQuery taskQuery = taskService.createTaskQuery()
                 .active()
                 .includeProcessVariables();
-        taskQuery.or().taskAssignee(String.valueOf(sysUser.getUserId()));
+        if(StringUtils.isNotBlank(flowtaskdto.getProcDefName())){
+            taskQuery.processDefinitionNameLike(flowtaskdto.getProcDefName());
+        }
+        if(ObjectUtils.isNotEmpty(flowtaskdto.getParams().get("beginTime"))){
+            taskQuery.taskCreatedAfter(DateUtils.parseDate(flowtaskdto.getParams().get("beginTime")));
+        }
+        if(ObjectUtils.isNotEmpty(flowtaskdto.getParams().get("endTime"))){
+            taskQuery.taskCreatedBefore(DateUtils.parseDate(flowtaskdto.getParams().get("endTime")));
+        }
+        taskQuery.or().taskAssignee(String.valueOf(sysUser.getUserId()))
+                .taskCandidateOrAssigned(String.valueOf(sysUser.getUserId()));
         if(!sysUser.getRoles().isEmpty()){
             sysUser.getRoles().forEach(f->
                     roleList.add(String.valueOf(f.getRoleId()))
@@ -582,16 +603,25 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      *
      * @param pageNum  当前页码
      * @param pageSize 每页条数
+     * @param flowTaskDto 参数
      */
     @Override
-    public List<FlowTaskDto> finishedList(Integer pageNum, Integer pageSize) {
+    public List<FlowTaskDto> finishedList(Integer pageNum, Integer pageSize,FlowTaskDto flowTaskDto) {
         Long userId = SecurityUtils.getLoginUser().getSysUser().getUserId();
         HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery()
                 .includeProcessVariables()
                 .finished()
-                .taskAssignee(userId.toString())
-                .orderByHistoricTaskInstanceEndTime()
-                .desc();
+                .taskAssignee(userId.toString());
+        if(StringUtils.isNotBlank(flowTaskDto.getProcDefName())){
+            taskInstanceQuery.processDefinitionNameLike(flowTaskDto.getProcDefName());
+        }
+        if(ObjectUtils.isNotEmpty(flowTaskDto.getParams().get("beginTime"))){
+            taskInstanceQuery.taskCreatedAfter(DateUtils.parseDate(flowTaskDto.getParams().get("beginTime")));
+        }
+        if(ObjectUtils.isNotEmpty(flowTaskDto.getParams().get("endTime"))){
+            taskInstanceQuery.taskCreatedBefore(DateUtils.parseDate(flowTaskDto.getParams().get("endTime")));
+        }
+        taskInstanceQuery.orderByHistoricTaskInstanceEndTime().desc();
         List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.listPage(pageSize * (pageNum - 1), pageSize);
         List<FlowTaskDto> hisTaskList = Lists.newArrayList();
         for (HistoricTaskInstance histTask : historicTaskInstanceList) {

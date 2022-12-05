@@ -1,6 +1,7 @@
 package com.jovefast.flowable.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jovefast.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,7 +14,7 @@ import java.util.Date;
  * @author Acecehgnui
  */
 @ApiModel("工作流任务相关-返回参数")
-public class FlowTaskDto implements Serializable {
+public class FlowTaskDto extends BaseEntity {
 
     private static final long serialVersionUID = 7223678899590929865L;
     @ApiModelProperty("任务编号")
@@ -84,10 +85,6 @@ public class FlowTaskDto implements Serializable {
 
     @ApiModelProperty("候选执行人")
     private String candidate;
-
-    @ApiModelProperty("任务创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
 
     @ApiModelProperty("任务完成时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -275,14 +272,6 @@ public class FlowTaskDto implements Serializable {
 
     public void setCandidate(String candidate) {
         this.candidate = candidate;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
     }
 
     public Date getFinishTime() {

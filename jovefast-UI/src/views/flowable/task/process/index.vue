@@ -1,22 +1,26 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="流程名称" prop="procDefName">
         <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
+          v-model="queryParams.procDefName"
+          placeholder="请输入完整流程名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="开始时间" prop="deployTime">
-        <el-date-picker clearable size="small"
-                        v-model="queryParams.deployTime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择时间">
-        </el-date-picker>
+      <el-form-item label="开始时间">
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+              :default-time="['00:00:00', '23:59:59']"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -93,7 +97,7 @@
     />
 
     <!-- 发起流程 -->
-    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="80%" append-to-body>
       <el-form :model="queryProcessParams" ref="queryProcessForm" :inline="true" v-show="showSearch" label-width="68px">
         <el-form-item label="名称" prop="name">
           <el-input
@@ -117,7 +121,7 @@
           </template>
         </el-table-column>
         <el-table-column label="流程分类" align="center" prop="category" />
-        <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -164,6 +168,8 @@ export default {
       multiple: true,
       // 显示搜索条件
       showSearch: true,
+      // 日期范围
+      dateRange: [],
       // 总条数
       total: 0,
       processTotal:0,
@@ -179,11 +185,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        name: null,
+        procDefName: null,
         category: null,
         key: null,
         tenantId: null,
-        deployTime: null,
         derivedFrom: null,
         derivedFromRoot: null,
         parentDeploymentId: null,
@@ -211,13 +216,45 @@ export default {
     };
   },
   created() {
+    this.dateRange = this.timeDefault();
     this.getList();
   },
   methods: {
+    // 默认时间
+    timeDefault() {
+      let date = new Date();
+      // 通过时间戳计算
+      let defalutStartTime = date.getTime() - 7 * 24 * 3600 * 1000; // 转化为时间戳 -几即表示几天内
+      let defalutEndTime = date.getTime();
+      let startDateNs = new Date(defalutStartTime);
+      let endDateNs = new Date(defalutEndTime);
+      // 月，日 不够10补0
+      defalutStartTime =
+        startDateNs.getFullYear() +
+        "-" +
+        (startDateNs.getMonth() + 1 >= 10
+          ? startDateNs.getMonth() + 1
+          : "0" + (startDateNs.getMonth() + 1)) +
+        "-" +
+        (startDateNs.getDate() >= 10
+          ? startDateNs.getDate()
+          : "0" + startDateNs.getDate()) + ' 00:00:00';
+      defalutEndTime =
+        endDateNs.getFullYear() +
+        "-" +
+        (endDateNs.getMonth() + 1 >= 10
+          ? endDateNs.getMonth() + 1
+          : "0" + (endDateNs.getMonth() + 1)) +
+        "-" +
+        (endDateNs.getDate() >= 10
+          ? endDateNs.getDate()
+          : "0" + endDateNs.getDate()) + ' 23:59:59';
+      return [defalutStartTime, defalutEndTime];
+    },
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
-      myProcessList(this.queryParams).then(response => {
+      myProcessList(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.myProcessList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -279,6 +316,7 @@ export default {
     },
     /**  发起流程申请 */
     handleStartProcess(row){
+      this.open = false;
       this.$router.push({ path: '/flowable/task/record/index',
         query: {
           deployId: row.deploymentId,
@@ -335,4 +373,3 @@ export default {
   }
 };
 </script>
-

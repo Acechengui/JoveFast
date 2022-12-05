@@ -42,8 +42,9 @@ public class FlowTaskController extends BaseController {
     @GetMapping(value = "/myProcess")
     @RequiresPermissions("flowable:task:myProcess")
     public TableDataInfo myProcess(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                                   @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
-        return getDataTable(flowTaskService.myProcess(pageNum, pageSize));
+                                   @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize,
+                                   FlowTaskDto params) {
+        return getDataTable(flowTaskService.myProcess(pageNum, pageSize,params));
     }
 
     @ApiOperation(value = "取消申请", response = FlowTaskDto.class)
@@ -51,24 +52,28 @@ public class FlowTaskController extends BaseController {
     @Log(title = "取消申请", businessType = BusinessType.UPDATE)
     @RequiresPermissions("flowable:task:stopProcess")
     public AjaxResult stopProcess(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.stopProcess(flowTaskVo);
+        boolean b = flowTaskService.stopProcess(flowTaskVo);
+        if(b){
+            return AjaxResult.success();
+        }
+        return AjaxResult.error();
     }
 
     @ApiOperation(value = "获取待办列表", response = FlowTaskDto.class)
     @GetMapping(value = "/todoList")
     @RequiresPermissions("flowable:task:todoList")
     public TableDataInfo todoList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                               @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
-        return getDataTable(flowTaskService.todoList(pageNum, pageSize));
+                                  @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize, FlowTaskDto params) {
+        return getDataTable(flowTaskService.todoList(pageNum, pageSize,params));
     }
 
     @ApiOperation(value = "获取已办任务", response = FlowTaskDto.class)
     @GetMapping(value = "/finishedList")
     @RequiresPermissions("flowable:task:finishedList")
     public TableDataInfo finishedList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                                   @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize) {
-        startPage();
-        return getDataTable(flowTaskService.finishedList(pageNum, pageSize));
+                                      @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize,
+                                      FlowTaskDto params) {
+        return getDataTable(flowTaskService.finishedList(pageNum, pageSize,params));
     }
 
 

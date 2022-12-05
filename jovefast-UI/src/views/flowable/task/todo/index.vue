@@ -1,22 +1,26 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="流程名称" prop="procDefName">
         <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
+          v-model="queryParams.procDefName"
+          placeholder="请输入完整流程名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="开始时间" prop="deployTime">
-        <el-date-picker clearable size="small"
-                        v-model="queryParams.deployTime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择时间">
-        </el-date-picker>
+      <el-form-item label="接收时间">
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+              :default-time="['00:00:00', '23:59:59']"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -72,7 +76,7 @@ import {
 } from "@/api/flowable/todo";
 
 export default {
-  name: "Deploy",
+  name: "Tode",
   components: {},
   data() {
     return {
@@ -84,11 +88,13 @@ export default {
       total: 0,
       // 流程待办任务表格数据
       todoList: [],
+      // 日期范围
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        name: null,
+        procDefName: null,
         category: null
       },
       // 表单参数
@@ -98,13 +104,45 @@ export default {
     };
   },
   created() {
+    this.dateRange = this.timeDefault();
     this.getList();
   },
   methods: {
+    // 默认时间
+    timeDefault() {
+      let date = new Date();
+      // 通过时间戳计算
+      let defalutStartTime = date.getTime() - 7 * 24 * 3600 * 1000; // 转化为时间戳 -几即表示几天内
+      let defalutEndTime = date.getTime();
+      let startDateNs = new Date(defalutStartTime);
+      let endDateNs = new Date(defalutEndTime);
+      // 月，日 不够10补0
+      defalutStartTime =
+        startDateNs.getFullYear() +
+        "-" +
+        (startDateNs.getMonth() + 1 >= 10
+          ? startDateNs.getMonth() + 1
+          : "0" + (startDateNs.getMonth() + 1)) +
+        "-" +
+        (startDateNs.getDate() >= 10
+          ? startDateNs.getDate()
+          : "0" + startDateNs.getDate()) + ' 00:00:00';
+      defalutEndTime =
+        endDateNs.getFullYear() +
+        "-" +
+        (endDateNs.getMonth() + 1 >= 10
+          ? endDateNs.getMonth() + 1
+          : "0" + (endDateNs.getMonth() + 1)) +
+        "-" +
+        (endDateNs.getDate() >= 10
+          ? endDateNs.getDate()
+          : "0" + endDateNs.getDate()) + ' 23:59:59';
+      return [defalutStartTime, defalutEndTime];
+    },
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
-      todoList(this.queryParams).then(response => {
+      todoList(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.todoList = response.rows;
         this.total = response.total;
         this.loading = false;

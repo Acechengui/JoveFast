@@ -83,16 +83,17 @@ public interface IFlowTaskService {
 
     /**
      * 我发起的流程
-     * @param pageNum
-     * @param pageSize
+     * @param pageNum 当前页
+     * @param pageSize 页大小
+     * @param params 参数
      */
-    List<FlowTaskDto> myProcess(Integer pageNum, Integer pageSize);
+    List<FlowTaskDto> myProcess(Integer pageNum, Integer pageSize,FlowTaskDto params);
 
     /**
      * 取消申请
      * @param flowTaskVo 参数
      */
-    AjaxResult stopProcess(FlowTaskVo flowTaskVo);
+    boolean stopProcess(FlowTaskVo flowTaskVo);
 
 
     /**
@@ -100,9 +101,10 @@ public interface IFlowTaskService {
      *
      * @param pageNum  当前页码
      * @param pageSize 每页条数
+     * @param flowtaskdto 参数
      * @return 代办任务列表
      */
-    List<FlowTaskDto> todoList(Integer pageNum, Integer pageSize);
+    List<FlowTaskDto> todoList(Integer pageNum, Integer pageSize,FlowTaskDto flowtaskdto);
 
 
     /**
@@ -110,8 +112,9 @@ public interface IFlowTaskService {
      *
      * @param pageNum  当前页码
      * @param pageSize 每页条数
+     * @param flowTaskDto 参数
      */
-    List<FlowTaskDto> finishedList(Integer pageNum, Integer pageSize);
+    List<FlowTaskDto> finishedList(Integer pageNum, Integer pageSize,FlowTaskDto flowTaskDto);
 
     /**
      * 流程历史流转记录
