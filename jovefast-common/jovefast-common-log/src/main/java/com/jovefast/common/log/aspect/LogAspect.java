@@ -21,13 +21,14 @@ import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.core.utils.ip.IpUtils;
 import com.jovefast.common.log.annotation.Log;
 import com.jovefast.common.log.enums.BusinessStatus;
+import com.jovefast.common.log.filter.PropertyPreExcludeFilter;
 import com.jovefast.common.log.service.AsyncLogService;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.system.api.domain.SysOperLog;
 
 /**
  * 操作日志记录处理
- * 
+ *
  * @author Acechengui
  */
 @Aspect
@@ -35,7 +36,10 @@ import com.jovefast.system.api.domain.SysOperLog;
 public class LogAspect
 {
     private static final Logger log = LoggerFactory.getLogger(LogAspect.class);
-    
+
+    /** 排除敏感属性字段 */
+    public static final String[] EXCLUDE_PROPERTIES = { "password", "oldPassword", "newPassword", "confirmPassword" };
+
     @Autowired
     private AsyncLogService asyncLogService;
 
@@ -52,7 +56,7 @@ public class LogAspect
 
     /**
      * 拦截异常操作
-     * 
+     *
      * @param joinPoint 切点
      * @param e 异常
      */
@@ -98,7 +102,6 @@ public class LogAspect
         catch (Exception exp)
         {
             // 记录本地异常日志
-            log.error("==前置通知异常==");
             log.error("异常信息:{}", exp.getMessage());
             exp.printStackTrace();
         }
@@ -106,7 +109,7 @@ public class LogAspect
 
     /**
      * 获取注解中对方法的描述信息 用于Controller层注解
-     * 
+     *
      * @param log 日志
      * @param operLog 操作日志
      * @throws Exception
@@ -134,7 +137,7 @@ public class LogAspect
 
     /**
      * 获取请求的参数，放到log中
-     * 
+     *
      * @param operLog 操作日志
      * @throws Exception 异常
      */
@@ -145,6 +148,11 @@ public class LogAspect
         {
             String params = argsArrayToString(joinPoint.getArgs());
             operLog.setOperParam(StringUtils.substring(params, 0, 2000));
+        }
+        else
+        {
+            Map<?, ?> paramsMap = ServletUtils.getParamMap(ServletUtils.getRequest());
+            operLog.setOperParam(StringUtils.substring(JSON.toJSONString(paramsMap, excludePropertyPreFilter()), 0, 2000));
         }
     }
 
@@ -162,7 +170,7 @@ public class LogAspect
                 {
                     try
                     {
-                        Object jsonObj = JSON.toJSON(o);
+                        String jsonObj = JSON.toJSONString(o, excludePropertyPreFilter());
                         params += jsonObj.toString() + " ";
                     }
                     catch (Exception e)
@@ -175,8 +183,16 @@ public class LogAspect
     }
 
     /**
+     * 忽略敏感属性
+     */
+    public PropertyPreExcludeFilter excludePropertyPreFilter()
+    {
+        return new PropertyPreExcludeFilter().addExcludes(EXCLUDE_PROPERTIES);
+    }
+
+    /**
      * 判断是否需要过滤的对象。
-     * 
+     *
      * @param o 对象信息。
      * @return 如果是需要过滤的对象，则返回true；否则返回false。
      */
