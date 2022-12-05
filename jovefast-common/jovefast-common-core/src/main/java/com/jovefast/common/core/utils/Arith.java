@@ -1,6 +1,7 @@
 package com.jovefast.common.core.utils;
 
 import java.math.BigDecimal;
+import java.util.regex.Pattern;
 
 /**
  * 精确的浮点数运算
@@ -16,6 +17,17 @@ public class Arith {
      * 这个类不能实例化
      */
     private Arith() {
+    }
+
+    /**
+     * 正则表达式的使用:6位数字
+     * @param regex 正则表达式
+     * @param numericStr 字符串
+     * @return 真假
+     */
+    public static boolean verifySeveralDigits(String regex,String numericStr){
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(numericStr).matches();
     }
 
     /**
