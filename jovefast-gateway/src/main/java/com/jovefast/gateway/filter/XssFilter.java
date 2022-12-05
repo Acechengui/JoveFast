@@ -42,6 +42,9 @@ public class XssFilter implements GlobalFilter, Ordered
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain)
     {
         ServerHttpRequest request = exchange.getRequest();
+        if(!xss.getEnabled()){
+            return chain.filter(exchange);
+        }
         // GET DELETE 不过滤
         HttpMethod method = request.getMethod();
         if (method == null || method.matches("GET") || method.matches("DELETE"))
