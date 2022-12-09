@@ -90,7 +90,7 @@
 ![输入图片说明](doc/preview/01.png)
 ![输入图片说明](doc/preview/image.png)
 
-1.5.5版本升级日志:
+1.5.6版本升级日志:
 ```markdown
 ALTER TABLE jimu_report_data_source
 ADD COLUMN type  varchar(10) NULL COMMENT '类型(report:报表;drag:仪表盘)';
