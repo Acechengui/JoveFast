@@ -46,7 +46,7 @@
     "clipboard": "2.0.8",
     "core-js": "3.25.2",
     "css-loader": "^3.5.3",
-    "echarts": "4.9.0",
+    "echarts": "5.4.0",
     "element-ui": "2.15.10",
     "eslint-loader": "^2.2.1",
     "file-saver": "2.0.5",
