@@ -24,7 +24,7 @@
         <swagger.core.version>1.6.2</swagger.core.version>
         <tobato.version>1.27.2</tobato.version>
         <kaptcha.version>2.3.2</kaptcha.version>
-        <pagehelper.boot.version>1.4.5</pagehelper.boot.version>
+        <pagehelper.boot.version>1.4.6</pagehelper.boot.version>
         <druid.version>1.2.11</druid.version>
         <dynamic-ds.version>3.5.2</dynamic-ds.version>
         <commons.io.version>2.11.0</commons.io.version>
@@ -81,13 +81,6 @@
                 <groupId>com.github.tobato</groupId>
                 <artifactId>fastdfs-client</artifactId>
                 <version>${tobato.version}</version>
-            </dependency>
-
-            <!-- Mybatis 依赖配置 -->
-            <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>${spring-boot.mybatis}</version>
             </dependency>
 
             <!-- Swagger 依赖配置 -->
