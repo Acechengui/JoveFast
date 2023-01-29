@@ -1,5 +1,5 @@
 
-<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">JoveFast v3.6.1</h1>
+<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">JoveFast v3.6.2</h1>
 <h4 align="center">基于若依Cloud的 Vue/Element UI 和 Spring Boot/Spring Cloud & Alibaba 前后端分离的分布式微服务架构</h4>
 <a href='https://gitee.com/wxjstudy/jove-fast'><img src='https://gitee.com/wxjstudy/jove-fast/widgets/widget_4.svg' alt='Fork me on Gitee'></img></a>
 

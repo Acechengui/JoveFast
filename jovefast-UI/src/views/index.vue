@@ -1,6 +1,6 @@
 <template>
   <div class="app-container home">
-    
+
     <el-row :gutter="10">
       <el-col :sm="48" :lg="24">
         <h2>公司简介</h2>
@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       // 版本号
-      version: "3.6.1",
+      version: "3.6.2",
       // 查询参数
       queryParams: {
         pageNum: 1,

@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jovefast</groupId>
     <artifactId>jovefast</artifactId>
-    <version>3.6.1</version>
+    <version>3.6.2</version>
     <name>jovefast</name>
     <url>http://doc.ruoyi.vip</url>
     <description>基于若依cloud的JoveFast</description>
 
     <properties>
-        <jovefast.version>3.6.1</jovefast.version>
+        <jovefast.version>3.6.2</jovefast.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
