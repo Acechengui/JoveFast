@@ -68,6 +68,9 @@ public class FlowTaskDto extends BaseEntity {
     @ApiModelProperty("流程定义名称")
     private String procDefName;
 
+    @ApiModelProperty("流程标题")
+    private String processTitle;
+
     @ApiModelProperty("流程定义内置使用版本")
     private int procDefVersion;
 
@@ -89,6 +92,14 @@ public class FlowTaskDto extends BaseEntity {
     @ApiModelProperty("任务完成时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date finishTime;
+
+    public String getProcessTitle() {
+        return processTitle;
+    }
+
+    public void setProcessTitle(String processTitle) {
+        this.processTitle = processTitle;
+    }
 
     public String getTaskId() {
         return taskId;

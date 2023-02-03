@@ -35,6 +35,7 @@
     <el-table v-loading="loading" :data="finishedList" border>
       <el-table-column label="发起人ID" align="center" prop="startUserId" />
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true"/>
+      <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
       <el-table-column label="任务节点" align="center" prop="taskName" />
       <el-table-column label="流程发起人" align="center">

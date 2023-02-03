@@ -34,6 +34,7 @@
 
     <el-table v-loading="loading" :data="todoList" border>
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true"/>
+      <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true"/>
       <el-table-column label="流程名称" align="center" prop="procDefName"/>
       <el-table-column label="任务节点" align="center" prop="taskName"/>
       <el-table-column label="流程版本" align="center">

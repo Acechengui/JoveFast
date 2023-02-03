@@ -3,12 +3,13 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span class="el-icon-document">基础信息</span>
-        <el-button style="float: right;" type="primary" @click="goBack">返回</el-button>
+        <el-button style="float: right;" icon="el-icon-arrow-left" type="primary"  size="mini" @click="goBack">返回</el-button>
+        <el-button style="float: right; margin-right: 10px;" icon="el-icon-picture-outline" type="danger" size="mini" @click="flowChart">流程图</el-button>
       </div>
       <!--流程处理表单模块-->
-      <el-col :span="16" :offset="6" v-if="variableOpen">
+      <el-col :span="24" v-if="variableOpen">
         <div>
-          <parser :key="new Date().getTime()" :form-conf="variablesData" />
+          <parser :key="new Date().getTime()" :form-conf="variablesData" @submit="submitVariable" ref="variableParser" />
         </div>
         <div style="margin-left:2%;margin-bottom: 20px" v-if="fileDisplay">
           <!--对上传文件进行显示处理 -->
@@ -25,7 +26,7 @@
       </el-col>
 
       <!--初始化流程加载表单信息-->
-      <el-col :span="16" :offset="4" v-if="formConfOpen">
+      <el-col :span="24" v-if="formConfOpen">
         <div class="key-form">
           <parser :key="new Date().getTime()" :form-conf="formConf" @submit="submitForm" ref="parser"
             @getData="getData" />
@@ -78,21 +79,22 @@
         </div>
       </el-col>
     </el-card>
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span class="el-icon-picture-outline">流程图</span>
-      </div>
+
+    <!--流程图-->
+    <el-dialog title="流程图" :visible.sync="flowChartOpen" width="60%" class="el-dialog-div" append-to-body>
       <flow :xmlData="xmlData" :taskData="taskList"></flow>
-    </el-card>
+    </el-dialog>
 
     <!--审批正常流程-->
-    <el-dialog :title="completeTitle" :visible.sync="completeOpen" :width="checkSendUser? '60%':'40%'" append-to-body>
+    <el-dialog :title="completeTitle" :visible.sync="completeOpen" :width="checkSendUser? '80%':'80%'" append-to-body>
       <el-form ref="taskForm" :model="taskForm" label-width="80px">
         <el-form-item v-if="checkSendUser" prop="targetKey">
+
           <el-row :gutter="20">
             <!--部门数据-->
             <el-col :span="6" :xs="24">
-              <h6>部门列表</h6>
+              <el-tag type="danger">默认不需要指定,但可以在下方指定审批人</el-tag>
+              <h6>展开部门列表选择</h6>
               <div class="head-container">
                 <el-input v-model="deptName" placeholder="请输入部门名称" clearable size="small" prefix-icon="el-icon-search"
                   style="margin-bottom: 20px" />
@@ -121,7 +123,7 @@
                 :total="total"
                 :page.sync="queryParams.pageNum"
                 :limit.sync="queryParams.pageSize"
-                @pagination="getList"
+                @pagination="checkSendUser ? getList:[]"
               />
             </el-col>
             <el-col :span="8" :xs="24">
@@ -131,6 +133,16 @@
               </el-tag>
             </el-col>
           </el-row>
+        </el-form-item>
+       <el-form-item label="快捷选择" prop="commentVar">
+        <el-select v-model="commentVar" clearable @change="bclxChange" placeholder="请选择">
+            <el-option
+              v-for="item in commentOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="处理意见" prop="comment" :rules="[{ required: true, message: '请输入处理意见', trigger: 'blur' }]">
           <el-input type="textarea" v-model="taskForm.comment" placeholder="请输入处理意见" />
@@ -143,7 +155,7 @@
     </el-dialog>
 
     <!--退回流程-->
-    <el-dialog :title="returnTitle" :visible.sync="returnOpen" width="40%" append-to-body>
+    <el-dialog :title="returnTitle" :visible.sync="returnOpen" width="60%" append-to-body>
       <el-form ref="taskForm" :model="taskForm" label-width="80px">
         <el-form-item label="退回节点" prop="targetKey">
           <el-radio-group v-model="taskForm.targetKey">
@@ -152,7 +164,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="退回意见" prop="comment" :rules="[{ required: true, message: '请输入意见', trigger: 'blur' }]">
-          <el-input style="width: 50%" type="textarea" v-model="taskForm.comment" placeholder="请输入意见" />
+          <el-input style="width: 80%" type="textarea" v-model="taskForm.comment" placeholder="请输入意见" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -162,10 +174,10 @@
     </el-dialog>
 
     <!--驳回流程-->
-    <el-dialog :title="rejectTitle" :visible.sync="rejectOpen" width="40%" append-to-body>
+    <el-dialog :title="rejectTitle" :visible.sync="rejectOpen" width="60%" append-to-body>
       <el-form ref="taskForm" :model="taskForm" label-width="80px">
         <el-form-item label="驳回意见" prop="comment" :rules="[{ required: true, message: '请输入意见', trigger: 'blur' }]">
-          <el-input style="width: 50%" type="textarea" v-model="taskForm.comment" placeholder="请输入意见" />
+          <el-input style="width: 80%" type="textarea" v-model="taskForm.comment" placeholder="请输入意见" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -207,6 +219,12 @@ export default {
       deptName: undefined,
       // 部门树选项
       deptOptions: undefined,
+      commentVar:undefined,
+      //是否同意快捷选项
+      commentOptions:[{
+          value: '同意',
+          label: '同意'
+        }],
       // 用户表格数据
       userList: null,
       defaultProps: {
@@ -219,6 +237,8 @@ export default {
       },
       // 遮罩层
       loading: true,
+      //是否显示流程图
+      flowChartOpen: false,
       flowRecordList: [], // 流程流转数据
       formConfCopy: {},
       src: null,
@@ -237,7 +257,8 @@ export default {
         taskId: "",// 流程任务编号
         procDefId: "",  // 流程编号
         vars: "",
-        targetKey: ""
+        targetKey: "",
+        variables:undefined
       },
       userDataList: [], // 流程候选人
       assignee: null,
@@ -275,9 +296,6 @@ export default {
     this.taskForm.instanceId = this.$route.query && this.$route.query.procInsId;
     // 初始化表单
     this.taskForm.procDefId = this.$route.query && this.$route.query.procDefId;
-    // 回显流程记录
-    this.getFlowViewer(this.taskForm.procInsId, this.taskForm.executionId);
-    this.getModelDetail(this.taskForm.deployId);
     // 流程任务重获取变量表单
     if (this.taskForm.taskId) {
       this.processVariables(this.taskForm.taskId)
@@ -289,6 +307,10 @@ export default {
     this.$modal.closeLoading();
   },
   methods: {
+    //下拉选择监听
+    bclxChange(selectValue) {
+      this.taskForm.comment = selectValue;
+    },
     /** 查询部门下拉树结构 */
     getTreeselect() {
       deptTreeSelect().then(response => {
@@ -312,6 +334,14 @@ export default {
     handleNodeClick(data) {
       this.queryParams.deptId = data.id;
       this.getList();
+    },
+    // 回显流程记录
+    flowChart(){
+      this.$modal.loading("正在加载数据中，请稍候...");
+      this.flowChartOpen=true;
+      this.getFlowViewer(this.taskForm.procInsId, this.taskForm.executionId);
+      this.getModelDetail(this.$route.query && this.$route.query.deployId);
+      this.$modal.closeLoading();
     },
     /** xml 文件 */
     getModelDetail(deployId) {
@@ -395,27 +425,34 @@ export default {
       a.href = file.url;
       a.dispatchEvent(event);
     },
-    fillFormData(fields, formConf) {
+    fillFormData(fields, formConfs) {
       fields.forEach((item, i) => {
         const val = item.__config__.defaultValue
         // 特殊处理el-upload，包括 回显图片
         if (item.__config__.tag === 'el-upload') {
-          // 回显图片
-          this.fileDisplay = true
+            // 回显图片
           if (item['list-type'] != 'text') {
             this.fileList = [];    //隐藏加的el-upload文件列表
-            item['file-list'] = JSON.parse(val)
+            if(val){
+              this.fileDisplay = true
+              item['file-list'] = JSON.parse(val)
+            }
           }else {  //图片
-            this.fileList = JSON.parse(val)
             item['file-list'] = [] //隐藏加的表单设计器的文件列表
+            if(val){
+              this.fileDisplay = true
+              this.fileList = JSON.parse(val)
+            }
+            
           }
+          
         }
         // 设置各表单项的默认值（回填表单），包括el-upload的默认值
         if (val) {
           item.__config__.defaultValue = val
         }
         if (Array.isArray(item.__config__.children)) {
-          this.fillFormData(item.__config__.children, formConf)
+          this.fillFormData(item.__config__.children, formConfs)
         }
       })
     },
@@ -427,17 +464,24 @@ export default {
           this.variablesData = res.data.variables;
           // 回填数据,这里主要是处理文件显示
           this.fillFormData(this.variablesData.fields, this.variablesData)
+          //判断是否允许编辑数据
+          if(res.data.whetherWritable){
+            this.variablesData.disabled = false;
+          }else{
+            this.variablesData.disabled = true;
+          }
+          this.variablesData.formBtns = false;
           this.variableOpen = true
         });
       }
     },
-    /** 根据当前任务或者流程设计配置的下一步节点 */
+    /** 根据当前任务获取流程设计配置的下一步节点 */
     getNextFlowNode(taskId) {
-      // 根据当前任务或者流程设计配置的下一步节点 todo 暂时未涉及到考虑网关、表达式和多节点情况
+      // 根据当前任务获取流程设计配置的下一步节点 todo 暂时未涉及到考虑网关、表达式和多节点情况
       const params = { taskId: taskId }
       getNextFlowNode(params).then(res => {
         const data = res.data;
-        if (data) {
+        if (data.type) {
           this.checkSendUser = true
           if (data.type === 'assignee') { // 指定人员
             this.userDataList = res.data.userList;
@@ -462,24 +506,39 @@ export default {
     },
     /** 审批任务选择 */
     handleComplete() {
+      //触发表单提交
+      this.$refs.variableParser.submitForm();
       this.completeOpen = true;
       this.completeTitle = "审批流程";
-      this.getTreeselect();
+      if(this.checkSendUser == true){
+        this.getTreeselect();
+      }
     },
     /** 审批任务 */
     taskComplete() {
-      if (!this.taskForm.values && this.checkSendUser) {
-        this.msgError("请选择流程接收人员");
-        return;
-      }
+      // if (!this.taskForm.values && this.checkSendUser) {
+      //   this.$modal.msgError("请选择流程接收人员");
+      //   return;
+      // }
       if (!this.taskForm.comment) {
-        this.msgError("请输入审批意见");
+        this.$modal.msgError("请输入审批意见");
         return;
       }
-      complete(this.taskForm).then(response => {
-        this.$modal.msgSuccess(response.msg);
-        this.goBack();
-      });
+      complete(this.taskForm).then(res => {
+        if(res.code == 200){
+          this.$modal.msgSuccess(res.msg);
+          this.goBack();
+        }else{
+          this.$modal.msgError(res.msg);
+        }
+    })
+    },
+    /** 审批过程中流程表单数据提交 */
+    submitVariable(data) {
+      if (data) {
+        this.taskForm.variables = data.valData;
+        this.taskForm.variables.variables = data.formData;
+      }
     },
     /** 委派任务 */
     handleDelegate() {
@@ -520,18 +579,29 @@ export default {
     /** 申请流程表单数据提交 */
     submitForm(data) {
       if (data) {
-        const variables = data.valData;
-        const formData = data.formData;
-        formData.disabled = true;
-        formData.formBtns = false;
-        if (this.taskForm.procDefId) {
-          variables.variables = formData;
-          // 启动流程并将表单数据加入流程变量
-          definitionStart(this.taskForm.procDefId, JSON.stringify(variables)).then(res => {
-            this.$modal.msgSuccess(res.msg);
-            this.goBack();
-          })
-        }
+        this.$prompt('请输入流程标题', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(({ value }) => {
+          this.$message({
+            type: 'success',
+            message: '设置的流程标题为:' + value
+          });
+          //设置一个流程标题(流程变量)
+          data.valData.processTitle = value;
+          const variables = data.valData;
+          const formData = data.formData;
+          if (this.taskForm.procDefId) {
+            variables.variables = formData;
+            // 启动流程并将表单数据加入流程变量
+            definitionStart(this.taskForm.procDefId, JSON.stringify(variables)).then(res => {
+              this.$modal.msgSuccess(res.msg);
+              formData.disabled = true;
+              formData.formBtns = false;
+              this.goBack();
+            })
+          }
+        }).catch(() => {});
       }
     },
     /** 驳回任务 */
@@ -599,10 +669,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.el-dialog-div{
+  max-height: 90vh;//如果高度过高，可用max-height
+   overflow: auto;
+}
+
 .key-form {
-  margin: 15px auto;
-  width: 95%;
-  padding: 15px;
+  width: 100%;
 }
 
 .clearfix:before,

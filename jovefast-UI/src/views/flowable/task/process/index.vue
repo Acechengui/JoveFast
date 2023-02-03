@@ -44,6 +44,7 @@
 
     <el-table v-loading="loading" :data="myProcessList" border>
       <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
+      <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
       <el-table-column label="流程类别" align="center" prop="category" width="100px" />
       <el-table-column label="流程版本" align="center" width="80px">
@@ -373,3 +374,4 @@ export default {
   }
 };
 </script>
+

@@ -1,6 +1,7 @@
 package com.jovefast.flowable.service;
 
 import com.jovefast.common.core.web.domain.AjaxResult;
+import com.jovefast.flowable.domain.dto.FlowNextDto;
 import com.jovefast.flowable.domain.dto.FlowTaskDto;
 import com.jovefast.flowable.domain.dto.FlowViewerDto;
 import com.jovefast.flowable.domain.vo.FlowTaskVo;
@@ -20,7 +21,7 @@ public interface IFlowTaskService {
      *
      * @param task 请求实体参数
      */
-    AjaxResult complete(FlowTaskVo task);
+    Boolean complete(FlowTaskVo task);
 
     /**
      * 驳回任务
@@ -147,11 +148,11 @@ public interface IFlowTaskService {
      * 获取流程变量
      * @param taskId 任务ID
      */
-    AjaxResult processVariables(String taskId);
+    Map<String, Object> processVariables(String taskId);
 
     /**
      * 获取下一节点
      * @param flowTaskVo 任务
      */
-    AjaxResult getNextFlowNode(FlowTaskVo flowTaskVo);
+    FlowNextDto getNextFlowNode(FlowTaskVo flowTaskVo);
 }

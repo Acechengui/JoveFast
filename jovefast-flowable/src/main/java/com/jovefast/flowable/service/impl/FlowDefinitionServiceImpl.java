@@ -1,16 +1,22 @@
 package com.jovefast.flowable.service.impl;
 
+import com.jovefast.common.core.constant.SecurityConstants;
+import com.jovefast.common.core.domain.R;
 import com.jovefast.common.core.exception.CheckedException;
+import com.jovefast.common.core.exception.ServiceException;
 import com.jovefast.common.core.utils.DateUtils;
+import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.flowable.common.constant.ProcessConstants;
 import com.jovefast.flowable.common.enums.FlowComment;
 import com.jovefast.flowable.domain.dto.FlowProcDefDto;
 import com.jovefast.flowable.mapper.FlowDeployMapper;
 import com.jovefast.flowable.mapper.SysDeployFormMapper;
+import com.jovefast.system.api.RemoteUserService;
 import com.jovefast.system.api.domain.SysUser;
 import com.jovefast.flowable.factory.FlowServiceFactory;
 import com.jovefast.flowable.service.IFlowDefinitionService;
+import com.jovefast.system.api.model.LoginUser;
 import org.apache.commons.io.IOUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.api.FlowableException;
@@ -20,6 +26,7 @@ import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.image.impl.DefaultProcessDiagramGenerator;
 import org.flowable.task.api.Task;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +49,9 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
 
     @Resource
     private SysDeployFormMapper sysDeployFormMapper;
+
+    @Autowired
+    private RemoteUserService remoteUserService;
 
     private static final String BPMN_FILE_SUFFIX = ".bpmn";
 
@@ -140,7 +150,19 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             // 设置流程发起人Id到流程中
             SysUser sysUser = SecurityUtils.getLoginUser().getSysUser();
             identityService.setAuthenticatedUserId(sysUser.getUserId().toString());
-            variables.put(ProcessConstants.PROCESS_INITIATOR, sysUser.getNickName());
+            variables.put(ProcessConstants.PROCESS_INITIATOR,"");
+            if(!StringUtils.isNotBlank(sysUser.getDept().getLeader())){
+                throw new CheckedException("部门未设置部门[上级领导账号]");
+            }
+            //获取流程发起人的部门领导信息
+            R<LoginUser> leaderResult = remoteUserService.getUserInfo(sysUser.getDept().getLeader(), SecurityConstants.INNER);
+            if (R.FAIL == leaderResult.getCode())
+            {
+                throw new ServiceException(leaderResult.getMsg());
+            }
+            SysUser leader = leaderResult.getData().getSysUser();
+            variables.put(ProcessConstants.PROCESS_APPROVAL,leader.getUserId());
+
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
             // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题
             Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();

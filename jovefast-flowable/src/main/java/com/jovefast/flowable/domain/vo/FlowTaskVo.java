@@ -41,6 +41,16 @@ public class FlowTaskVo {
     @ApiModelProperty("审批组")
     private List<String> candidateGroups;
 
+    private Map<String, Object> variables;
+
+    public Map<String, Object> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<String, Object> variables) {
+        this.variables = variables;
+    }
+
     public String getTaskId() {
         return taskId;
     }
