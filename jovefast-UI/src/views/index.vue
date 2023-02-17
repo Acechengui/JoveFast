@@ -24,6 +24,24 @@
     </el-row>
     <el-divider />
     <el-row :gutter="20">
+      <el-col>
+        <el-card class="box-card" >
+          <div slot="header" class="clearfix">
+            <span>快捷导航</span>
+          </div>
+          <el-row>
+            <el-col :span="12" v-for="({name,icon,route},index) of navigators" :key="index" style="padding: 0">
+              <el-card shadow="hover">
+                <div  style="display: flex;align-items: center;flex-direction: column;cursor: pointer" @click="()=>{gotoRoute(route)}">
+                  <i :class="icon"><a href="javascript:;" style="text-align: center;" v-text="name"></a></i>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
           <div slot="header" class="clearfix">
@@ -46,86 +64,60 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
-        <el-card class="update-log">
-          <div slot="header" class="clearfix">
-            <span>公告通知</span>
-          </div>
-          <ol>
-            <li v-for="(item,index) in noticeList" :key="index" class="noticeTitle" v-html="item.noticeTitle" @click="seeNotice(item.noticeContent)"></li>
-          </ol>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
-        <el-card class="update-log">
-          <div slot="header" class="clearfix">
-            <span>技术支持</span>
-          </div>
-          <div class="body">
-            <img
-              :src="technicalSupport"
-              alt="donate"
-              width="100%"
-            />
-          </div>
-        </el-card>
-      </el-col>
     </el-row>
   </div>
 </template>
 <script>
-import { listNotice} from "@/api/system/notice";
 export default {
   name: "Index",
   data() {
     return {
       // 版本号
       version: "3.6.2",
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10
-      },
-      // 公告表格数据
-      noticeList: [],
-      technicalSupport:require("@/assets/images/hacknet.jpg")
+      navigators: [
+        {
+          name: '我的流程',
+          icon: 'el-icon-news',
+          route: {
+            path: '/workflowCenter/taskmanger/deploy'
+          }
+        },
+        {
+          name: '待办任务',
+          icon: 'el-icon-date',
+          route: {
+            path: '/workflowCenter/taskmanger/todo'
+          }
+        },
+        {
+          name: '已办任务',
+          icon: 'el-icon-success',
+          route: {
+            path: '/workflowCenter/taskmanger/finished'
+          }
+        },
+        {
+          name: '在线用户',
+          icon: 'el-icon-view',
+          route: {
+            path: '/monitor/online'
+          }
+        },
+      ],
     };
   },
-  created() {
-    this.getList();
-  },
   methods: {
-    //公告列表
-   async getList() {
-      listNotice(this.queryParams).then(response => {
-        this.noticeList = response.rows;
-        this.noticeList.forEach(e => {
-          e.noticeTitle=e.noticeTitle + '[查看]';
-        });
-      });
-    },
-    //查看通知内容
-    seeNotice(content) {
-      this.$notify.info({
-          title: '通知',
-          dangerouslyUseHTMLString: true,
-          message: content,
-          //duration: 0 //不会自动关闭
-        });
-    },
     goTarget(href) {
       window.open(href, "_blank");
     },
+    gotoRoute (route) {
+      this.$router.push(route);
+    }
   },
 };
 </script>
 
 <style scoped lang="scss">
-.noticeTitle {
-  cursor: pointer;//悬浮时变手指
-  color: rgb(255, 145, 0);
-  font-size: larger;
-}
 .home {
   blockquote {
     padding: 10px 20px;
@@ -133,12 +125,14 @@ export default {
     font-size: 17.5px;
     border-left: 5px solid #eee;
   }
+
   hr {
     margin-top: 20px;
     margin-bottom: 20px;
     border: 0;
     border-top: 1px solid #eee;
   }
+
   .col-item {
     margin-bottom: 20px;
   }
@@ -148,7 +142,11 @@ export default {
     margin: 0;
   }
 
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "open sans",
+  "Helvetica Neue",
+  Helvetica,
+  Arial,
+  sans-serif;
   font-size: 13px;
   color: #676a6c;
   overflow-x: hidden;
@@ -172,18 +170,6 @@ export default {
 
     b {
       font-weight: 700;
-    }
-  }
-
-  .update-log {
-    ol {
-      display: block;
-      list-style-type: decimal;
-      margin-block-start: 1em;
-      margin-block-end: 1em;
-      margin-inline-start: 0;
-      margin-inline-end: 0;
-      padding-inline-start: 40px;
     }
   }
 }

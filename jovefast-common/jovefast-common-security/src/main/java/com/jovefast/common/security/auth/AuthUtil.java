@@ -6,7 +6,7 @@ import com.jovefast.system.api.model.LoginUser;
 
 /**
  * Token 权限验证工具类
- * 
+ *
  * @author Acechengui
  */
 public class AuthUtil
@@ -26,7 +26,7 @@ public class AuthUtil
 
     /**
      * 会话注销，根据指定Token
-     * 
+     *
      * @param token 指定token
      */
     public static void logoutByToken(String token)
@@ -44,6 +44,9 @@ public class AuthUtil
 
     /**
      * 获取当前登录用户信息
+     *
+     * @param token 指定token
+     * @return 用户信息
      */
     public static LoginUser getLoginUser(String token)
     {
@@ -52,6 +55,8 @@ public class AuthUtil
 
     /**
      * 验证当前用户有效期
+     *
+     * @param loginUser 用户信息
      */
     public static void verifyLoginUserExpire(LoginUser loginUser)
     {
@@ -60,7 +65,7 @@ public class AuthUtil
 
     /**
      * 当前账号是否含有指定角色标识, 返回true或false
-     * 
+     *
      * @param role 角色标识
      * @return 是否含有指定角色标识
      */
@@ -71,7 +76,7 @@ public class AuthUtil
 
     /**
      * 当前账号是否含有指定角色标识, 如果验证未通过，则抛出异常: NotRoleException
-     * 
+     *
      * @param role 角色标识
      */
     public static void checkRole(String role)
@@ -81,7 +86,7 @@ public class AuthUtil
 
     /**
      * 根据注解传入参数鉴权, 如果验证未通过，则抛出异常: NotRoleException
-     * 
+     *
      * @param requiresRoles 角色权限注解
      */
     public static void checkRole(RequiresRoles requiresRoles)
@@ -91,7 +96,7 @@ public class AuthUtil
 
     /**
      * 当前账号是否含有指定角色标识 [指定多个，必须全部验证通过]
-     * 
+     *
      * @param roles 角色标识数组
      */
     public static void checkRoleAnd(String... roles)
@@ -101,7 +106,7 @@ public class AuthUtil
 
     /**
      * 当前账号是否含有指定角色标识 [指定多个，只要其一验证通过即可]
-     * 
+     *
      * @param roles 角色标识数组
      */
     public static void checkRoleOr(String... roles)
@@ -111,7 +116,7 @@ public class AuthUtil
 
     /**
      * 当前账号是否含有指定权限, 返回true或false
-     * 
+     *
      * @param permission 权限码
      * @return 是否含有指定权限
      */
@@ -122,7 +127,7 @@ public class AuthUtil
 
     /**
      * 当前账号是否含有指定权限, 如果验证未通过，则抛出异常: NotPermissionException
-     * 
+     *
      * @param permission 权限码
      */
     public static void checkPermi(String permission)
@@ -132,7 +137,7 @@ public class AuthUtil
 
     /**
      * 根据注解传入参数鉴权, 如果验证未通过，则抛出异常: NotPermissionException
-     * 
+     *
      * @param requiresPermissions 权限注解
      */
     public static void checkPermi(RequiresPermissions requiresPermissions)
@@ -142,7 +147,7 @@ public class AuthUtil
 
     /**
      * 当前账号是否含有指定权限 [指定多个，必须全部验证通过]
-     * 
+     *
      * @param permissions 权限码数组
      */
     public static void checkPermiAnd(String... permissions)
@@ -152,7 +157,7 @@ public class AuthUtil
 
     /**
      * 当前账号是否含有指定权限 [指定多个，只要其一验证通过即可]
-     * 
+     *
      * @param permissions 权限码数组
      */
     public static void checkPermiOr(String... permissions)
