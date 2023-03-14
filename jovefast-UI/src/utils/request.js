@@ -94,10 +94,7 @@ service.interceptors.response.use(
     const msg =
       res.msg || res.data.msg || errorCode[code] || errorCode["default"];
     // 二进制数据则直接返回
-    if (
-      res.request.responseType === "blob" ||
-      res.request.responseType === "arraybuffer"
-    ) {
+    if (res.request.responseType ===  'blob' || res.request.responseType ===  'arraybuffer') {
       return res.data;
     }
     if (code === 401) {
@@ -127,6 +124,8 @@ service.interceptors.response.use(
     } else if (code === 601) {
       Message({ message: msg, type: "warning" });
       return Promise.reject("error");
+    } else if (code === 202) {
+      return res.data;
     } else if (code !== 200) {
       Notification.error({ title: msg });
       return Promise.reject("error");
@@ -168,8 +167,8 @@ export function download(url, params, filename, config) {
       ...config,
     })
     .then(async (data) => {
-      const isLogin = await blobValidate(data);
-      if (isLogin) {
+      const isBlob = blobValidate(data);
+      if (isBlob) {
         const blob = new Blob([data]);
         saveAs(blob, filename);
       } else {
