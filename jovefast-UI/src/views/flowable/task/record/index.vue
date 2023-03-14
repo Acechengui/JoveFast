@@ -13,7 +13,16 @@
         </div>
         <div style="margin-left:2%;margin-bottom: 20px" v-if="fileDisplay">
           <!--对上传文件进行显示处理 -->
-          <el-tag type="success" effect="plain" v-if="fileList">附件列表:</el-tag><el-upload :on-preview="handleFilePreview" :file-list="fileList" />
+          <el-tag type="success" effect="plain" v-if="fileList">附件列表:</el-tag>
+
+          <el-card class="t-box-card">
+            <div v-for="o in fileList" :key="o" class="text item">
+              {{ o.name }}
+              <el-button type="text" class="button t-download" @click="handleFilePreview(o)">下载</el-button>
+            </div>
+          </el-card>
+
+          <!-- <el-upload :on-preview="handleFilePreview" :file-list="fileList" /> -->
         </div>
         <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
           <el-button icon="el-icon-edit-outline" type="success" size="mini" @click="handleComplete">审批</el-button>
@@ -29,7 +38,7 @@
       <el-col :span="24" v-if="formConfOpen">
         <div class="key-form">
           <parser :key="new Date().getTime()" :form-conf="formConf" @submit="submitForm" ref="parser"
-            @getData="getData" />
+                  @getData="getData" />
         </div>
       </el-col>
     </el-card>
@@ -43,7 +52,7 @@
         <div class="block">
           <el-timeline>
             <el-timeline-item v-for="(item,index ) in flowRecordList" :key="index" :icon="setIcon(item.finishTime)"
-              :color="setColor(item.finishTime)">
+                              :color="setColor(item.finishTime)">
               <p style="font-weight: 700">{{item.taskName}}</p>
               <el-card :body-style="{ padding: '10px' }">
                 <el-descriptions class="margin-top" :column="1" size="small" border>
@@ -97,23 +106,23 @@
               <h6>展开部门列表选择</h6>
               <div class="head-container">
                 <el-input v-model="deptName" placeholder="请输入部门名称" clearable size="small" prefix-icon="el-icon-search"
-                  style="margin-bottom: 20px" />
+                          style="margin-bottom: 20px" />
               </div>
               <div class="head-container">
-                <el-tree 
-                :data="deptOptions" 
-                :props="defaultProps" 
-                :expand-on-click-node="false"
-                :filter-node-method="filterNode"
-                ref="tree"
-                highlight-current
-                @node-click="handleNodeClick" />
+                <el-tree
+                  :data="deptOptions"
+                  :props="defaultProps"
+                  :expand-on-click-node="false"
+                  :filter-node-method="filterNode"
+                  ref="tree"
+                  highlight-current
+                  @node-click="handleNodeClick" />
               </div>
             </el-col>
             <el-col :span="10" :xs="24">
               <h6>待选人员</h6>
               <el-table ref="singleTable" :data="userList" border style="width: 100%"
-                @selection-change="handleSelectionChange">
+                        @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50" align="center" />
                 <el-table-column label="用户名" align="center" prop="nickName" />
                 <el-table-column label="部门" align="center" prop="dept.deptName" />
@@ -134,8 +143,8 @@
             </el-col>
           </el-row>
         </el-form-item>
-       <el-form-item label="快捷选择" prop="commentVar">
-        <el-select v-model="commentVar" clearable @change="bclxChange" placeholder="请选择">
+        <el-form-item label="快捷选择" prop="commentVar">
+          <el-select v-model="commentVar" clearable @change="bclxChange" placeholder="请选择">
             <el-option
               v-for="item in commentOptions"
               :key="item.value"
@@ -222,9 +231,9 @@ export default {
       commentVar:undefined,
       //是否同意快捷选项
       commentOptions:[{
-          value: '同意',
-          label: '同意'
-        }],
+        value: '同意',
+        label: '同意'
+      }],
       // 用户表格数据
       userList: null,
       defaultProps: {
@@ -320,9 +329,9 @@ export default {
     /** 查询用户列表 */
     getList() {
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.userList = response.rows;
-        this.total = response.total;
-      }
+          this.userList = response.rows;
+          this.total = response.total;
+        }
       );
     },
     // 筛选节点
@@ -418,19 +427,19 @@ export default {
     },
     //点击文件列表中已上传文件进行下载
     handleFilePreview(file) {
-      var a = document.createElement('a');
-      var event = new MouseEvent('click');
-      a.target="_blank";
-      a.download = file.name;
-      a.href = file.url;
-      a.dispatchEvent(event);
+      // 根据地址保存文件
+      this.$download.saveAs(file.url, file.name);
     },
     fillFormData(fields, formConfs) {
       fields.forEach((item, i) => {
+        //回显时不允许还能上传文件
+        if(item['name'] === 'files'){
+          item.disabled=true;
+        }
         const val = item.__config__.defaultValue
         // 特殊处理el-upload，包括 回显图片
         if (item.__config__.tag === 'el-upload') {
-            // 回显图片
+          // 回显图片
           if (item['list-type'] != 'text') {
             this.fileList = [];    //隐藏加的el-upload文件列表
             if(val){
@@ -443,9 +452,9 @@ export default {
               this.fileDisplay = true
               this.fileList = JSON.parse(val)
             }
-            
+
           }
-          
+
         }
         // 设置各表单项的默认值（回填表单），包括el-upload的默认值
         if (val) {
@@ -531,7 +540,7 @@ export default {
         }else{
           this.$modal.msgError(res.msg);
         }
-    })
+      })
     },
     /** 审批过程中流程表单数据提交 */
     submitVariable(data) {
@@ -671,7 +680,7 @@ export default {
 <style lang="scss" scoped>
 .el-dialog-div{
   max-height: 90vh;//如果高度过高，可用max-height
-   overflow: auto;
+  overflow: auto;
 }
 
 .key-form {
@@ -699,5 +708,20 @@ export default {
 
 .my-label {
   background: #E1F3D8;
+}
+
+.text {
+  font-size: 15px;
+  color: red;
+}
+
+.item {
+  margin-bottom: 10px;
+}
+.t-box-card {
+  width: 50%;
+}
+.t-download{
+  margin-left: 50%;
 }
 </style>
