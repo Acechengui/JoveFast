@@ -1,22 +1,19 @@
 package com.jovefast.flowable.service.impl;
 
-import com.jovefast.common.core.constant.SecurityConstants;
-import com.jovefast.common.core.domain.R;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.jovefast.common.core.exception.CheckedException;
-import com.jovefast.common.core.exception.ServiceException;
 import com.jovefast.common.core.utils.DateUtils;
-import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.flowable.common.constant.ProcessConstants;
 import com.jovefast.flowable.common.enums.FlowComment;
 import com.jovefast.flowable.domain.dto.FlowProcDefDto;
 import com.jovefast.flowable.mapper.FlowDeployMapper;
 import com.jovefast.flowable.mapper.SysDeployFormMapper;
-import com.jovefast.system.api.RemoteUserService;
 import com.jovefast.system.api.domain.SysUser;
 import com.jovefast.flowable.factory.FlowServiceFactory;
 import com.jovefast.flowable.service.IFlowDefinitionService;
-import com.jovefast.system.api.model.LoginUser;
 import org.apache.commons.io.IOUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.api.FlowableException;
@@ -49,9 +46,6 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
 
     @Resource
     private SysDeployFormMapper sysDeployFormMapper;
-
-    @Autowired
-    private RemoteUserService remoteUserService;
 
     private static final String BPMN_FILE_SUFFIX = ".bpmn";
 
@@ -151,26 +145,22 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             SysUser sysUser = SecurityUtils.getLoginUser().getSysUser();
             identityService.setAuthenticatedUserId(sysUser.getUserId().toString());
             variables.put(ProcessConstants.PROCESS_INITIATOR,"");
-            if(!StringUtils.isNotBlank(sysUser.getDept().getLeader())){
-                throw new CheckedException("部门未设置部门[上级领导账号]");
-            }
-            //获取流程发起人的部门领导信息
-            R<LoginUser> leaderResult = remoteUserService.getUserInfo(sysUser.getDept().getLeader(), SecurityConstants.INNER);
-            if (R.FAIL == leaderResult.getCode())
-            {
-                throw new ServiceException(leaderResult.getMsg());
-            }
-            SysUser leader = leaderResult.getData().getSysUser();
-            variables.put(ProcessConstants.PROCESS_APPROVAL,leader.getUserId());
-
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
             // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题
             Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
             if (Objects.nonNull(task)) {
                 //往意见表增加记录
                 taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.NORMAL.getType(), sysUser.getNickName() + "发起流程申请");
-                //往附件表里增加记录,注意:这里会自动往意见表里再增加记录, type值为event,此处暂时用不到先注释
-                //taskService.createAttachment(FlowComment.NORMAL.getType(), task.getId(), processInstance.getProcessInstanceId(), sysUser.getNickName() + "的附件", sysUser.getNickName() + "上传的附件",variables.get("files").toString());
+                //往附件表里增加记录,注意:这里会自动往意见表里再增加记录, type值为event
+                if(Objects.nonNull(variables.get("files")) && !variables.get("files").equals("null")){
+                    JSONArray jo=(JSONArray)JSON.parse((String) variables.get("files"));;
+                    for (Object o : jo) {
+                        JSONObject js=(JSONObject) o;
+                        taskService.createAttachment(FlowComment.NORMAL.getType(), task.getId(), processInstance.getProcessInstanceId()
+                                ,js.getString("name"),sysUser.getNickName() + "上传的附件",js.getString("url"));
+                    }
+
+                }
                 taskService.complete(task.getId(), variables);
             }
             return true;

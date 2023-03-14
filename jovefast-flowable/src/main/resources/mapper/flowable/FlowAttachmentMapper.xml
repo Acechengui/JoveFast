@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jovefast.flowable.mapper.FlowAttachmentMapper">
+    <select id="selectActHiAttachmentByuserId" parameterType="FlowEnclosureDTO" resultType="FlowEnclosureDTO">
+        SELECT
+        ID_ AS hid,
+        REV_ AS hrev,
+        USER_ID_ AS huserId,
+        NAME_ AS hname,
+        DESCRIPTION_ AS hdescription,
+        TYPE_ AS htype,
+        TASK_ID_ AS htaskId,
+        PROC_INST_ID_ AS hprocinstId,
+        URL_ AS hurl,
+        CONTENT_ID_ AS hcontentId,
+        TIME_ AS htime
+        FROM
+        act_hi_attachment
+        <where>
+            <if test="huserId != null "> and USER_ID_ = #{huserId}</if>
+            <if test="hname !=null and hname != ''"> and NAME_ like concat('%',#{hname},'%')</if>
+        </where>
+    </select>
+
+    <select id="selectActHiAttachmentByhid" parameterType="string" resultType="FlowEnclosureDTO">
+        SELECT
+        ID_ AS hid,
+        REV_ AS hrev,
+        USER_ID_ AS huserId,
+        NAME_ AS hname,
+        DESCRIPTION_ AS hdescription,
+        TYPE_ AS htype,
+        TASK_ID_ AS htaskId,
+        PROC_INST_ID_ AS hprocinstId,
+        URL_ AS hurl,
+        CONTENT_ID_ AS hcontentId,
+        TIME_ AS htime
+        FROM
+        act_hi_attachment
+        <where>
+            <if test="hid !=null and hid != ''"> and ID_ =#{hid} </if>
+        </where>
+    </select>
+
+
+    <delete id="deleteActHiAttachmentById" parameterType="String">
+        delete from act_hi_attachment where ID_ =#{hid}
+    </delete>
+</mapper>
