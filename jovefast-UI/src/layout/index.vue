@@ -1,17 +1,19 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
-    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
-    <sidebar v-if="!sidebar.hide" class="sidebar-container" />
-    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
-        <navbar />
-        <tags-view v-if="needTagsView" />
+    <el-scrollbar>
+      <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+      <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
+      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
+        <div :class="{'fixed-header':fixedHeader}">
+          <navbar/>
+          <tags-view v-if="needTagsView"/>
+        </div>
+        <app-main/>
+        <right-panel>
+          <settings/>
+        </right-panel>
       </div>
-      <app-main />
-      <right-panel>
-        <settings />
-      </right-panel>
-    </div>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -35,15 +37,15 @@ export default {
   },
   mixins: [ResizeMixin],
   mounted() {
-  // 加载水印
-  watermark.load({
-        watermark_txt:"水印",  //水印的内容
-        watermark_color:'#5579ee',            //水印字体颜色
-        watermark_fontsize:'16px',          //水印字体大小
-        watermark_alpha:0.4,               //水印透明度，要求设置在大于等于0.005
-        watermark_angle:45,                 //水印倾斜度数
-        watermark_width:300,                //水印宽度
-        watermark_height:300,               //水印长度
+    // 加载水印
+    watermark.load({
+      watermark_txt:"xxx公司",  //水印的内容
+      watermark_color:'#5579ee',            //水印字体颜色
+      watermark_fontsize:'16px',          //水印字体大小
+      watermark_alpha:0.4,               //水印透明度，要求设置在大于等于0.005
+      watermark_angle:45,                 //水印倾斜度数
+      watermark_width:300,                //水印宽度
+      watermark_height:300,               //水印长度
     });
   },
   computed: {
@@ -76,49 +78,56 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/assets/styles/mixin.scss";
-  @import "~@/assets/styles/variables.scss";
+@import "~@/assets/styles/mixin.scss";
+@import "~@/assets/styles/variables.scss";
 
-  .app-wrapper {
-    @include clearfix;
-    position: relative;
+.app-wrapper {
+  @include clearfix;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  .el-scrollbar{
     height: 100%;
-    width: 100%;
-
-    &.mobile.openSidebar {
-      position: fixed;
-      top: 0;
-    }
   }
 
-  .drawer-bg {
-    background: #000;
-    opacity: 0.3;
-    width: 100%;
-    top: 0;
-    height: 100%;
-    position: absolute;
-    z-index: 999;
+  ::v-deep .el-scrollbar__wrap {
+    overflow-x: hidden;
   }
 
-  .fixed-header {
+  &.mobile.openSidebar {
     position: fixed;
     top: 0;
-    right: 0;
-    z-index: 9;
-    width: calc(100% - #{$base-sidebar-width});
-    transition: width 0.28s;
   }
+}
 
-  .hideSidebar .fixed-header {
-    width: calc(100% - 54px);
-  }
+.drawer-bg {
+  background: #000;
+  opacity: 0.3;
+  width: 100%;
+  top: 0;
+  height: 100%;
+  position: absolute;
+  z-index: 999;
+}
 
-  .sidebarHide .fixed-header {
-    width: 100%;
-  }
+.fixed-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9;
+  width: calc(100% - #{$base-sidebar-width});
+  transition: width 0.28s;
+}
 
-  .mobile .fixed-header {
-    width: 100%;
-  }
+.hideSidebar .fixed-header {
+  width: calc(100% - 54px);
+}
+
+.sidebarHide .fixed-header {
+  width: 100%;
+}
+
+.mobile .fixed-header {
+  width: 100%;
+}
 </style>
