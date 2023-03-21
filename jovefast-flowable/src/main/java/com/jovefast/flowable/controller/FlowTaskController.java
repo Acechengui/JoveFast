@@ -87,15 +87,32 @@ public class FlowTaskController extends BaseController {
     @ApiOperation(value = "获取流程变量", response = FlowTaskDto.class)
     @GetMapping(value = "/processVariables/{taskId}")
     public AjaxResult processVariables(@ApiParam(value = "流程任务Id") @PathVariable(value = "taskId") String taskId) {
-        return flowTaskService.processVariables(taskId);
+        return AjaxResult.success(flowTaskService.processVariables(taskId));
     }
 
     @ApiOperation(value = "审批任务")
     @PostMapping(value = "/complete")
     @RequiresPermissions("flowable:task:complete")
     @Log(title = "审批任务", businessType = BusinessType.UPDATE)
-    public AjaxResult complete(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.complete(flowTaskVo);
+    public AjaxResult complete(@RequestBody FlowTaskVo params) {
+        if(flowTaskService.complete(params)){
+            return AjaxResult.success();
+        }
+        return AjaxResult.error();
+    }
+
+    @ApiOperation(value = "批量审批任务")
+    @RequestMapping(value = "/complete/batch/{ids}")
+    @RequiresPermissions("flowable:task:batchhandle")
+    @Log(title = "批量审批任务", businessType = BusinessType.BATCH)
+    public AjaxResult batchComplete(@PathVariable String[] ids) {
+        if(ids.length >10){
+            return AjaxResult.error("批量审批最多不能超过10条");
+        }
+        if(flowTaskService.batchComplete(ids)){
+            return AjaxResult.success();
+        }
+        return AjaxResult.error();
     }
 
     @ApiOperation(value = "驳回任务")
@@ -170,7 +187,7 @@ public class FlowTaskController extends BaseController {
     @ApiOperation(value = "获取下一节点")
     @PostMapping(value = "/nextFlowNode")
     public AjaxResult getNextFlowNode(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.getNextFlowNode(flowTaskVo);
+        return AjaxResult.success(flowTaskService.getNextFlowNode(flowTaskVo));
     }
 
     /**

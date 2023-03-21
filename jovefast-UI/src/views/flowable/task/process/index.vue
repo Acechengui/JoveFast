@@ -14,8 +14,8 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          :default-time="['00:00:00', '23:59:59']"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -39,29 +39,33 @@
           v-hasPermi="['flowable:deployment:add']"
         >新增流程</el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+        :columns="columns"
+      ></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="myProcessList" border>
-      <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程类别" align="center" prop="category" width="100px" />
-      <el-table-column label="流程版本" align="center" width="80px">
+      <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true" v-if="columns[0].visible"/>
+      <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true" v-if="columns[1].visible"/>
+      <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true" v-if="columns[2].visible"/>
+      <el-table-column label="流程类别" align="center" prop="category" width="100px" v-if="columns[3].visible"/>
+      <el-table-column label="流程版本" align="center" width="80px" v-if="columns[4].visible">
         <template slot-scope="scope">
           <el-tag size="medium" >v{{ scope.row.procDefVersion }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="提交时间" align="center" prop="createTime" width="180"/>
-      <el-table-column label="流程状态" align="center" width="100">
+      <el-table-column label="提交时间" align="center" prop="createTime" width="180" v-if="columns[5].visible"/>
+      <el-table-column label="流程状态" align="center" width="100" v-if="columns[6].visible">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.finishTime == null" size="mini">进行中</el-tag>
           <el-tag type="success" v-if="scope.row.finishTime != null" size="mini">已完成</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="耗时" align="center" prop="duration" width="180"/>
-      <el-table-column label="当前节点" align="center" prop="taskName"/>
-      <el-table-column label="办理" align="center">
+      <el-table-column label="耗时" align="center" prop="duration" width="180" v-if="columns[7].visible"/>
+      <el-table-column label="当前节点" align="center" prop="taskName" v-if="columns[8].visible"/>
+      <el-table-column label="办理" align="center" v-if="columns[9].visible">
         <template slot-scope="scope">
           <label v-if="scope.row.assigneeName">{{scope.row.assigneeName}} <el-tag type="info" size="mini" v-if="scope.row.deptName">{{scope.row.deptName}}</el-tag></label>
           <label v-if="scope.row.candidate">{{scope.row.candidate}}</label>
@@ -209,6 +213,19 @@ export default {
         parentDeploymentId: null,
         engineVersion: null
       },
+      // 列信息
+      columns: [
+        { key: 0, label: `流程编号`, visible: false },
+        { key: 1, label: `流程标题`, visible: true },
+        { key: 2, label: `流程名称`, visible: true },
+        { key: 3, label: `流程类别`, visible: true },
+        { key: 4, label: `流程版本`, visible: true },
+        { key: 5, label: `提交时间`, visible: true },
+        { key: 6, label: `流程状态`, visible: true },
+        { key: 7, label: `耗时`, visible: true },
+        { key: 8, label: `当前节点`, visible: true },
+        { key: 9, label: `办理`, visible: true }
+      ],
       // 表单参数
       form: {},
       // 表单校验
@@ -323,7 +340,7 @@ export default {
           deployId: row.deploymentId,
           procDefId: row.id,
           finished: true
-          }
+        }
       })
     },
     /**  取消流程申请 */
@@ -344,7 +361,7 @@ export default {
           deployId: row.deployId,
           taskId: row.taskId,
           finished: false
-      }})
+        }})
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -358,7 +375,6 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      // const ids = row.procInsId || this.ids;// 暂不支持删除多个流程
       const ids = row.procInsId;
       this.$confirm('是否确认删除流程定义编号为"' + ids + '"的数据项?', "警告", {
         confirmButtonText: "确定",

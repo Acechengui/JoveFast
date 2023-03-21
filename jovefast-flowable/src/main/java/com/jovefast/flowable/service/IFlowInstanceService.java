@@ -1,7 +1,5 @@
 package com.jovefast.flowable.service;
 
-import com.jovefast.common.core.web.domain.AjaxResult;
-import com.jovefast.flowable.domain.vo.FlowTaskVo;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.task.api.Task;
 
@@ -46,5 +44,5 @@ public interface IFlowInstanceService {
      * @param variables 流程变量
      * @return
      */
-    boolean startProcessInstanceById(String procDefId, Map<String, Object> variables);
+    boolean startProcessInstanceById(String procDefId,Map<String, Object> variables);
 }

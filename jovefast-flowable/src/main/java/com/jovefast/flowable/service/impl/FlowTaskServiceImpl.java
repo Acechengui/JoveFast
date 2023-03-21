@@ -13,6 +13,7 @@ import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.flowable.common.constant.ProcessConstants;
 import com.jovefast.flowable.common.enums.FlowComment;
 import com.jovefast.flowable.domain.SysForm;
+import com.jovefast.flowable.domain.SysProcessTitle;
 import com.jovefast.flowable.domain.dto.FlowCommentDto;
 import com.jovefast.flowable.domain.dto.FlowNextDto;
 import com.jovefast.flowable.domain.dto.FlowTaskDto;
@@ -22,6 +23,7 @@ import com.jovefast.flowable.factory.FlowServiceFactory;
 import com.jovefast.flowable.flow.CustomProcessDiagramGenerator;
 import com.jovefast.flowable.flow.FindNextNodeUtil;
 import com.jovefast.flowable.flow.FlowableUtils;
+import com.jovefast.flowable.mapper.FlowDeployMapper;
 import com.jovefast.flowable.service.IFlowTaskService;
 import com.jovefast.flowable.service.ISysDeployFormService;
 import com.jovefast.system.api.RemoteUserService;
@@ -50,6 +52,7 @@ import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,8 +76,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     @Resource
     private ISysDeployFormService sysInstanceFormService;
 
+    @Autowired
+    private FlowDeployMapper flowDeployMapper;
+
     /**
-     * 完成任务
+     * 单个完成任务
      *
      * @param taskVo 请求实体参数
      */
@@ -95,6 +101,20 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             //更新全局变量
             taskService.setVariables(taskVo.getTaskId(),taskVo.getVariables());
             taskService.complete(taskVo.getTaskId(), taskVo.getValues());
+        }
+        return true;
+    }
+
+    /**
+     * 批量完成任务
+     *
+     * @param taskIds 请求实体参数
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Boolean batchComplete(String[] taskIds) {
+        for (String ts:taskIds) {
+            taskService.complete(ts);
         }
         return true;
     }
@@ -348,7 +368,6 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
     @Override
     public void deleteTask(FlowTaskVo flowTaskVo) {
-        // todo 待确认删除任务是物理删除任务 还是逻辑删除，让这个任务直接通过？
         taskService.deleteTask(flowTaskVo.getTaskId(), flowTaskVo.getComment());
     }
 
@@ -430,10 +449,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setCreateTime(hisIns.getStartTime());
             flowTask.setFinishTime(hisIns.getEndTime());
             flowTask.setProcInsId(hisIns.getId());
-
-            Object processTitle =runtimeService.getVariables(hisIns.getId()).get("processTitle");
-            if(ObjectUtils.allNotNull(processTitle)){
-                flowTask.setProcessTitle(String.valueOf(processTitle));
+            SysProcessTitle pt = flowDeployMapper.selectSysProcessTitle(hisIns.getId());
+            if(pt !=null){
+                flowTask.setProcessTitle(pt.getProcessTitle());
             }
             // 计算耗时
             if (Objects.nonNull(hisIns.getEndTime())) {
@@ -585,9 +603,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setExecutionId(task.getExecutionId());
             flowTask.setTaskName(task.getName());
             //获取流程标题
-            Object processTitle = task.getProcessVariables().get("processTitle");
-            if(ObjectUtils.allNotNull(processTitle)){
-                flowTask.setProcessTitle(String.valueOf(processTitle));
+            SysProcessTitle pt = flowDeployMapper.selectSysProcessTitle(task.getProcessInstanceId());
+            if(pt!=null){
+                flowTask.setProcessTitle(pt.getProcessTitle());
             }
             // 流程定义信息
             ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
@@ -651,13 +669,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setTaskDefKey(histTask.getTaskDefinitionKey());
             flowTask.setTaskName(histTask.getName());
             flowTask.setExecutionId(histTask.getExecutionId());
-
             //获取流程标题
-            Object processTitle = histTask.getProcessVariables().get("processTitle");
-            if(ObjectUtils.allNotNull(processTitle)){
-                flowTask.setProcessTitle(String.valueOf(processTitle));
+            SysProcessTitle pt = flowDeployMapper.selectSysProcessTitle(histTask.getProcessInstanceId());
+            if(pt!=null){
+                flowTask.setProcessTitle(pt.getProcessTitle());
             }
-
             // 流程定义信息
             ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
                     .processDefinitionId(histTask.getProcessDefinitionId())

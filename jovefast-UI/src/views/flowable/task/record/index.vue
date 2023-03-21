@@ -596,14 +596,15 @@ export default {
             type: 'success',
             message: '设置的流程标题为:' + value
           });
-          //设置一个流程标题(流程变量)
-          data.valData.processTitle = value;
+
           const variables = data.valData;
           const formData = data.formData;
           if (this.taskForm.procDefId) {
             variables.variables = formData;
+            //设置一个流程标题
+            variables.processTitle=value;
             // 启动流程并将表单数据加入流程变量
-            definitionStart(this.taskForm.procDefId, JSON.stringify(variables)).then(res => {
+            definitionStart(this.taskForm.procDefId,JSON.stringify(variables)).then(res => {
               this.$modal.msgSuccess(res.msg);
               formData.disabled = true;
               formData.formBtns = false;

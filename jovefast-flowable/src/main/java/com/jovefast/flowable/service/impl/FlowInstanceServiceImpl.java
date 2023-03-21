@@ -2,13 +2,15 @@ package com.jovefast.flowable.service.impl;
 
 
 import com.jovefast.common.security.utils.SecurityUtils;
-import com.jovefast.flowable.domain.vo.FlowTaskVo;
 import com.jovefast.flowable.factory.FlowServiceFactory;
+import com.jovefast.flowable.mapper.FlowDeployMapper;
 import com.jovefast.flowable.service.IFlowInstanceService;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +24,14 @@ import java.util.Objects;
  * @author Acecehgnui
  */
 @Service
-@Slf4j
 public class FlowInstanceServiceImpl extends FlowServiceFactory implements IFlowInstanceService {
 
+    @Autowired
+    private FlowDeployMapper flowDeployMapper;
 
     @Override
     public List<Task> queryListByInstanceId(String instanceId) {
-        List<Task> list = taskService.createTaskQuery().processInstanceId(instanceId).active().list();
-        return list;
+        return taskService.createTaskQuery().processInstanceId(instanceId).active().list();
     }
 
     /**
@@ -64,11 +66,15 @@ public class FlowInstanceServiceImpl extends FlowServiceFactory implements IFlow
         // 查询历史数据
         HistoricProcessInstance historicProcessInstance = getHistoricProcessInstanceById(instanceId);
         if (historicProcessInstance.getEndTime() != null) {
+            flowDeployMapper.deleteSysProcessTitleByProcInsId(historicProcessInstance.getId());
             historyService.deleteHistoricProcessInstance(historicProcessInstance.getId());
             return;
         }
+        //删除流程标题
+        flowDeployMapper.deleteSysProcessTitleByProcInsId(historicProcessInstance.getId());
         // 删除流程实例
         runtimeService.deleteProcessInstance(instanceId, deleteReason);
+
         // 删除历史流程实例
         historyService.deleteHistoricProcessInstance(instanceId);
     }
@@ -97,17 +103,13 @@ public class FlowInstanceServiceImpl extends FlowServiceFactory implements IFlow
      * @return
      */
     @Override
-    public boolean startProcessInstanceById(String procDefId, Map<String, Object> variables) {
-        try {
-            // 设置流程发起人Id到流程中
-            Long userId = SecurityUtils.getLoginUser().getUserid();
-            variables.put("initiator",userId);
-            variables.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);
-            runtimeService.startProcessInstanceById(procDefId, variables);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    @Transactional
+    public boolean startProcessInstanceById(String procDefId,Map<String, Object> variables) {
+        // 设置流程发起人Id到流程中
+        Long userId = SecurityUtils.getLoginUser().getUserid();
+        variables.put("initiator",userId);
+        variables.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);
+        ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
+        return ObjectUtils.allNotNull(processInstance);
     }
 }

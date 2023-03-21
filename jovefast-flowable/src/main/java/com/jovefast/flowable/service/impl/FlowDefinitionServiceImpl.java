@@ -8,6 +8,7 @@ import com.jovefast.common.core.utils.DateUtils;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.flowable.common.constant.ProcessConstants;
 import com.jovefast.flowable.common.enums.FlowComment;
+import com.jovefast.flowable.domain.SysProcessTitle;
 import com.jovefast.flowable.domain.dto.FlowProcDefDto;
 import com.jovefast.flowable.mapper.FlowDeployMapper;
 import com.jovefast.flowable.mapper.SysDeployFormMapper;
@@ -23,7 +24,6 @@ import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.image.impl.DefaultProcessDiagramGenerator;
 import org.flowable.task.api.Task;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -146,6 +146,13 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             identityService.setAuthenticatedUserId(sysUser.getUserId().toString());
             variables.put(ProcessConstants.PROCESS_INITIATOR,"");
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
+            /**
+             * 将流程标题信息存入
+             */
+            int i = flowDeployMapper.insertSysProcessTitle(new SysProcessTitle(processInstance.getId(),String.valueOf(variables.get("processTitle"))));
+            if(i <=0 ){
+                throw new CheckedException("流程标题添加失败");
+            }
             // 给第一步申请人节点设置任务执行人和意见 todo:第一个节点不设置为申请人节点有点问题
             Task task = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
             if (Objects.nonNull(task)) {

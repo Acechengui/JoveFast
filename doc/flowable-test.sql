@@ -1235,4 +1235,15 @@ CREATE TABLE `sys_task_form`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '流程任务关联表单' ROW_FORMAT = DYNAMIC;
 
+-- ----------------------------
+-- Table structure for sys_process_title
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_process_title`;
+CREATE TABLE `sys_process_title`  (
+                                      `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+                                      `proc_ins_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '流程实例ID',
+                                      `process_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '流程标题',
+                                      PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
 SET FOREIGN_KEY_CHECKS = 1;

@@ -17,11 +17,17 @@ import java.util.Map;
 public interface IFlowTaskService {
 
     /**
-     * 审批任务
+     * 单个审批任务
      *
      * @param task 请求实体参数
      */
     Boolean complete(FlowTaskVo task);
+
+    /**
+     * 批量审批任务
+     * @param taskIds 请求参数
+     */
+    Boolean batchComplete(String[] taskIds);
 
     /**
      * 驳回任务

@@ -4,7 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jovefast.flowable.mapper.FlowDeployMapper">
 
-
     <select id="selectDeployList" resultType="FlowProcDefDto">
         SELECT
         rp.id_ as id,
@@ -14,10 +13,14 @@
         rp.key_ as flowKey,
         rp.version_ as version,
         rp.suspension_state_ as suspensionState,
-        rd.deploy_time_  as deploymentTime
+        rd.deploy_time_  as deploymentTime,
+        sf.form_name as formName,
+        sf.form_id as formId
         FROM
         ACT_RE_PROCDEF rp
         LEFT JOIN ACT_RE_DEPLOYMENT rd ON rp.deployment_id_ = rd.id_
+        LEFT JOIN sys_deploy_form df ON df.deploy_id = rd.id_
+        LEFT JOIN sys_form sf ON sf.form_id = df.form_id
         <where>
             <if test="name != null and name != ''">
                 and rd.name_ like concat('%', #{name}, '%')
@@ -26,5 +29,18 @@
         order by rd.deploy_time_ desc
     </select>
 
+    <select id="selectSysProcessTitle" resultType="SysProcessTitle" parameterType="string">
+        SELECT id,proc_ins_id AS procInsId,process_title AS processTitle FROM sys_process_title WHERE proc_ins_id=#{procInsId}
+    </select>
+
+    <insert id="insertSysProcessTitle" parameterType="SysProcessTitle">
+        INSERT INTO sys_process_title (proc_ins_id, process_title)
+        VALUES
+            (#{procInsId}, #{processTitle} )
+    </insert>
+
+    <delete id="deleteSysProcessTitleByProcInsId" parameterType="string">
+        delete from sys_process_title where proc_ins_id=#{procInsId}
+    </delete>
 
 </mapper>
