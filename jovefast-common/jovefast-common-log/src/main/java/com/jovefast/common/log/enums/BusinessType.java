@@ -2,7 +2,7 @@ package com.jovefast.common.log.enums;
 
 /**
  * 业务操作类型
- * 
+ *
  * @author Acechengui
  */
 public enum BusinessType
@@ -56,4 +56,8 @@ public enum BusinessType
      * 清空数据
      */
     CLEAN,
+    /**
+     * 批处理
+     */
+    BATCH,
 }
