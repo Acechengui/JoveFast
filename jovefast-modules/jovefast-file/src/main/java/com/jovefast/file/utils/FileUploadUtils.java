@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Objects;
+
+import com.jovefast.common.core.exception.file.FileException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 import com.jovefast.common.core.exception.file.FileNameLengthLimitExceededException;
@@ -17,7 +19,7 @@ import com.jovefast.common.core.utils.uuid.Seq;
 
 /**
  * 文件上传工具类
- * 
+ *
  * @author Acechengui
  */
 public class FileUploadUtils
@@ -45,6 +47,9 @@ public class FileUploadUtils
         try
         {
             return upload(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+        }
+        catch (FileException fe){
+            throw new IOException(fe.getDefaultMessage(), fe);
         }
         catch (Exception e)
         {

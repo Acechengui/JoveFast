@@ -2,7 +2,7 @@ package com.jovefast.common.core.exception.file;
 
 /**
  * 文件名大小限制异常类
- * 
+ *
  * @author Acechengui
  */
 public class FileSizeLimitExceededException extends FileException
@@ -11,6 +11,6 @@ public class FileSizeLimitExceededException extends FileException
 
     public FileSizeLimitExceededException(long defaultMaxSize)
     {
-        super("upload.exceed.maxSize", new Object[] { defaultMaxSize });
+        super("upload.exceed.maxSize", new Object[] { defaultMaxSize }, "the filesize is too large");
     }
 }
