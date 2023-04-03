@@ -2,7 +2,6 @@ package com.jovefast.common.swagger.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 import springfox.documentation.spring.web.plugins.WebFluxRequestHandlerProvider;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
  *
  * @author Acechengui
  */
-@Component
 public class SwaggerBeanPostProcessor implements BeanPostProcessor
 {
     @Override

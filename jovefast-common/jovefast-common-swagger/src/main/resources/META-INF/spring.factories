@@ -1,4 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.jovefast.common.swagger.config.SwaggerAutoConfiguration,\
-  com.jovefast.common.swagger.config.SwaggerWebConfiguration,\
-  com.jovefast.common.swagger.config.SwaggerBeanPostProcessor
+# com.jovefast.common.swagger.config.SwaggerAutoConfiguration
+# com.jovefast.common.swagger.config.SwaggerWebConfiguration
+# com.jovefast.common.swagger.config.SwaggerBeanPostProcessor

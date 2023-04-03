@@ -1,15 +1,13 @@
 package com.jovefast.common.swagger.config;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * swagger 资源映射路径
- * 
+ *
  * @author Acechengui
  */
-@Configuration
 public class SwaggerWebConfiguration implements WebMvcConfigurer
 {
     @Override
