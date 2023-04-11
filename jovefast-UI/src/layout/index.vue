@@ -1,9 +1,9 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
-    <el-scrollbar>
-      <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
-      <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
-      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
+    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+    <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
+    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
+      <el-scrollbar>
         <div :class="{'fixed-header':fixedHeader}">
           <navbar/>
           <tags-view v-if="needTagsView"/>
@@ -12,13 +12,12 @@
         <right-panel>
           <settings/>
         </right-panel>
-      </div>
-    </el-scrollbar>
+      </el-scrollbar>
+    </div>
   </div>
 </template>
 
 <script>
-import watermark from "watermark-dom";//水印
 import RightPanel from '@/components/RightPanel'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
@@ -36,18 +35,6 @@ export default {
     TagsView
   },
   mixins: [ResizeMixin],
-  mounted() {
-    // 加载水印
-    watermark.load({
-      watermark_txt:"xxx公司",  //水印的内容
-      watermark_color:'#5579ee',            //水印字体颜色
-      watermark_fontsize:'16px',          //水印字体大小
-      watermark_alpha:0.4,               //水印透明度，要求设置在大于等于0.005
-      watermark_angle:45,                 //水印倾斜度数
-      watermark_width:300,                //水印宽度
-      watermark_height:300,               //水印长度
-    });
-  },
   computed: {
     ...mapState({
       theme: state => state.settings.theme,
@@ -86,6 +73,7 @@ export default {
   position: relative;
   height: 100%;
   width: 100%;
+
   .el-scrollbar{
     height: 100%;
   }
