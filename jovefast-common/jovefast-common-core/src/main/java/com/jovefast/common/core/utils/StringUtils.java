@@ -1,13 +1,13 @@
 package com.jovefast.common.core.utils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
+import org.springframework.lang.Nullable;
 import org.springframework.util.AntPathMatcher;
 import com.jovefast.common.core.constant.Constants;
 import com.jovefast.common.core.text.StrFormatter;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 字符串工具类
@@ -16,6 +16,9 @@ import com.jovefast.common.core.text.StrFormatter;
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils
 {
+
+    private static final String[] EMPTY_STRING_ARRAY = {};
+
     /** 空字符串 */
     private static final String NULLSTR = "";
 
@@ -454,7 +457,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
     }
 
     /**
-     * 判断给定的set列表中是否包含数组array 判断给定的数组array中是否包含给定的元素value
+     * 判断给定的collection列表中是否包含数组array 判断给定的数组array中是否包含给定的元素value
      *
      * @param collection 给定的集合
      * @param array 给定的数组
@@ -574,5 +577,156 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
             }
         }
         return sb.toString();
+    }
+
+    public static TimeZone parseTimeZoneString(String timeZoneString) {
+        TimeZone timeZone = TimeZone.getTimeZone(timeZoneString);
+        if ("GMT".equals(timeZone.getID()) && !timeZoneString.startsWith("GMT")) {
+            // We don't want that GMT fallback...
+            throw new IllegalArgumentException("Invalid time zone specification '" + timeZoneString + "'");
+        }
+        return timeZone;
+    }
+
+    @Nullable
+    public static Locale parseLocaleString(String localeString) {
+        return parseLocaleTokens(localeString, tokenizeLocaleSource(localeString));
+    }
+
+    @Nullable
+    private static Locale parseLocaleTokens(String localeString, String[] tokens) {
+        String language = (tokens.length > 0 ? tokens[0] : "");
+        String country = (tokens.length > 1 ? tokens[1] : "");
+        validateLocalePart(language);
+        validateLocalePart(country);
+
+        String variant = "";
+        if (tokens.length > 2) {
+            // There is definitely a variant, and it is everything after the country
+            // code sans the separator between the country code and the variant.
+            int endIndexOfCountryCode = localeString.indexOf(country, language.length()) + country.length();
+            // Strip off any leading '_' and whitespace, what's left is the variant.
+            variant = trimLeadingWhitespace(localeString.substring(endIndexOfCountryCode));
+            if (variant.startsWith("_")) {
+                variant = trimLeadingCharacter(variant, '_');
+            }
+        }
+
+        if (variant.isEmpty() && country.startsWith("#")) {
+            variant = country;
+            country = "";
+        }
+
+        return (language.length() > 0 ? new Locale(language, country, variant) : null);
+    }
+
+    private static void validateLocalePart(String localePart) {
+        for (int i = 0; i < localePart.length(); i++) {
+            char ch = localePart.charAt(i);
+            if (ch != ' ' && ch != '_' && ch != '-' && ch != '#' && !Character.isLetterOrDigit(ch)) {
+                throw new IllegalArgumentException(
+                        "Locale part \"" + localePart + "\" contains invalid characters");
+            }
+        }
+    }
+
+    /**
+     * Trim all occurrences of the supplied leading character from the given {@code String}.
+     * @param str the {@code String} to check
+     * @param leadingCharacter the leading character to be trimmed
+     * @return the trimmed {@code String}
+     */
+    public static String trimLeadingCharacter(String str, char leadingCharacter) {
+        if (!hasLength(str)) {
+            return str;
+        }
+
+        int beginIdx = 0;
+        while (beginIdx < str.length() && leadingCharacter == str.charAt(beginIdx)) {
+            beginIdx++;
+        }
+        return str.substring(beginIdx);
+    }
+
+    /**
+     * Check that the given {@code String} is neither {@code null} nor of length 0.
+     * <p>Note: this method returns {@code true} for a {@code String} that
+     * purely consists of whitespace.
+     * @param str the {@code String} to check (may be {@code null})
+     * @return {@code true} if the {@code String} is not {@code null} and has length
+     */
+    public static boolean hasLength(@Nullable String str) {
+        return (str != null && !str.isEmpty());
+    }
+
+    private static String[] tokenizeLocaleSource(String localeSource) {
+        return tokenizeToStringArray(localeSource, "_ ", false, false);
+    }
+
+    /**
+     * Tokenize the given {@code String} into a {@code String} array via a
+     * {@link StringTokenizer}.
+     * <p>The given {@code delimiters} string can consist of any number of
+     * delimiter characters. Each of those characters can be used to separate
+     * tokens. A delimiter is always a single character; for multi-character
+     * @param str the {@code String} to tokenize (potentially {@code null} or empty)
+     * @param delimiters the delimiter characters, assembled as a {@code String}
+     * (each of the characters is individually considered as a delimiter)
+     * @param trimTokens trim the tokens via {@link String#trim()}
+     * @param ignoreEmptyTokens omit empty tokens from the result array
+     * (only applies to tokens that are empty after trimming; StringTokenizer
+     * will not consider subsequent delimiters as token in the first place).
+     * @return an array of the tokens
+     * @see java.util.StringTokenizer
+     * @see String#trim()
+     */
+    public static String[] tokenizeToStringArray(
+            @Nullable String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
+
+        if (str == null) {
+            return EMPTY_STRING_ARRAY;
+        }
+
+        StringTokenizer st = new StringTokenizer(str, delimiters);
+        List<String> tokens = new ArrayList<>();
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            if (trimTokens) {
+                token = token.trim();
+            }
+            if (!ignoreEmptyTokens || token.length() > 0) {
+                tokens.add(token);
+            }
+        }
+        return toStringArray(tokens);
+    }
+
+    /**
+     * Copy the given {@link Collection} into a {@code String} array.
+     * <p>The {@code Collection} must contain {@code String} elements only.
+     * @param collection the {@code Collection} to copy
+     * (potentially {@code null} or empty)
+     * @return the resulting {@code String} array
+     */
+    public static String[] toStringArray(@Nullable Collection<String> collection) {
+        return (!CollectionUtils.isEmpty(collection) ? collection.toArray(EMPTY_STRING_ARRAY) : EMPTY_STRING_ARRAY);
+    }
+
+    /**
+     * Trim leading whitespace from the given {@code String}.
+     * @param str the {@code String} to check
+     * @return the trimmed {@code String}
+     * @see java.lang.Character#isWhitespace
+     */
+    public static String trimLeadingWhitespace(String str) {
+        if (!hasLength(str)) {
+            return str;
+        }
+
+        int beginIdx = 0;
+        while (beginIdx < str.length() && Character.isWhitespace(str.charAt(beginIdx))) {
+            beginIdx++;
+        }
+        return str.substring(beginIdx);
     }
 }

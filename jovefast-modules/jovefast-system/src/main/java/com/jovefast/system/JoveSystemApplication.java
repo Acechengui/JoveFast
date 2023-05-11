@@ -14,7 +14,7 @@ import com.jovefast.common.swagger.annotation.EnableCustomSwagger2;
 @EnableCustomConfig
 @EnableCustomSwagger2
 @EnableFastFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.jovefast"})
 public class JoveSystemApplication
 {
     public static void main(String[] args)

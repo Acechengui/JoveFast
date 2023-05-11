@@ -1,13 +1,15 @@
 <template>
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">xxxx-微服务平台 <el-tag type="danger">v3.6.2</el-tag></h3>
+      <lang-select class="set-language" />
+      <h3 class="title">{{ $t('login.title') }} <el-tag type="danger">v3.6.2</el-tag></h3>
+      <h5 class="tip">{{ $t('login.tip') }}<el-tag type="success">{{ $t('login.google') }}</el-tag><el-tag type="warning">{{ $t('login.firefox') }}</el-tag><el-tag type="info">Edge</el-tag></h5>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
           type="text"
           auto-complete="off"
-          placeholder="账户"
+          :placeholder="$t('login.username')"
         >
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
@@ -17,7 +19,7 @@
           v-model="loginForm.password"
           type="password"
           auto-complete="off"
-          placeholder="密码"
+          :placeholder="$t('login.password')"
           @keyup.enter.native="handleLogin"
         >
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
@@ -27,7 +29,7 @@
         <el-input
           v-model="loginForm.code"
           auto-complete="off"
-          placeholder="验证码"
+          :placeholder="$t('login.code')"
           style="width: 63%"
           @keyup.enter.native="handleLogin"
         >
@@ -37,7 +39,7 @@
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
+      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">{{ $t('login.rememberMe') }}</el-checkbox>
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
@@ -46,17 +48,17 @@
           style="width:100%;"
           @click.native.prevent="handleLogin"
         >
-          <span v-if="!loading">登 录</span>
-          <span v-else>登 录 中...</span>
+          <span v-if="!loading">{{ $t('login.logIn') }}</span>
+          <span v-else>{{ $t('login.loginStatus') }}</span>
         </el-button>
         <div style="float: right;" v-if="register">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
+          <router-link class="link-type" :to="'/register'">{{ $t('login.register') }}</router-link>
         </div>
       </el-form-item>
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2022-2023 xxx All Rights Reserved.</span>
+      <span>Copyright © 2022-2023 jovepcb All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -65,9 +67,11 @@
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
+import LangSelect from '@/components/LangSelect'
 
 export default {
   name: "Login",
+  components: { LangSelect },
   data() {
     return {
       codeUrl: "",
@@ -80,18 +84,18 @@ export default {
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", message: "请输入您的账号" }
+          { required: true, trigger: "blur"}
         ],
         password: [
-          { required: true, trigger: "blur", message: "请输入您的密码" }
+          { required: true, trigger: "blur"}
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        code: [{ required: true, trigger: "change"}]
       },
       loading: false,
       // 验证码开关
       captchaOnOff: true,
       // 注册开关
-      register: false,
+      register: true,
       redirect: undefined
     };
   },
@@ -150,12 +154,17 @@ export default {
           });
         }
       });
-    }
+    },
   }
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+.tip {
+  margin: 0px auto 8px auto;
+  text-align: center;
+  color: #707070;
+}
 .login {
   display: flex;
   justify-content: center;

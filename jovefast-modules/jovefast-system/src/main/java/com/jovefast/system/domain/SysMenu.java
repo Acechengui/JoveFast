@@ -51,6 +51,9 @@ public class SysMenu extends BaseEntity
     /** 是否新窗口打开（0是 1否） */
     private String isBlank;
 
+    /** 国际化字典ID */
+    private String dictionaryId;
+
     /** 类型（M目录 C菜单 F按钮） */
     private String menuType;
 
@@ -88,6 +91,14 @@ public class SysMenu extends BaseEntity
 
     public String getIsBlank() {
         return isBlank;
+    }
+
+    public String getDictionaryId() {
+        return dictionaryId;
+    }
+
+    public void setDictionaryId(String dictionaryId) {
+        this.dictionaryId = dictionaryId;
     }
 
     public void setIsBlank(String isBlank) {

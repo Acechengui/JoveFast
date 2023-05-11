@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import Cookies from 'js-cookie'
 import Print from 'vue-print-nb'//打印功能
+import i18n from './lang' //国际化
 
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'

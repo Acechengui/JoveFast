@@ -18,8 +18,9 @@
         >
           <item
             :icon="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"
-            :title="onlyOneChild.meta.title"
+            :title="rotueTitle(onlyOneChild.meta.dictionaryId)"
           />
+          <!--  :title="onlyOneChild.meta.title"  -->
         </el-menu-item>
       </app-link>
     </template>
@@ -34,8 +35,9 @@
         <item
           v-if="item.meta"
           :icon="item.meta && item.meta.icon"
-          :title="item.meta.title"
+          :title="rotueTitle(item.meta.dictionaryId)"
         />
+        <!-- :title="item.meta.title" -->
       </template>
       <sidebar-item
         v-for="(child, index) in item.children"
@@ -80,6 +82,13 @@ export default {
     return {};
   },
   methods: {
+    rotueTitle(item) {
+      const name=item;
+      if(this.$t('router.'+name)){
+        return this.$t('router.'+name)
+      }
+      return item;
+    },
     hasOneShowingChild(children = [], parent) {
       if (!children) {
         children = [];

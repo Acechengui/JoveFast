@@ -32,6 +32,9 @@ public class MetaVo
     /** 是否新窗口打开（0是 1否） */
     private String isBlank;
 
+    /** 国际化字典ID */
+    private String dictionaryId;
+
     public MetaVo()
     {
     }
@@ -56,7 +59,7 @@ public class MetaVo
         this.link = link;
     }
 
-    public MetaVo(String title, String icon, boolean noCache, String link ,String isBlank)
+    public MetaVo(String title, String icon, boolean noCache, String link ,String isBlank,String dictionaryDd)
     {
         this.title = title;
         this.icon = icon;
@@ -66,6 +69,15 @@ public class MetaVo
             this.link = link;
         }
         this.isBlank = isBlank;
+        this.dictionaryId = dictionaryDd;
+    }
+
+    public String getDictionaryId() {
+        return dictionaryId;
+    }
+
+    public void setDictionaryId(String dictionaryId) {
+        this.dictionaryId = dictionaryId;
     }
 
     public String getIsBlank() {

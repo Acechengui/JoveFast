@@ -17,6 +17,7 @@
         <module>jovefast-common-datascope</module>
 		<module>jovefast-common-datasource</module>
         <module>jovefast-common-seata</module>
+        <module>jovefast-common-i18n</module>
     </modules>
 
     <artifactId>jovefast-common</artifactId>

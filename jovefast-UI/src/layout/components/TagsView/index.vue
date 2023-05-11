@@ -13,17 +13,17 @@
         @click.middle.native="!isAffix(tag)?closeSelectedTag(tag):''"
         @contextmenu.prevent.native="openMenu(tag,$event)"
       >
-        {{ tag.title }}
+        {{rotueTitle(tag.meta.dictionaryId === undefined ? tag.title:tag.meta.dictionaryId)}}
         <span v-if="!isAffix(tag)" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
     </scroll-pane>
     <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
-      <li @click="refreshSelectedTag(selectedTag)"><i class="el-icon-refresh-right"></i> 刷新页面</li>
-      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)"><i class="el-icon-close"></i> 关闭当前</li>
-      <li @click="closeOthersTags"><i class="el-icon-circle-close"></i> 关闭其他</li>
-      <li v-if="!isFirstView()" @click="closeLeftTags"><i class="el-icon-back"></i> 关闭左侧</li>
-      <li v-if="!isLastView()" @click="closeRightTags"><i class="el-icon-right"></i> 关闭右侧</li>
-      <li @click="closeAllTags(selectedTag)"><i class="el-icon-circle-close"></i> 全部关闭</li>
+      <li @click="refreshSelectedTag(selectedTag)"><i class="el-icon-refresh-right"></i> {{ $t('tagsView.refresh') }}</li>
+      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)"><i class="el-icon-close"></i> {{ $t('tagsView.close') }}</li>
+      <li @click="closeOthersTags"><i class="el-icon-circle-close"></i> {{ $t('tagsView.closeOthers') }}</li>
+      <li v-if="!isFirstView()" @click="closeLeftTags"><i class="el-icon-back"></i> {{ $t('tagsView.closeLeft') }}</li>
+      <li v-if="!isLastView()" @click="closeRightTags"><i class="el-icon-right"></i> {{ $t('tagsView.closeRight') }}</li>
+      <li @click="closeAllTags(selectedTag)"><i class="el-icon-circle-close"></i> {{ $t('tagsView.closeAll') }}</li>
     </ul>
   </div>
 </template>
@@ -72,6 +72,13 @@ export default {
     this.addTags()
   },
   methods: {
+    rotueTitle(item) {
+      const name=item;
+      if(this.$t('router.'+name)){
+        return this.$t('router.'+name)
+      }
+      return item;
+    },
     isActive(route) {
       return route.path === this.$route.path
     },

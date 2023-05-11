@@ -1,9 +1,11 @@
 <template>
   <div class="register">
     <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
-      <h3 class="title">xxxx-微服务平台 <el-tag type="danger">v3.6.2</el-tag></h3>
+      <lang-select class="set-language" />
+      <h3 class="title">{{ $t('register.title') }} <el-tag type="danger">v3.6.2</el-tag></h3>
+      <h5 class="tip">{{ $t('register.tip') }}<el-tag type="success">{{ $t('register.google') }}</el-tag><el-tag type="warning">{{ $t('register.firefox') }}</el-tag><el-tag type="info">Edge</el-tag></h5>
       <el-form-item prop="username">
-        <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账户">
+        <el-input v-model="registerForm.username" type="text" auto-complete="off" :placeholder="$t('register.username')">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -12,7 +14,7 @@
           v-model="registerForm.password"
           type="password"
           auto-complete="off"
-          placeholder="密码"
+          :placeholder="$t('register.password')"
           @keyup.enter.native="handleRegister"
         >
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
@@ -23,7 +25,7 @@
           v-model="registerForm.confirmPassword"
           type="password"
           auto-complete="off"
-          placeholder="确认密码"
+          :placeholder="$t('register.confirmPassword')"
           @keyup.enter.native="handleRegister"
         >
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
@@ -33,7 +35,7 @@
         <el-input
           v-model="registerForm.code"
           auto-complete="off"
-          placeholder="验证码"
+          :placeholder="$t('login.code')"
           style="width: 63%"
           @keyup.enter.native="handleRegister"
         >
@@ -51,26 +53,27 @@
           style="width:100%;"
           @click.native.prevent="handleRegister"
         >
-          <span v-if="!loading">注 册</span>
-          <span v-else>注 册 中...</span>
+          <span v-if="!loading">{{ $t('register.register') }}</span>
+          <span v-else>{{ $t('register.registerStatus') }}</span>
         </el-button>
         <div style="float: right;">
-          <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
+          <router-link class="link-type" :to="'/login'">{{ $t('register.login') }}</router-link>
         </div>
       </el-form-item>
     </el-form>
     <!--  底部  -->
     <div class="el-register-footer">
-      <span>Copyright © 2022-2023 xxx All Rights Reserved.</span>
+      <span>Copyright © 2022-2023 jovepcb All Rights Reserved.</span>
     </div>
   </div>
 </template>
 
 <script>
 import { getCodeImg, register } from "@/api/login";
-
+import LangSelect from '@/components/LangSelect'
 export default {
   name: "Register",
+  components: { LangSelect },
   data() {
     const equalToPassword = (rule, value, callback) => {
       if (this.registerForm.password !== value) {
@@ -146,6 +149,11 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+.tip {
+  margin: 0px auto 8px auto;
+  text-align: center;
+  color: #707070;
+}
 .register {
   display: flex;
   justify-content: center;

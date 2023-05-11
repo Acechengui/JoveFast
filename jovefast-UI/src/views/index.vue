@@ -3,63 +3,129 @@
 
     <el-row :gutter="10">
       <el-col :sm="48" :lg="24">
-        <h2>公司简介</h2>
+        <h2>{{ $t('index.introTitle') }}</h2>
         <p>
-           xxxx成立于2004年，注册地址为：xxxxxxxxxxxxxxx。公司是一家专业从事印制电路板的研发、生产和销售的国家级高新技术企业。公司自创办以来，长期坚持质量为先、技术为核心、客户需求为导向的发展策略，专注于有优势、有前景的细分电路板市场，取得了多项国家技术专利，研发出多种特殊的产品工艺。
-
-      公司目前有三个生产基地，分别位于深圳市宝安区沙井街道、松岗街道以及鹤山市鹤城镇。公司产品广泛应用于通信、新能源、工业控制、消费电子、汽车电子及医疗电子等应用领域，主要客户为：华为、中兴、Vertiv（维谛）、Sumsung（三星）、Schneider（施耐德）、Asteelflash（飞旭）、LACROIX、LENZE（伦茨）、理邦等国内外知名企业。
-
-      公司始终肩负着“以科技和实业利益社会、富强中国”的时代使命，致力于成为全球电子电路制造行业的先进企业。
+          {{ $t('index.intro1') }}
+          {{ $t('index.intro2') }}
+          {{ $t('index.intro3') }}
         </p>
         <p>
-          <el-button
-            size="mini"
-            icon="el-icon-s-home"
-            plain
-            @click="goTarget('http://www.xxxxx.com/')"
-            >访问官网</el-button
-          >
+          <el-button size="mini" icon="el-icon-s-home" plain @click="goTarget('http://www.jovepcb.com/')">
+            {{ $t('index.visitWebsite') }}
+          </el-button>
         </p>
       </el-col>
     </el-row>
     <el-divider />
+
     <el-row :gutter="20">
       <el-col>
-        <el-card class="box-card" >
+        <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>快捷导航</span>
+            <span>{{ $t('index.navigation') }}</span>
           </div>
           <el-row>
-            <el-col :span="12" v-for="({name,icon,route},index) of navigators" :key="index" style="padding: 0">
+            <el-col :span="12" style="padding: 0">
               <el-card shadow="hover">
-                <div  style="display: flex;align-items: center;flex-direction: column;cursor: pointer" @click="()=>{gotoRoute(route)}">
-                  <i :class="icon"><a href="javascript:;" style="text-align: center;" v-text="name"></a></i>
+                <div style="display: flex;align-items: center;flex-direction: column;cursor: pointer" @click="() => {
+                  gotoRoute({
+                    path: '/workflowCenter/taskmanger/deploy'
+                  })
+                }">
+                  <i class="el-icon-news"><a href="javascript:;" style="text-align: center;">{{ $t('index.deploy')
+                    }}</a></i>
                 </div>
               </el-card>
             </el-col>
+
+            <el-col :span="12" style="padding: 0">
+              <el-card shadow="hover">
+                <div style="display: flex;align-items: center;flex-direction: column;cursor: pointer" @click="() => {
+                  gotoRoute({
+                    path: '/workflowCenter/taskmanger/todo'
+                  })
+                }">
+                  <i class="el-icon-date"><a href="javascript:;" style="text-align: center;">{{ $t('index.todo')
+                    }}</a></i>
+                </div>
+              </el-card>
+            </el-col>
+
+            <el-col :span="12" style="padding: 0">
+              <el-card shadow="hover">
+                <div style="display: flex;align-items: center;flex-direction: column;cursor: pointer" @click="() => {
+                  gotoRoute({
+                    path: '/workflowCenter/taskmanger/finished'
+                  })
+                }">
+                  <i class="el-icon-success"><a href="javascript:;" style="text-align: center;">{{ $t('index.finished')
+                    }}</a></i>
+                </div>
+              </el-card>
+            </el-col>
+
+
+            <el-col :span="12" style="padding: 0">
+              <el-card shadow="hover">
+                <div style="display: flex;align-items: center;flex-direction: column;cursor: pointer" @click="() => {
+                  gotoRoute({
+                    path: '/monitor/online'
+                  })
+                }">
+                  <i class="el-icon-view"><a href="javascript:;" style="text-align: center;">{{ $t('index.online')
+                    }}</a></i>
+                </div>
+              </el-card>
+            </el-col>
+
           </el-row>
         </el-card>
       </el-col>
     </el-row>
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
-        <el-card class="update-log">
+      <el-col>
+        <el-card>
           <div slot="header" class="clearfix">
-            <span>联系信息</span>
+            <span>{{ $t('index.question') }}</span>
+          </div>
+          <div class="body">
+            <el-collapse accordion>
+              <el-collapse-item>
+                <template slot="title">
+                  {{ $t('index.question1') }}<i class="header-icon el-icon-question"></i>
+                </template>
+                <div>
+                  {{ $t('index.answer1') }}
+                </div>
+              </el-collapse-item>
+              <el-collapse-item>
+                <template slot="title">
+                  {{ $t('index.question2') }}<i class="header-icon el-icon-question"></i>
+                </template>
+                <div>
+                  {{ $t('index.answer2') }}
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col>
+        <el-card>
+          <div slot="header" class="clearfix">
+            <span>{{ $t('index.information') }}</span>
           </div>
           <div class="body">
             <p>
-              <i class="el-icon-s-promotion"></i> 官网：<el-link
-                href="http://www.xxxxx.com"
-                target="_blank"
-                >http://www.xxxx.com</el-link
-              >
+              <i class="el-icon-chat-dot-round"></i>{{ $t('index.developer') }}<a href="javascript:;">
+              / JOVEPCB-IT TEAM</a>
             </p>
             <p>
-              <i class="el-icon-chat-dot-round"></i> 开发者：<a
-                href="javascript:;"
-                >/ IT TEAM</a
-              >
+              <i class="el-icon-s-promotion"></i>{{ $t('index.website') }}<el-link href="http://www.jovepcb.com"
+                                                                                   target="_blank">
+              http://www.jovepcb.com</el-link>
             </p>
           </div>
         </el-card>
@@ -74,43 +140,13 @@ export default {
     return {
       // 版本号
       version: "3.6.2",
-      navigators: [
-        {
-          name: '我的流程',
-          icon: 'el-icon-news',
-          route: {
-            path: '/workflowCenter/taskmanger/deploy'
-          }
-        },
-        {
-          name: '待办任务',
-          icon: 'el-icon-date',
-          route: {
-            path: '/workflowCenter/taskmanger/todo'
-          }
-        },
-        {
-          name: '已办任务',
-          icon: 'el-icon-success',
-          route: {
-            path: '/workflowCenter/taskmanger/finished'
-          }
-        },
-        {
-          name: '在线用户',
-          icon: 'el-icon-view',
-          route: {
-            path: '/monitor/online'
-          }
-        },
-      ],
     };
   },
   methods: {
     goTarget(href) {
       window.open(href, "_blank");
     },
-    gotoRoute (route) {
+    gotoRoute(route) {
       this.$router.push(route);
     }
   },
