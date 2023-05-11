@@ -20,8 +20,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{ $t('common.search') }}</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{ $t('common.reset') }}</el-button>
       </el-form-item>
     </el-form>
 
@@ -34,7 +34,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:menu:add']"
-        >新增</el-button>
+        >{{ $t('common.add') }}</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -56,7 +56,7 @@
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160"></el-table-column>
+      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="260"></el-table-column>
       <el-table-column prop="icon" label="图标" align="center" width="100">
         <template slot-scope="scope">
           <svg-icon :icon-class="scope.row.icon" />
@@ -83,21 +83,21 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:menu:edit']"
-          >修改</el-button>
+          >{{ $t('common.edit') }}</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-plus"
             @click="handleAdd(scope.row)"
             v-hasPermi="['system:menu:add']"
-          >新增</el-button>
+          >{{ $t('common.add') }}</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:menu:remove']"
-          >删除</el-button>
+          >{{ $t('common.del') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -206,7 +206,7 @@
                 </el-tooltip>
                 组件路径
               </span>
-              <el-input v-model="form.component" placeholder="请输入组件路径" />
+              <el-input v-model="form.component" placeholder="请输入组件路径" @blur="componentPathFormatting"/>
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType != 'M'">
@@ -279,11 +279,23 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+
+          <el-col :span="12" v-if="form.menuType != 'F'">
+            <el-form-item prop="dictionaryId">
+              <span slot="label">
+                <el-tooltip content="访问的国际化标识" placement="top">
+                <i class="el-icon-question"></i>
+                </el-tooltip>
+                国际化地址
+              </span>
+              <el-input v-model="form.dictionaryId" placeholder="请输入国际化地址" />
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">{{ $t('common.determine') }}</el-button>
+        <el-button @click="cancel">{{ $t('common.cancel') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -342,6 +354,12 @@ export default {
     this.getList();
   },
   methods: {
+    /**
+     * 组件路径自动格式化，在资源管理器中复制出来的路径需要手动把‘\’替换成‘/’，这个方法自动替换
+     */
+    componentPathFormatting() {
+      this.form.component = this.form.component?.replaceAll('\\','/');
+    },
     // 选择图标
     selected(name) {
       this.form.icon = name;
