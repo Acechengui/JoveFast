@@ -77,6 +77,9 @@ Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
 Vue.use(Contextmenu)
+Vue.use(Element, {
+  i18n: (key, value) => i18n.t(key, value)
+})
 DictData.install()
 
 /**
@@ -99,5 +102,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: h => h(App)
 })
