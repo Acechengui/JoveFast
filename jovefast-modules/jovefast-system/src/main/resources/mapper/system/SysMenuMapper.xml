@@ -26,7 +26,7 @@
 		<result property="updateTime"     column="update_time"    />
 		<result property="updateBy"       column="update_by"      />
 		<result property="remark"         column="remark"         />
-		<result property="dictionaryId"         column="dictionary_id"         />
+		<result property="dictionaryId"   column="dictionary_id"  />
 	</resultMap>
 
 	<sql id="selectMenuVo">
@@ -192,6 +192,7 @@
 		<if test="isFrame != null and isFrame != ''">#{isFrame},</if>
 		<if test="isCache != null and isCache != ''">#{isCache},</if>
 		<if test="isBlank != null and isBlank != ''">#{isBlank},</if>
+		<if test="dictionaryId != null and dictionaryId != ''">#{dictionaryId},</if>
 		<if test="menuType != null and menuType != ''">#{menuType},</if>
 		<if test="visible != null">#{visible},</if>
 		<if test="status != null">#{status},</if>
