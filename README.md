@@ -9,7 +9,7 @@
 
 预览地址:[https://acechengui.github.io/jove-fast-ui/](https://acechengui.github.io/jove-fast-ui/)(条件有限,后台服务器已到期)
 
-* 账号密码admin/Psitadmin
+* 账号密码admin/joveadmin
 * 采用前后端分离的模式
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
 * 注册中心、配置中心选型Nacos，权限认证使用Redis。
