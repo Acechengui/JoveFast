@@ -118,7 +118,7 @@ Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的
 redisson:
     address: redis://127.0.0.1:6379
     # 选哪个库
-    database: 15  
+    database: 9  
     # 密码,若无密码可删除
     password: joveadmin 
 ``` 
