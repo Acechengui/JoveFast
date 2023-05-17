@@ -69,6 +69,9 @@ export default {
     processManagement: 'Process Management',
     formConfiguration: 'Form Configuration',
     taskManagement: 'Task Management',
+    QRcodegeneration: 'QR code generation',
+    attachmentManagement: 'Attachment Management',
+    myAttachment: 'My attachment',
   },
   login: {
     title: 'JOVE Cloud Platform',

@@ -68,6 +68,9 @@ export default {
     processManagement: '流程管理',
     formConfiguration: '表单配置',
     taskManagement: '任务管理',
+    QRcodegeneration: '二维码生成',
+    attachmentManagement: '附件管理',
+    myAttachment: '我的附件',
   },
   login: {
     title: '中富-云平台',

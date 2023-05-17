@@ -70,6 +70,9 @@ export default {
     processManagement: 'การจัดการกระบวนการ',
     formConfiguration: 'การกำหนดค่าแบบฟอร์ม',
     taskManagement: 'การจัดการงาน',
+    QRcodegeneration: 'การสร้างรหัส QR',
+    attachmentManagement: 'การจัดการอุปกรณ์เสริม',
+    myAttachment: 'อุปกรณ์เสริมของฉัน',
   },
   login: {
     title: 'แพลตฟอร์มคลาวด์ JOVE',
