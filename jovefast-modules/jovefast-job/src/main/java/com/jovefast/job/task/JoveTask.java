@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  *
  * @author Acechengui
  */
-@Component("JoveTask")
+@Component("joveTask")
 public class JoveTask {
     private static final Logger log = LoggerFactory.getLogger(JoveTask.class);
 
