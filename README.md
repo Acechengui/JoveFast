@@ -7,9 +7,8 @@
 ## 项目简介
 基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),工作流[flowable](https://www.flowable.com/)
 
-预览地址:[https://acechengui.github.io/jove-fast-ui/](https://acechengui.github.io/jove-fast-ui/)(条件有限,后台服务器已到期)
 
-* 账号密码admin/Psitadmin
+* 账号密码admin/joveadmin
 * 采用前后端分离的模式
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
 * 注册中心、配置中心选型Nacos，权限认证使用Redis。
@@ -118,7 +117,7 @@ Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的
 redisson:
     address: redis://127.0.0.1:6379
     # 选哪个库
-    database: 15  
+    database: 9  
     # 密码,若无密码可删除
     password: joveadmin 
 ``` 
