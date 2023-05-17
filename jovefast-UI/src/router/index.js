@@ -43,6 +43,11 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/sso',
+    component: () => import('@/views/sso'),
+    hidden: true
+  },
+  {
     path: '/login',
     component: () => import('@/views/login'),
     hidden: true
@@ -66,12 +71,14 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: 'index',
+    name:'index',
+    title: 'index',
     children: [
       {
         path: 'index',
         component: () => import('@/views/index'),
         name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: 'index', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -85,7 +92,7 @@ export const constantRoutes = [
         path: 'profile',
         component: () => import('@/views/system/user/profile/index'),
         name: 'Profile',
-        meta: { title: '个人中心', icon: 'user' }
+        meta: { title: 'profile', icon: 'user' }
       }
     ]
   }
@@ -103,7 +110,7 @@ export const dynamicRoutes = [
         path: 'role/:userId(\\d+)',
         component: () => import('@/views/system/user/authRole'),
         name: 'AuthRole',
-        meta: { title: '分配角色', activeMenu: '/system/user' }
+        meta: { title: 'athRole', activeMenu: '/system/user' }
       }
     ]
   },
@@ -117,7 +124,7 @@ export const dynamicRoutes = [
         path: 'user/:roleId(\\d+)',
         component: () => import('@/views/system/role/authUser'),
         name: 'AuthUser',
-        meta: { title: '分配用户', activeMenu: '/system/role' }
+        meta: { title: 'authUser', activeMenu: '/system/role' }
       }
     ]
   },
@@ -131,7 +138,7 @@ export const dynamicRoutes = [
         path: 'index/:dictId(\\d+)',
         component: () => import('@/views/system/dict/data'),
         name: 'Data',
-        meta: { title: '字典数据', activeMenu: '/system/dict' }
+        meta: { title: 'data', activeMenu: '/system/dict' }
       }
     ]
   },
@@ -144,7 +151,7 @@ export const dynamicRoutes = [
         path: 'definition/model/',
         component: () => import('@/views/flowable/definition/model'),
         name: 'Model',
-        meta: { title: '流程设计'}
+        meta: { title: 'model'}
       }
     ]
   },
@@ -158,7 +165,7 @@ export const dynamicRoutes = [
         path: 'task/record/index',
         component: () => import('@/views/flowable/task/record/index'),
         name: 'Record',
-        meta: { title: '流程处理'}
+        meta: { title: 'record'}
       }
     ]
   },
@@ -172,7 +179,7 @@ export const dynamicRoutes = [
         path: 'build/index',
         component: () => import('@/views/tool/build/index'),
         name: 'FormBuild',
-        meta: { title: '表单配置'}
+        meta: { title: 'formBuild'}
       }
     ]
   },
@@ -186,7 +193,7 @@ export const dynamicRoutes = [
         path: 'index/:jobId(\\d+)',
         component: () => import('@/views/monitor/job/log'),
         name: 'JobLog',
-        meta: { title: '调度日志', activeMenu: '/monitor/job' }
+        meta: { title: 'jobLog', activeMenu: '/monitor/job' }
       }
     ]
   },
@@ -200,7 +207,7 @@ export const dynamicRoutes = [
         path: 'index/:tableId(\\d+)',
         component: () => import('@/views/tool/gen/editTable'),
         name: 'GenEdit',
-        meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
+        meta: { title: 'genEdit', activeMenu: '/tool/gen' }
       }
     ]
   }
@@ -219,7 +226,7 @@ Router.prototype.replace = function push(location) {
 }
 
 export default new Router({
-  mode: 'history', // 去掉url中的#  用github page部署需要注释,否则访问静态资源404
+  mode: 'history', // 去掉url中的#
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

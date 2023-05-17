@@ -18,7 +18,7 @@
         >
           <item
             :icon="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"
-            :title="rotueTitle(onlyOneChild.meta.dictionaryId)"
+            :title="rotueTitle(onlyOneChild.meta.dictionaryId === undefined ? onlyOneChild.meta.title:onlyOneChild.meta.dictionaryId)"
           />
           <!--  :title="onlyOneChild.meta.title"  -->
         </el-menu-item>
@@ -35,7 +35,7 @@
         <item
           v-if="item.meta"
           :icon="item.meta && item.meta.icon"
-          :title="rotueTitle(item.meta.dictionaryId)"
+          :title="rotueTitle(item.meta.dictionaryId=== undefined ? item.meta.title:item.meta.dictionaryId)"
         />
         <!-- :title="item.meta.title" -->
       </template>
