@@ -257,6 +257,7 @@ com.jovefast
 │       └── jovefast-common-core                         // 核心模块
 │       └── jovefast-common-datascope                    // 权限范围
 │       └── jovefast-common-datasource                   // 多数据源
+│       └── jovefast-common-i18n                         // 国际化
 │       └── jovefast-common-log                          // 日志记录
 │       └── jovefast-common-redis                        // 缓存服务
 │       └── jovefast-common-seata                        // 分布式事务
