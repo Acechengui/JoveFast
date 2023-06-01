@@ -2,6 +2,7 @@
 export const formConf = {
   formRef: 'elForm',
   formModel: 'formData',
+  other: 'other',
   size: 'medium',
   labelPosition: 'right',
   labelWidth: 100,
@@ -180,6 +181,28 @@ export const selectComponents = [
     disabled: false,
     filterable: false,
     multiple: false
+  },
+  {
+    __config__: {
+      label: '万能选择',
+      showLabel: true,
+      labelWidth: null,
+      tag: 'ts-universal-select',
+      tagIcon: 'select',
+      layout: 'colFormItem',
+      span: 24,
+      required: true,
+      regList: [],
+      changeTag: true,
+      document: 'https://element.eleme.cn/#/zh-CN/component/select'
+    },
+    placeholder: '请选择',
+    style: { width: '100%' },
+    requestApi: '',
+    requestKey: '',
+    label: 'name',
+    field: 'desc',
+    requestType: 'get'
   },
   {
     __config__: {
@@ -545,5 +568,94 @@ export const layoutComponents = [
     plain: false,
     circle: false,
     disabled: false
+  },
+  {
+    __config__: {
+      layout: 'colFormItem',
+      tagIcon: 'table',
+      tag: 'el-table',
+      document: 'https://element.eleme.cn/#/zh-CN/component/table',
+      span: 24,
+      formId: 101,
+      renderKey: 1595761764203,
+      componentName: 'dataTable',
+      showLabel: true,
+      changeTag: true,
+      labelWidth: null,
+      label: '表格',
+      dataType: 'dynamic',
+      method: 'get',
+      dataPath: 'list',
+      dataConsumer: 'data',
+      url: 'https://www.fastmock.site/mock/f8d7a54fb1e60561e2f720d5a810009d/fg/tableData',
+      children: [
+        {
+          __config__: {
+            layout: 'raw',
+            tag: 'el-table-column'
+          },
+          align: 'center',
+          prop: 'name',
+          label: '姓名'
+        },
+        {
+          __config__: {
+            layout: 'raw',
+            tag: 'el-table-column'
+          },
+          align: 'center',
+          prop: 'date',
+          label: '时间'
+        },
+        {
+          __config__: {
+            layout: 'raw',
+            tag: 'el-table-column'
+          },
+          align: 'center',
+          prop: 'address',
+          label: '地址'
+        }
+      ]
+    },
+    data: [{
+      name: '张三',
+      sex: '男',
+      age: '18',
+      ah: '打球、游泳'
+    }, {
+      name: '李四',
+      sex: '男',
+      age: '18',
+      ah: '打球、游泳'
+    }, {
+      name: '老六',
+      sex: '男',
+      age: '18',
+      ah: '打球、游泳'
+    }],
+    directives: [{
+      name: 'loading',
+      value: true
+    }],
+    border: true,
+    stripe: true,
+    size: 'medium',
+    type: 'default',
+    justify: 'start'
+  },
+  {
+    __config__: {
+      layout: 'tsSubform',
+      tagIcon: 'row',
+      tag: 'ts-sub-form',
+      label: '子表单',
+      showLabel: false,
+      defaultValue: [],
+      children: []
+    },
+    addButton: true, // 默认可添加
+    deleteButton: true, // 默认可删除
+    canEdit: true // 默认可编辑，为false时添加和删除都不可用，并且表单为disabled状态
   }
 ]

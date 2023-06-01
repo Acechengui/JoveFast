@@ -12,5 +12,4 @@ export default {
   'el-time-picker': 'change',
   'el-date-picker': 'change',
   'el-rate': 'change',
-  tinymce: 'blur'
 }

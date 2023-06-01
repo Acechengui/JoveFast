@@ -27,9 +27,10 @@ export function makeUpJs(formConfig, type) {
   const methodList = mixinMethod(type)
   const uploadVarList = []
   const created = []
+  const other = []
 
   formConfig.fields.forEach(el => {
-    buildAttributes(el, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created)
+    buildAttributes(el, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created, other)
   })
 
   const script = buildexport(
@@ -41,17 +42,18 @@ export function makeUpJs(formConfig, type) {
     uploadVarList.join('\n'),
     propsList.join('\n'),
     methodList.join('\n'),
-    created.join('\n')
+    created.join('\n'),
+    other.join('\n')
   )
   confGlobal = null
   return script
 }
 
 // 构建组件属性
-function buildAttributes(scheme, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created) {
+function buildAttributes(scheme, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created, other) {
   const config = scheme.__config__
   const slot = scheme.__slot__
-  buildData(scheme, dataList)
+  buildData(scheme, dataList, other)
   buildRules(scheme, ruleList)
 
   // 特殊处理options属性
@@ -140,9 +142,42 @@ function mixinMethod(type) {
 }
 
 // 构建data
-function buildData(scheme, dataList) {
+function buildData(scheme, dataList, other) {
   const config = scheme.__config__
+  if (config.tag === 'el-table') {
+    dataList.push(`${scheme.__vModel__}: ${JSON.stringify(scheme.data)},`)
+    return
+  }
+  if (config.tag === 'ts-sub-form') {
+    const subformData = []
+    if (scheme.__config__.children.length > 0) {
+      scheme.__config__.children.forEach(item => {
+        const basicsData = JSON.parse(JSON.stringify(item))
+        basicsData.config = {}
+        basicsData.config.label = item.__config__.label
+        basicsData.config.formId = item.__config__.formId
+        basicsData.config.align = item.__config__.align
+        basicsData.config.optionType = item.__config__.optionType
+        basicsData.config.width = item.__config__.width
+        basicsData.config.tag = item.__config__.tag
+        basicsData.config.prop = item.__vModel__
+        basicsData.placeholder = item.placeholder
+        basicsData.disabled = item.disabled
+        basicsData.readonly = item.readonly
+        delete basicsData.__config__
+        delete basicsData.__vModel__
+        subformData.push(basicsData)
+      })
+    }
+    other.push(`subForm${config.formId}: ${JSON.stringify(subformData)},`)
+    other.push(`subForm${config.formId}Data: ${JSON.stringify(config.defaultValue)},`)
+    other.push(`addButton${config.formId}: ${JSON.stringify(scheme.addButton)},`)
+    other.push(`canEdit${config.formId}: ${JSON.stringify(scheme.canEdit)},`)
+    other.push(`deleteButton${config.formId}: ${JSON.stringify(scheme.deleteButton)},`)
+    return
+  }
   if (scheme.__vModel__ === undefined) return
+  
   const defaultValue = JSON.stringify(config.defaultValue)
   dataList.push(`${scheme.__vModel__}: ${defaultValue},`)
 }
@@ -239,13 +274,16 @@ function buildOptionMethod(methodName, model, methodList, scheme) {
 }
 
 // js整体拼接
-function buildexport(conf, type, data, rules, selectOptions, uploadVar, props, methods, created) {
+function buildexport(conf, type, data, rules, selectOptions, uploadVar, props, methods, created, other) {
   const str = `${exportDefault}{
   ${inheritAttrs[type]}
   components: {},
   props: [],
   data () {
     return {
+      ${conf.other}: {
+        ${other}
+      },
       ${conf.formModel}: {
         ${data}
       },

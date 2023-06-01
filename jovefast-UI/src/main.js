@@ -7,6 +7,8 @@ import i18n from './lang' //国际化
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
 
+import axios from 'axios'
+
 import '@/assets/styles/index.scss' // global css
 import '@/assets/styles/jove.scss' // jove css
 import App from './App'
@@ -48,6 +50,10 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+//自定义组件-子表单
+import TsSubFrom from '@/components/TsSubForm/index.vue'
+//自定义组件-万能选择
+import TsUniversalSelect from '@/components/TsSubForm/ts-universal-select.vue'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -61,6 +67,7 @@ Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
+Vue.prototype.$axios = axios
 
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
@@ -71,6 +78,8 @@ Vue.component('WangEditor', WangEditor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+Vue.component('tsSubForm', TsSubFrom)
+Vue.component('tsUniversalSelect', TsUniversalSelect)
 
 Vue.use(Print)
 Vue.use(directive)

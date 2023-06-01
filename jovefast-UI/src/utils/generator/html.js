@@ -110,10 +110,29 @@ const layouts = {
     </el-row>`
     str = colWrapper(scheme, str)
     return str
+  },
+  tsSubform(scheme) {
+    const dataName = `:table-data="other.subForm${scheme.__config__.formId}"`
+    const value = `v-model="other.subForm${scheme.__config__.formId}Data"`
+    const addButton = `:addButton="other.addButton${scheme.__config__.formId}"`
+    const deleteButton = `:deleteButton="other.deleteButton${scheme.__config__.formId}"`
+    const canEdit = `:canEdit="other.canEdit${scheme.__config__.formId}"`
+    const str = `<ts-sub-form ${dataName} ${value} ${addButton} ${deleteButton} ${canEdit}></ts-sub-form>`
+    return str
   }
 }
 
 const tags = {
+  'el-table': el => {
+    const {
+      tag
+    } = attrBuilder(el)
+    const child = elTableColumn(el)
+    const border = el.border ? `:border="${el.border}"` : ''
+    const stripe = el.stripe ? `:stripe="${el.stripe}"` : ''
+    const size = el.size ? `size="${el.size}"` : ''
+    return `<${tag} ${border} ${stripe} ${size} :data="${confGlobal.formModel}.${el.__vModel__}">${child}</${tag}>`
+  },
   'el-button': el => {
     const {
       tag, disabled
@@ -171,6 +190,19 @@ const tags = {
 
     if (child) child = `\n${child}\n` // 换行
     return `<${tag} ${vModel} ${placeholder} ${disabled} ${multiple} ${filterable} ${clearable} ${width}>${child}</${tag}>`
+  },
+  //万能选择
+  'ts-universal-select': el => {
+    const {
+      tag, vModel, clearable, placeholder, width
+    } = attrBuilder(el)
+    const filterable = el.filterable ? 'filterable' : ''
+    const multiple = el.multiple ? 'multiple' : ''
+    const requestApi = el.requestApi ? `requestApi="${el.requestApi}"` : ''
+    const requestType = el.requestType ? `requestType="${el.requestType}"` : ''
+    const label = el.label ? `label="${el.label}"` : ''
+    const field = el.field ? `field="${el.field}"` : ''
+    return `<${tag} ${vModel} ${requestApi} ${requestType} ${label} ${field} ${placeholder} ${multiple} ${filterable} ${clearable} ${width} />`
   },
   'el-radio-group': el => {
     const { tag, disabled, vModel } = attrBuilder(el)
@@ -284,13 +316,18 @@ const tags = {
 
     if (child) child = `\n${child}\n` // 换行
     return `<${tag} ${ref} ${fileList} ${action} ${autoUpload} ${multiple} ${beforeUpload} ${listType} ${accept} ${name} ${disabled}>${child}</${tag}>`
-  },
-  tinymce: el => {
-    const { tag, vModel, placeholder } = attrBuilder(el)
-    const height = el.height ? `:height="${el.height}"` : ''
-    const branding = el.branding ? `:branding="${el.branding}"` : ''
-    return `<${tag} ${vModel} ${placeholder} ${height} ${branding}></${tag}>`
   }
+}
+function elTableColumn(scheme) {
+  const children = []
+  const config = scheme.__config__
+  if (config.children.length > 0) {
+    const { tag } = scheme.__config__.children[0].__config__
+    config.children.forEach(ts => {
+      ts.prop && children.push(`<${tag} label="${ts.label}" align="${ts.align}" prop="${ts.prop}"></${tag}>`)
+    })
+  }
+  return children.join('\n')
 }
 
 function attrBuilder(el) {
@@ -300,7 +337,7 @@ function attrBuilder(el) {
     clearable: el.clearable ? 'clearable' : '',
     placeholder: el.placeholder ? `placeholder="${el.placeholder}"` : '',
     width: el.style && el.style.width ? ':style="{width: \'100%\'}"' : '',
-    disabled: el.disabled ? ':disabled=\'true\'' : ''
+    disabled: el.disabled ? ':disabled=\'true\'' : '',
   }
 }
 

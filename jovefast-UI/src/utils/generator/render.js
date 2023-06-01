@@ -84,7 +84,17 @@ const componentChild = {
       }
       return list
     }
+  },
+  'el-table': {
+    'children': (h, conf, key) => {
+      const list = [];
+      conf.children.forEach((item,index) => {
+        list.push(<el-table-column key={index} label={item.label} prop={item.prop} align={item.align} width={item.width}></el-table-column>)
+      })
+      return list
+    }
   }
+
 }
 
 export default {
