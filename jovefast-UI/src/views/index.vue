@@ -29,7 +29,7 @@
               <el-card shadow="hover">
                 <div style="display: flex;align-items: center;flex-direction: column;cursor: pointer" @click="() => {
                   gotoRoute({
-                    path: '/workflowCenter/taskmanger/deploy'
+                    path: '/workflowCenter/taskmanger/process'
                   })
                 }">
                   <i class="el-icon-news"><a href="javascript:;" style="text-align: center;">{{ $t('index.deploy')
