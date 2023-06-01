@@ -765,9 +765,12 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     flowTask.setDuration(histIns.getDurationInMillis() == null || histIns.getDurationInMillis() == 0 ? null : DateUtils.getProcessCompletionTime(histIns.getDurationInMillis()));
                     // 获取意见评论内容
                     List<Comment> commentList = taskService.getProcessInstanceComments(histIns.getProcessInstanceId());
+                    StringBuilder stl=new StringBuilder();
                     commentList.forEach(comment -> {
                         if (histIns.getTaskId().equals(comment.getTaskId())) {
-                            flowTask.setComment(FlowCommentDto.builder().type(comment.getType()).comment(comment.getFullMessage()).build());
+                            if(comment.getFullMessage() !=null){
+                                stl.append(comment.getFullMessage()).append("; ");
+                            }
                         }
                     });
                     hisFlowList.add(flowTask);
