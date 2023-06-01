@@ -39,10 +39,10 @@
       </div>
     </div>
   </template>
-  
+
   <script>
   import render from './ts-render'
-  
+
   export default {
     name: 'TsSubForm',
     components: {
@@ -84,7 +84,7 @@
       return {
         ts_sustain_type: ['el-input', 'el-radio-group', 'el-checkbox-group',
           'el-input-number', 'el-select', 'el-cascader', 'el-switch',
-          'el-slider', 'el-time-select', 'el-date-picker', 'el-upload', 'el-rate', 'el-color-picker'],
+          'el-slider', 'el-time-select', 'el-date-picker', 'el-upload', 'el-rate', 'el-color-picker','ts-universal-select'],
         ts_get_data_type: ['el-radio-group', 'el-select', 'el-checkbox-group', 'el-cascader'],
         ts_local_data: [],
         ts_current_row: null,
