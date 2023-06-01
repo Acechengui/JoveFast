@@ -413,7 +413,14 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void assignTask(FlowTaskVo flowTaskVo) {
-        taskService.setAssignee(flowTaskVo.getTaskId(), flowTaskVo.getComment());
+        if(ObjectUtils.allNull(flowTaskVo.getValues().get(ProcessConstants.PROCESS_APPROVAL))){
+            throw new CheckedException("未指定转办人");
+        }
+        //添加审批意见
+        taskService.addComment(flowTaskVo.getTaskId(), flowTaskVo.getInstanceId(), FlowComment.NORMAL.getType(), flowTaskVo.getComment());
+        taskService.setAssignee(flowTaskVo.getTaskId(),String.valueOf(flowTaskVo.getValues().get(ProcessConstants.PROCESS_APPROVAL)));
+        //更新全局变量
+        taskService.setVariables(flowTaskVo.getTaskId(),flowTaskVo.getVariables());
     }
 
     /**

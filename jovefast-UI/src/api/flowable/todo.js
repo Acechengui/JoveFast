@@ -70,3 +70,12 @@ export function deployStart(deployId) {
     method: 'get',
   })
 }
+
+//转办任务
+export function transferTask(data) {
+  return request({
+    url: '/flowable/task/assign',
+    method: 'post',
+    data: data
+  })
+}
