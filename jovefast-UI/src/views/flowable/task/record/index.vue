@@ -3,6 +3,7 @@
     <div slot="header" class="clearfix">
       <span class="el-icon-document">基础信息</span>
       <el-button style="float: right;" icon="el-icon-arrow-left" type="primary"  size="mini" @click="goBack">返回</el-button>
+      <el-button style="float: right; margin-right: 10px;" icon="el-icon-video-camera" type="warning"  size="mini" v-print="printOption">全页打印</el-button>
       <el-button style="float: right; margin-right: 10px;" icon="el-icon-picture-outline" type="danger" size="mini" @click="flowChart">流程图</el-button>
     </div>
     <div id="nbprint">
@@ -278,6 +279,30 @@ export default {
   },
   data() {
     return {
+      printOption:{
+        id: 'nbprint', // 打印元素的id 不需要携带#号
+        preview: false, // 开启打印预览
+        previewTitle: '打印预览', // 打印预览标题
+        popTitle: '流程信息', // 页眉标题 默认浏览器标题 空字符串时显示undefined 使用html语言
+        previewBeforeOpenCallback: () => {
+          //console.log("触发打印预览打开前回调");
+        },
+        previewOpenCallback: () => {
+          //console.log("触发打开打印预览回调");
+        },
+        beforeOpenCallback: () => {
+          //console.log("触发打印工具打开前回调");
+        },
+        openCallback: () => {
+          //console.log("触发打开打印工具回调");
+        },
+        closeCallback: () => {
+          //console.log("触发关闭打印工具回调");
+        },
+        clickMounted: () => {
+          //console.log("触发点击打印回调");
+        }
+      },
       // 模型xml数据
       xmlData: "",
       taskList: [],
