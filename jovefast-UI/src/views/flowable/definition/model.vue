@@ -98,7 +98,7 @@ export default {
       })
     },
     /** 指定流程办理人员列表 */
-   async getDataList() {
+    getDataList() {
       listUserAll().then(res =>{
         this.users = res.rows;
         let arr = {nickName: "流程发起人", userId: "${INITIATOR}"}
@@ -110,7 +110,7 @@ export default {
       listFormAll().then(res =>{
         this.forms = res.data;
       });
-      
+
     },
     /** 展示xml */
     showXML(data){
@@ -120,24 +120,26 @@ export default {
     },
     /** 获取数据类型 */
     dataType(data){
-      // this.users = [];
-      // this.groups = [];
+      this.users = [];
+      this.groups = [];
       if (data) {
         if (data.dataType === 'dynamic') {
           if (data.userType === 'assignee') {
-            this.users = [{nickName: "${INITIATOR}", userId: "${INITIATOR}"},
-                          {nickName: "#{approval}", userId: "#{approval}"}
-              ]
+            this.users = [{nickName: "流程发起人", userId: "${INITIATOR}"},
+              {nickName: "${approval}", userId: "${approval}"}
+            ]
           } else if (data.userType === 'candidateUsers') {
-            this.users = [ {nickName: "#{approval}", userId: "#{approval}"}]
+            this.users = [{nickName: "流程发起人", userId: "${INITIATOR}"},
+              {nickName: "${approval}", userId: "${approval}"}
+            ]
           } else {
-            this.groups = [{roleName: "#{approval}", roleId: "#{approval}"}]
+            this.groups = [{roleName: "${approval}", roleId: "${approval}"}]
           }
-        } 
-        //else {
+        }
+        else {
           //created已加载过一次
-          //this.getDataList()
-        //}
+          this.getDataList()
+        }
       }
     }
   },

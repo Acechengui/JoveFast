@@ -23,8 +23,8 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{ $t('common.search') }}</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{ $t('common.reset') }}</el-button>
       </el-form-item>
     </el-form>
 
@@ -64,14 +64,16 @@
         </template>
       </el-table-column>
       <el-table-column label="耗时" align="center" prop="duration" width="180" v-if="columns[7].visible"/>
-      <el-table-column label="当前节点" align="center" prop="taskName" v-if="columns[8].visible"/>
-      <el-table-column label="办理" align="center" v-if="columns[9].visible">
+      <el-table-column label="发起人" align="center" prop="startUserName" width="180" v-if="columns[8].visible"/>
+      <el-table-column label="当前节点" align="center" prop="taskName" v-if="columns[9].visible"/>
+      <el-table-column label="办理" align="center" v-if="columns[10].visible">
         <template slot-scope="scope">
           <label v-if="scope.row.assigneeName">{{scope.row.assigneeName}} <el-tag type="info" size="mini" v-if="scope.row.deptName">{{scope.row.deptName}}</el-tag></label>
           <label v-if="scope.row.candidate">{{scope.row.candidate}}</label>
+          <label v-if="scope.row.taskName && scope.row.assigneeName===null && scope.row.candidate===null">{{scope.row.taskName}}</label>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-dropdown>
             <span class="el-dropdown-link">
@@ -114,8 +116,8 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleProcessQuery">搜索</el-button>
-          <el-button icon="el-icon-refresh" size="mini" @click="resetProcessQuery">重置</el-button>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleProcessQuery">{{ $t('common.search') }}</el-button>
+          <el-button icon="el-icon-refresh" size="mini" @click="resetProcessQuery">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="processLoading" fit :data="definitionList" border >
@@ -126,7 +128,7 @@
           </template>
         </el-table-column>
         <el-table-column label="流程分类" align="center" prop="category" />
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -223,8 +225,9 @@ export default {
         { key: 5, label: `提交时间`, visible: true },
         { key: 6, label: `流程状态`, visible: true },
         { key: 7, label: `耗时`, visible: true },
-        { key: 8, label: `当前节点`, visible: true },
-        { key: 9, label: `办理`, visible: true }
+        { key: 8, label: `发起人`, visible: true },
+        { key: 9, label: `当前节点`, visible: true },
+        { key: 10, label: `办理`, visible: true }
       ],
       // 表单参数
       form: {},

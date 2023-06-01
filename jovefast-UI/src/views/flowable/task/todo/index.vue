@@ -14,8 +14,8 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          :default-time="['00:00:00', '23:59:59']"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -23,32 +23,54 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{ $t('common.search') }}</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{ $t('common.reset') }}</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="batchhandle"
+          v-hasPermi="['flowable:task:batchhandle']"
+        >批量审批</el-button>
+      </el-col>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+        :columns="columns"
+      ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="todoList" border>
-      <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程名称" align="center" prop="procDefName"/>
-      <el-table-column label="任务节点" align="center" prop="taskName"/>
-      <el-table-column label="流程版本" align="center">
+    <el-table v-loading="loading" :data="todoList" @selection-change="handleSelectionChange" border>
+      <el-table-column type="selection" width="50" align="center" />
+      <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true" v-if="columns[0].visible"/>
+      <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true" v-if="columns[1].visible"/>
+      <el-table-column label="流程名称" align="center" prop="procDefName" v-if="columns[2].visible"/>
+      <el-table-column label="任务节点" align="center" prop="taskName" v-if="columns[3].visible"/>
+      <el-table-column label="办理" align="center" v-if="columns[4].visible">
+        <template slot-scope="scope">
+          <label v-if="scope.row.assigneeName">{{scope.row.assigneeName}} <el-tag type="info" size="mini" v-if="scope.row.deptName">{{scope.row.deptName}}</el-tag></label>
+          <label v-if="scope.row.candidate">{{scope.row.candidate}}</label>
+          <label v-if="scope.row.taskName && scope.row.assigneeName===null && scope.row.candidate===null">{{scope.row.taskName}}</label>
+        </template>
+      </el-table-column>
+      <el-table-column label="流程版本" align="center" v-if="columns[5].visible">
         <template slot-scope="scope">
           <el-tag size="medium" >v{{scope.row.procDefVersion}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="流程发起人" align="center">
+      <el-table-column label="流程发起人" align="center" v-if="columns[6].visible">
         <template slot-scope="scope">
           <label>{{scope.row.startUserName}} <el-tag type="info" size="mini" v-if="scope.row.startDeptName">{{scope.row.startDeptName}}</el-tag></label>
         </template>
       </el-table-column>
-      <el-table-column label="接收时间" align="center" prop="createTime" width="180"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="接收时间" align="center" prop="createTime" width="180" v-if="columns[7].visible"/>
+      <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -73,16 +95,22 @@
 
 <script>
 import {
-  todoList
+  todoList,
+  batchComplete
 } from "@/api/flowable/todo";
 
 export default {
   name: "Tode",
-  components: {},
   data() {
     return {
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
       // 遮罩层
-      loading: true,
+      loading: false,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -98,6 +126,17 @@ export default {
         procDefName: null,
         category: null
       },
+      // 列信息
+      columns: [
+        { key: 0, label: `任务编号`, visible: false },
+        { key: 1, label: `流程标题`, visible: true },
+        { key: 2, label: `流程名称`, visible: true },
+        { key: 3, label: `任务节点`, visible: true },
+        { key: 4, label: `办理`, visible: true },
+        { key: 5, label: `流程版本`, visible: true },
+        { key: 6, label: `流程发起人`, visible: true },
+        { key: 6, label: `接收时间`, visible: true }
+      ],
       // 表单参数
       form: {},
       // 表单校验
@@ -159,6 +198,27 @@ export default {
           taskId: row.taskId,
           finished: true
         }})
+    },
+    /** 批量审批操作 */
+    batchhandle(){
+      if(this.ids.length > 10){
+        this.$modal.msgWarning('批量审批最多不能超过10条');
+        return false;
+      }
+      batchComplete(this.ids).then(res => {
+        if(res.code == 200){
+          this.$modal.msgSuccess(res.msg);
+          this.getList();
+        }else{
+          this.$modal.msgError(res.msg);
+        }
+      })
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.taskId);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
     },
     /** 搜索按钮操作 */
     handleQuery() {
