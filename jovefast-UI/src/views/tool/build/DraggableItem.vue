@@ -77,8 +77,69 @@ const layouts = {
     }}>
       {child}
     </render>
+  },
+  tsSubform(h, currentItem, index, list) {
+    const { activeItem } = this.$listeners
+    const config = currentItem.__config__
+    let className = this.activeId === config.formId ? 'drawing-item active-from-item' : 'drawing-item'
+    if (this.formConf.unFocusedComponentBorder) className += ' unfocus-bordered'
+    let labelWidth = config.labelWidth ? `${config.labelWidth}px` : null
+    if (config.showLabel === false) labelWidth = '0'
+    const tableData = []
+    const tableDataColumns = []
+    const tableDataProp = {}
+    const child = tsSubformChildren.apply(this, arguments)
+    tableDataColumns.push(<el-table-column label="将元素拖拽到下方" minWidth="100%" prop="columns1"></el-table-column>)
+    // eslint-disable-next-line max-len
+    tableDataProp.columns1 = <draggable list={config.children || []} animation={340} group="componentsGroup" class="drag-wrapper" style="display: flex;flex-direction: row">
+      {child}
+      <div style="clear:both;height:20px"></div>
+    </draggable>
+    tableData.push(tableDataProp)
+    return (
+      <el-col class={className}
+              nativeOnClick={event => { activeItem(currentItem); event.stopPropagation() }}>
+        <el-form-item label-width={labelWidth} label={config.showLabel ? config.label : ''} required={config.required}>
+          <el-table
+            data={tableData}
+            border={true}
+            style="width: 100%">
+            <el-table-column
+              type="index"
+              label="#"
+              align="center"
+              width="50px"
+            />
+            {tableDataColumns}
+          </el-table>
+        </el-form-item>
+        {components.itemBtns.apply(this, arguments)}
+      </el-col>
+    )
   }
 }
+
+function tsSubformChildren(h, currentItem, index, list, formId) {
+  const config = currentItem.__config__
+  if (!Array.isArray(config.children)) return null
+  return config.children.map((el, i) => {
+    const layout = layouts[el.__config__.layout]
+    el.__config__.showLabel = false
+    if (layout) {
+      const style = `width:${el.__config__.tag === 'el-input-number'
+        ? '240px' : '200px'};border:1px solid rgb(199 199 199)`
+      return <div style={style}>
+        <div style="width:100%;padding-left:20px">{el.__config__.label}</div>
+        {layout.call(this, h, el, i, config.children, formId)}
+      </div>
+    }
+    return <div>
+      <div style="width:100%;padding-left:20px">标题1</div>
+      {layoutIsNotFound.call(this)}
+    </div>
+  })
+}
+
 
 function renderChildren(h, currentItem, index, list) {
   const config = currentItem.__config__

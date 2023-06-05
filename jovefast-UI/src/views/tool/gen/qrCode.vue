@@ -55,7 +55,7 @@
         <el-form-item size="large">
           <el-button type="primary" @click="submitForm">生成</el-button>
           <el-button @click="downLoad" type="info">立即下载</el-button>
-          <el-button @click="resetForm" type="warning">重置</el-button>
+          <el-button @click="resetForm" type="warning">{{ $t('common.reset') }}</el-button>
         </el-form-item>
         <el-row :gutter="15">
           <el-form-item>

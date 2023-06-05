@@ -7,12 +7,7 @@
             <div class="setting" title="资源引用" @click="showResource">
               <el-badge :is-dot="!!resources.length" class="item">
                 <i class="el-icon-setting" />
-                资源引用
               </el-badge>
-              <span class="bar-btn" @click="runCode">
-                <i class="el-icon-refresh" />
-                刷新
-              </span>
               <span class="bar-btn" @click="exportFile">
                 <i class="el-icon-download" />
                 导出vue文件
@@ -53,47 +48,12 @@
             <div v-show="activeTab==='js'" id="editorJs" class="tab-editor" />
             <div v-show="activeTab==='css'" id="editorCss" class="tab-editor" />
           </el-col>
-          <!-- <el-col :md="24" :lg="12" class="right-preview">
-            <div class="action-bar" :style="{'text-align': 'left'}">
-              <span class="bar-btn" @click="runCode">
-                <i class="el-icon-refresh" />
-                刷新
-              </span>
-              <span class="bar-btn" @click="exportFile">
-                <i class="el-icon-download" />
-                导出vue文件
-              </span>
-              <span ref="copyBtn" class="bar-btn copy-btn">
-                <i class="el-icon-document-copy" />
-                复制代码
-              </span>
-              <span class="bar-btn delete-btn" @click="$emit('update:visible', false)">
-                <i class="el-icon-circle-close" />
-                关闭
-              </span>
-            </div>
-            <iframe
-              v-show="isIframeLoaded"
-              ref="previewPage"
-              class="result-wrapper"
-              frameborder="0"
-              src="preview.html"
-              @load="iframeLoad"
-            />
-            <div v-show="!isIframeLoaded" v-loading="true" class="result-wrapper" />
-          </el-col> -->
         </el-row>
       </div>
     </el-drawer>
-    <resource-dialog
-      :visible.sync="resourceVisible"
-      :origin-resource="resources"
-      @save="setResource"
-    />
   </div>
 </template>
 <script>
-import { parse } from '@babel/parser'
 import ClipboardJS from 'clipboard'
 import { saveAs } from 'file-saver'
 import {
@@ -101,8 +61,7 @@ import {
 } from '@/utils/generator/html'
 import { makeUpJs } from '@/utils/generator/js'
 import { makeUpCss } from '@/utils/generator/css'
-import { exportDefault, beautifierConf, titleCase } from '@/utils/index'
-import ResourceDialog from './ResourceDialog'
+import {beautifierConf } from '@/utils/index'
 import loadMonaco from '@/utils/loadMonaco'
 import loadBeautifier from '@/utils/loadBeautifier'
 
@@ -120,7 +79,6 @@ let beautifier
 let monaco
 
 export default {
-  components: { ResourceDialog },
   props: ['formData', 'generateConf'],
   data() {
     return {
@@ -130,7 +88,7 @@ export default {
       cssCode: '',
       codeFrame: '',
       isIframeLoaded: false,
-      isInitcode: false, // 保证open后两个异步只执行一次runcode
+      isInitcode: false, // 保证open后两个异步只执行一次
       isRefreshCode: false, // 每次打开都需要重新刷新代码
       resourceVisible: false,
       scripts: [],
@@ -167,9 +125,6 @@ export default {
     window.removeEventListener('keydown', this.preventDefaultSave)
   },
   methods: {
-    closedig(){
-      
-    },
     preventDefaultSave(e) {
       if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
@@ -194,7 +149,7 @@ export default {
           this.setEditorValue('editorCss', 'css', this.cssCode)
           if (!this.isInitcode) {
             this.isRefreshCode = true
-            this.isIframeLoaded && (this.isInitcode = true) && this.runCode()
+            this.isIframeLoaded && (this.isInitcode = true)
           }
         })
       })
@@ -206,7 +161,7 @@ export default {
     iframeLoad() {
       if (!this.isInitcode) {
         this.isIframeLoaded = true
-        this.isRefreshCode && (this.isInitcode = true) && this.runCode()
+        this.isRefreshCode && (this.isInitcode = true)
       }
     },
     setEditorValue(id, type, codeStr) {
@@ -219,52 +174,6 @@ export default {
           language: mode[type],
           automaticLayout: true
         })
-      }
-      // ctrl + s 刷新
-      editorObj[type].onKeyDown(e => {
-        if (e.keyCode === 49 && (e.metaKey || e.ctrlKey)) {
-          this.runCode()
-        }
-      })
-    },
-    runCode() {
-      const jsCodeStr = editorObj.js.getValue()
-      try {
-        const ast = parse(jsCodeStr, { sourceType: 'module' })
-        const astBody = ast.program.body
-        if (astBody.length > 1) {
-          this.$confirm(
-            'js格式不能识别，仅支持修改export default的对象内容',
-            '提示',
-            {
-              type: 'warning'
-            }
-          )
-          return
-        }
-        if (astBody[0].type === 'ExportDefaultDeclaration') {
-          const postData = {
-            type: 'refreshFrame',
-            data: {
-              generateConf: this.generateConf,
-              html: editorObj.html.getValue(),
-              js: jsCodeStr.replace(exportDefault, ''),
-              css: editorObj.css.getValue(),
-              scripts: this.scripts,
-              links: this.links
-            }
-          }
-
-          this.$refs.previewPage.contentWindow.postMessage(
-            postData,
-            location.origin
-          )
-        } else {
-          this.$message.error('请使用export default')
-        }
-      } catch (err) {
-        this.$message.error(`js错误：${err}`)
-        console.error(err)
       }
     },
     generateCode() {
@@ -334,16 +243,6 @@ export default {
   font-size: 18px;
   cursor: pointer;
   z-index: 1;
-}
-.right-preview {
-  height: 100%;
-  .result-wrapper {
-    height: calc(100vh - 33px);
-    width: 100%;
-    overflow: auto;
-    padding: 12px;
-    box-sizing: border-box;
-  }
 }
 @include action-bar;
 ::v-deep .el-drawer__header {

@@ -128,8 +128,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">{{ $t('common.determine') }}</el-button>
+        <el-button @click="cancel">{{ $t('common.cancel') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -148,7 +148,7 @@ import {
   inputComponents, selectComponents, layoutComponents, formConf
 } from '@/utils/generator/config'
 import {
-  exportDefault, beautifierConf, isNumberStr, titleCase, isObjectObject
+  beautifierConf, titleCase, isObjectObject
 } from '@/utils/index'
 import {
   makeUpHtml, vueTemplate, vueScript, cssStyle
@@ -166,7 +166,6 @@ import loadBeautifier from '@/utils/loadBeautifier'
 import {getForm, addForm, updateForm} from "@/api/flowable/form";
 
 let beautifier
-const emptyActiveData = { style: {}, autosize: {} }
 let oldActiveId
 let tempActiveData
 const drawingListInDB = getDrawingList()
@@ -283,6 +282,7 @@ export default {
         that.form = res.data;
       })
     }else {
+      that.formConf=[];
       if (formConfInDB) {
         that.formConf = formConfInDB
       }
