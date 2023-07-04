@@ -47,7 +47,7 @@
     "core-js": "3.25.2",
     "css-loader": "^3.5.3",
     "echarts": "5.4.0",
-    "element-ui": "2.15.10",
+    "element-ui": "2.15.13",
     "eslint-loader": "^2.2.1",
     "file-saver": "2.0.5",
     "fuse.js": "6.4.3",
