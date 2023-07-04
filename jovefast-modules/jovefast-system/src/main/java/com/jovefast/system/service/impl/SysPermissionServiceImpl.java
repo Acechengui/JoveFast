@@ -3,6 +3,7 @@ package com.jovefast.system.service.impl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.springframework.util.CollectionUtils;
 
 import com.jovefast.system.api.domain.SysRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ public class SysPermissionServiceImpl implements ISysPermissionService
 
     /**
      * 获取角色数据权限
-     * 
-     * @param userId 用户Id
+     *
+     * @param user 用户Id
      * @return 角色权限信息
      */
     @Override
@@ -49,8 +50,8 @@ public class SysPermissionServiceImpl implements ISysPermissionService
 
     /**
      * 获取菜单数据权限
-     * 
-     * @param userId 用户Id
+     *
+     * @param user 用户Id
      * @return 菜单权限信息
      */
     @Override
@@ -65,7 +66,7 @@ public class SysPermissionServiceImpl implements ISysPermissionService
         else
         {
             List<SysRole> roles = user.getRoles();
-            if (!roles.isEmpty() && roles.size() > 1)
+            if (!CollectionUtils.isEmpty(roles))
             {
                 // 多角色设置permissions属性，以便数据权限匹配权限
                 for (SysRole role : roles)
