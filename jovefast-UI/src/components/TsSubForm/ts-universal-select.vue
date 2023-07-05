@@ -1,10 +1,10 @@
 <template>
     <el-select v-model="currentValue" :multiple="multiple" :filterable="filterable" remote reserve-keyword
-        :placeholder="placeholder" :remote-method="remoteMethod" :loading="loading">
+        :placeholder="placeholder" :remote-method="remoteMethod" :loading="loading" allow-create>
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
     </el-select>
 </template>
-  
+
 <script>
 import { getToken } from "@/utils/auth";
 export default {
