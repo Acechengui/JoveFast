@@ -14,16 +14,14 @@ import com.jovefast.flowable.common.constant.ProcessConstants;
 import com.jovefast.flowable.common.enums.FlowComment;
 import com.jovefast.flowable.domain.SysForm;
 import com.jovefast.flowable.domain.SysProcessTitle;
-import com.jovefast.flowable.domain.dto.FlowCommentDto;
-import com.jovefast.flowable.domain.dto.FlowNextDto;
-import com.jovefast.flowable.domain.dto.FlowTaskDto;
-import com.jovefast.flowable.domain.dto.FlowViewerDto;
+import com.jovefast.flowable.domain.dto.*;
 import com.jovefast.flowable.domain.vo.FlowTaskVo;
 import com.jovefast.flowable.factory.FlowServiceFactory;
 import com.jovefast.flowable.flow.CustomProcessDiagramGenerator;
 import com.jovefast.flowable.flow.FindNextNodeUtil;
 import com.jovefast.flowable.flow.FlowableUtils;
 import com.jovefast.flowable.mapper.FlowDeployMapper;
+import com.jovefast.flowable.mapper.FlowHistericTaskMapper;
 import com.jovefast.flowable.service.IFlowTaskService;
 import com.jovefast.flowable.service.ISysDeployFormService;
 import com.jovefast.system.api.RemoteUserService;
@@ -51,7 +49,6 @@ import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.task.api.history.HistoricTaskInstanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +57,7 @@ import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -78,6 +76,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
 
     @Autowired
     private FlowDeployMapper flowDeployMapper;
+
+    @Autowired
+    private FlowHistericTaskMapper  flowHistericTaskMapper;
 
     /**
      * 单个完成任务
@@ -113,7 +114,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean batchComplete(String[] taskIds) {
+        Long userId = SecurityUtils.getLoginUser().getSysUser().getUserId();
         for (String ts:taskIds) {
+            taskService.setAssignee(ts, userId.toString());
             taskService.complete(ts);
         }
         return true;
@@ -416,6 +419,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         if(ObjectUtils.allNull(flowTaskVo.getValues().get(ProcessConstants.PROCESS_APPROVAL))){
             throw new CheckedException("未指定转办人");
         }
+        if(String.valueOf(flowTaskVo.getValues().get(ProcessConstants.PROCESS_APPROVAL)).contains(",")){
+            throw new CheckedException("只能转办给一人");
+        }
         //添加审批意见
         taskService.addComment(flowTaskVo.getTaskId(), flowTaskVo.getInstanceId(), FlowComment.NORMAL.getType(), flowTaskVo.getComment());
         taskService.setAssignee(flowTaskVo.getTaskId(),String.valueOf(flowTaskVo.getValues().get(ProcessConstants.PROCESS_APPROVAL)));
@@ -647,62 +653,36 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
     @Override
     public List<FlowTaskDto> finishedList(Integer pageNum, Integer pageSize,FlowTaskDto flowTaskDto) {
-        Long userId = SecurityUtils.getLoginUser().getSysUser().getUserId();
-        HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery()
-                .includeProcessVariables()
-                .finished()
-                .taskAssignee(userId.toString());
-        if(StringUtils.isNotBlank(flowTaskDto.getProcDefName())){
-            taskInstanceQuery.processDefinitionNameLike(flowTaskDto.getProcDefName());
-        }
-        if(ObjectUtils.isNotEmpty(flowTaskDto.getParams().get("beginTime"))){
-            taskInstanceQuery.taskCreatedAfter(DateUtils.parseDate(flowTaskDto.getParams().get("beginTime")));
-        }
-        if(ObjectUtils.isNotEmpty(flowTaskDto.getParams().get("endTime"))){
-            taskInstanceQuery.taskCreatedBefore(DateUtils.parseDate(flowTaskDto.getParams().get("endTime")));
-        }
-        taskInstanceQuery.orderByHistoricTaskInstanceEndTime().desc();
-        List<HistoricTaskInstance> historicTaskInstanceList = taskInstanceQuery.listPage(pageSize * (pageNum - 1), pageSize);
+        Map<String, Object> params = flowTaskDto.getParams();
+        params.put("assignee",SecurityUtils.getLoginUser().getSysUser().getUserId());
+        params.put("pageNum",pageSize * (pageNum - 1));
+        params.put("pageSize",pageSize);
+        List<HistoricTaskInstanceDTO> historicTaskInstanceList = flowHistericTaskMapper.selectFlowHistericTaskInstance(flowTaskDto);
         List<FlowTaskDto> hisTaskList = Lists.newArrayList();
-        for (HistoricTaskInstance histTask : historicTaskInstanceList) {
-            FlowTaskDto flowTask = new FlowTaskDto();
-            // 当前流程信息
-            flowTask.setTaskId(histTask.getId());
-            // 审批人员信息
-            flowTask.setCreateTime(histTask.getCreateTime());
-            flowTask.setFinishTime(histTask.getEndTime());
-            flowTask.setDuration(DateUtils.getProcessCompletionTime(histTask.getDurationInMillis()));
-            flowTask.setProcDefId(histTask.getProcessDefinitionId());
-            flowTask.setTaskDefKey(histTask.getTaskDefinitionKey());
-            flowTask.setTaskName(histTask.getName());
-            flowTask.setExecutionId(histTask.getExecutionId());
-            //获取流程标题
-            SysProcessTitle pt = flowDeployMapper.selectSysProcessTitle(histTask.getProcessInstanceId());
-            if(pt!=null){
-                flowTask.setProcessTitle(pt.getProcessTitle());
-            }
+        for (HistoricTaskInstanceDTO inst : historicTaskInstanceList) {
+            AtomicReference<FlowTaskDto> flowTasks = new AtomicReference<>(new FlowTaskDto());
+            flowTasks.get().setTaskId(inst.getIdRev());
+            flowTasks.get().setCreateTime(inst.getStartTime());
+            flowTasks.get().setFinishTime(inst.getEndTime());
+            flowTasks.get().setDuration(DateUtils.getProcessCompletionTime(inst.getDuration()));
+            flowTasks.get().setProcDefId(inst.getProcDefId());
+            flowTasks.get().setTaskDefKey(inst.getTaskDefKey());
+            flowTasks.get().setTaskName(inst.getNname());
+            flowTasks.get().setExecutionId(inst.getExecutionId());
+            flowTasks.get().setProcessTitle(inst.getProcessTitle());
+            flowTasks.get().setStartDeptName(inst.getStartDeptName());
+            flowTasks.get().setStartUserId(inst.getStartUserId());
+            flowTasks.get().setStartUserName(inst.getStartUserName());
             // 流程定义信息
             ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionId(histTask.getProcessDefinitionId())
+                    .processDefinitionId(inst.getProcDefId())
                     .singleResult();
-            flowTask.setDeployId(pd.getDeploymentId());
-            flowTask.setProcDefName(pd.getName());
-            flowTask.setProcDefVersion(pd.getVersion());
-            flowTask.setProcInsId(histTask.getProcessInstanceId());
-            flowTask.setHisProcInsId(histTask.getProcessInstanceId());
-
-            // 流程发起人信息
-            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-                    .processInstanceId(histTask.getProcessInstanceId())
-                    .singleResult();
-            R<SysUser> startUser = remoteuserservice.selectUserInFoById(Long.parseLong(historicProcessInstance.getStartUserId()), SecurityConstants.INNER);
-            if(startUser.getCode() == HttpStatus.ERROR){
-                throw new CheckedException("获取用户信息失败");
-            }
-            flowTask.setStartUserId(String.valueOf(startUser.getData().getUserId()));
-            flowTask.setStartUserName(startUser.getData().getNickName());
-            flowTask.setStartDeptName(startUser.getData().getDept().getDeptName());
-            hisTaskList.add(flowTask);
+            flowTasks.get().setDeployId(pd.getDeploymentId());
+            flowTasks.get().setProcDefName(pd.getName());
+            flowTasks.get().setProcDefVersion(pd.getVersion());
+            flowTasks.get().setProcInsId(inst.getProcInstId());
+            flowTasks.get().setHisProcInsId(inst.getProcInstId());
+            hisTaskList.add(flowTasks.get());
         }
         return hisTaskList;
     }
@@ -779,6 +759,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                                 stl.append(comment.getFullMessage()).append("; ");
                             }
                         }
+                        flowTask.setComment(FlowCommentDto.builder().type(comment.getType()).comment(String.valueOf(stl)).build());
                     });
                     hisFlowList.add(flowTask);
                 }
