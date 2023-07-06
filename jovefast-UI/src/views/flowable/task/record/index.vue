@@ -36,7 +36,7 @@
       <!--初始化流程加载表单信息-->
       <el-col :span="24" v-if="formConfOpen">
         <div class="key-form">
-          <parser :key="new Date().getTime()" :form-conf="formConf" @submit="submitForm" ref="parser"
+          <parser :key="new Date().getTime()" :form-conf="formConf" @submit="initSubmitForm" ref="parser"
                   @getData="getData" />
         </div>
       </el-col>
@@ -202,7 +202,7 @@
           <el-row :gutter="20">
             <!--部门数据-->
             <el-col :span="6" :xs="24">
-              <el-tag type="danger">把任务转办给他人</el-tag>
+              <el-tag type="danger">把任务转办给他人: 只能转给一人</el-tag>
               <h6>展开部门列表选择</h6>
               <div class="head-container">
                 <el-input v-model="deptName" placeholder="请输入部门名称" clearable size="small" prefix-icon="el-icon-search"
@@ -318,6 +318,8 @@ export default {
       }],
       // 用户表格数据
       userList: null,
+      //流程标题
+      processTitle:undefined,
       defaultProps: {
         children: "children",
         label: "label"
@@ -699,32 +701,41 @@ export default {
       }
     },
     /** 申请流程表单数据提交 */
-    submitForm(data) {
+    initSubmitForm(data) {
       if (data) {
-        this.$prompt('请输入流程标题', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
-        }).then(({ value }) => {
-          this.$message({
-            type: 'success',
-            message: '设置的流程标题为:' + value
-          });
+        if(!this.processTitle){
+          this.$prompt('请输入流程标题', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+          }).then(({ value }) => {
+            this.processTitle=value;
+            this.$message({
+              type: 'success',
+              message: '设置的流程标题为:' + this.processTitle
+            });
+            this.applicationHandle(data);
+          }).catch(() => {});
+        }else{
+          this.applicationHandle(data);
+        }
 
-          const variables = data.valData;
-          const formData = data.formData;
-          if (this.taskForm.procDefId) {
-            variables.variables = formData;
-            //设置一个流程标题
-            variables.processTitle=value;
-            // 启动流程并将表单数据加入流程变量
-            definitionStart(this.taskForm.procDefId,JSON.stringify(variables)).then(res => {
-              this.$modal.msgSuccess(res.msg);
-              formData.disabled = true;
-              formData.formBtns = false;
-              this.goBack();
-            })
-          }
-        }).catch(() => {});
+      }
+    },
+    /** 申请提交 */
+    applicationHandle(appData){
+      const variables = appData.valData;
+      const formData = appData.formData;
+      if (this.taskForm.procDefId) {
+        variables.variables = formData;
+        //设置一个流程标题
+        variables.processTitle=this.processTitle;
+        // 启动流程并将表单数据加入流程变量
+        definitionStart(this.taskForm.procDefId,JSON.stringify(variables)).then(res => {
+          this.$modal.msgSuccess(res.msg);
+          formData.disabled = true;
+          formData.formBtns = false;
+          this.goBack();
+        })
       }
     },
     /** 驳回任务 */
