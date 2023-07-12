@@ -20,7 +20,7 @@ import com.jovefast.job.domain.SysJob;
 
 /**
  * 定时任务工具类
- * 
+ *
  * @author Acechengui
  *
  */
@@ -121,7 +121,7 @@ public class ScheduleUtils
 
     /**
      * 检查包名是否为白名单配置
-     * 
+     *
      * @param invokeTarget 目标字符串
      * @return 结果
      */
@@ -134,6 +134,8 @@ public class ScheduleUtils
             return StringUtils.containsAnyIgnoreCase(invokeTarget, Constants.JOB_WHITELIST_STR);
         }
         Object obj = SpringUtils.getBean(StringUtils.split(invokeTarget, ".")[0]);
-        return StringUtils.containsAnyIgnoreCase(obj.getClass().getPackage().getName(), Constants.JOB_WHITELIST_STR);
+        String beanPackageName = obj.getClass().getPackage().getName();
+        return StringUtils.containsAnyIgnoreCase(beanPackageName, Constants.JOB_WHITELIST_STR)
+                && !StringUtils.containsAnyIgnoreCase(beanPackageName, Constants.JOB_ERROR_STR);
     }
 }
