@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -213,6 +214,54 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     }
 
     /**
+     * 判断日期是否为1号
+     */
+    public static boolean isFirstDayOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) + 1);
+        return calendar.get(Calendar.DAY_OF_MONTH) == 2;
+    }
+
+    /**
+     * 判断日期是否为月末
+     */
+    public static boolean isLastDayOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) + 1);
+        return calendar.get(Calendar.DAY_OF_MONTH) == 1;
+    }
+
+    /**
+     * 判断当前时间是否在某个时间之前
+     *
+     * @param tagDateTime 判断的标准
+     * @return true是，false不是
+     */
+    public static boolean isTodayBefore(Date tagDateTime) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar contCalendar = Calendar.getInstance();
+        Calendar tagCalendar = (Calendar) contCalendar.clone();
+        tagCalendar.setTime(tagDateTime);
+        return contCalendar.before(tagCalendar);
+    }
+
+    //判断选择的日期是否是今天
+    public static boolean isToday(Date time) {
+        return isThisTime(time, "yyyy-MM-dd");
+    }
+
+    private static boolean isThisTime(Date time, String pattern) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        //参数时间
+        String param = sdf.format(time);
+        //当前时间
+        String now = sdf.format(new Date());
+        return param.equals(now);
+    }
+
+    /**
      * 返回当前时间的单个时间类型
      *
      * @param type 1：年；2：月；3：日；
@@ -230,6 +279,21 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
             default:
                 return 0;
         }
+    }
+
+    /**
+     * 获取上个月天数
+     * @return 天数
+     */
+    public static int getDaysOfLastMonth() {
+        //取得系统当前时间
+        Calendar cal = Calendar.getInstance();
+        //取得系统当前时间所在月第一天时间对象
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        //日期减一,取得上月最后一天时间对象
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        //输出上月最后一天日期
+        return cal.get(Calendar.DAY_OF_MONTH);
     }
 
 
@@ -398,5 +462,42 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         pram.put("month", month);
         pram.put("date", date);
         return pram;
+    }
+
+    /**
+     * 去年
+     */
+    public static String lastYear() {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.YEAR, -1);
+        int year = c.get(Calendar.YEAR);
+        return String.valueOf(year);
+    }
+
+    /**
+     * 计算时间差
+     *
+     * @param endDate 最后时间
+     * @param startTime 开始时间
+     * @return 时间差（天/小时/分钟）
+     */
+    public static String timeDistance(Date endDate, Date startTime)
+    {
+        long nd = 1000 * 24 * 60 * 60;
+        long nh = 1000 * 60 * 60;
+        long nm = 1000 * 60;
+        // long ns = 1000;
+        // 获得两个时间的毫秒时间差异
+        long diff = endDate.getTime() - startTime.getTime();
+        // 计算差多少天
+        long day = diff / nd;
+        // 计算差多少小时
+        long hour = diff % nd / nh;
+        // 计算差多少分钟
+        long min = diff % nd % nh / nm;
+        // 计算差多少秒//输出结果
+        // long sec = diff % nd % nh % nm / ns;
+        return day + "天" + hour + "小时" + min + "分钟";
     }
 }
