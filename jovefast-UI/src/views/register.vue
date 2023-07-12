@@ -2,7 +2,7 @@
   <div class="register">
     <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
       <lang-select class="set-language" />
-      <h3 class="title">{{ $t('register.title') }} <el-tag type="danger">v3.6.2</el-tag></h3>
+      <h3 class="title">{{ $t('register.title') }} <el-tag type="danger">v3.6.3</el-tag></h3>
       <h5 class="tip">{{ $t('register.tip') }}<el-tag type="success">{{ $t('register.google') }}</el-tag><el-tag type="warning">{{ $t('register.firefox') }}</el-tag><el-tag type="info">Edge</el-tag></h5>
       <el-form-item prop="username">
         <el-input v-model="registerForm.username" type="text" auto-complete="off" :placeholder="$t('register.username')">

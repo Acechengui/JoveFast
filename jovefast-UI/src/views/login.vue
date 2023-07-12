@@ -2,7 +2,7 @@
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <lang-select class="set-language" />
-      <h3 class="title">{{ $t('login.title') }} <el-tag type="danger">v3.6.2</el-tag></h3>
+      <h3 class="title">{{ $t('login.title') }} <el-tag type="danger">v3.6.3</el-tag></h3>
       <h5 class="tip">{{ $t('login.tip') }}<el-tag type="success">{{ $t('login.google') }}</el-tag><el-tag type="warning">{{ $t('login.firefox') }}</el-tag><el-tag type="info">Edge</el-tag></h5>
       <el-form-item prop="username">
         <el-input
