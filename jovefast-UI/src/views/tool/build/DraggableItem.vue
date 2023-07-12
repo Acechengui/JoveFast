@@ -30,9 +30,9 @@ const layouts = {
     if (config.showLabel === false) labelWidth = '0'
     return (
       <el-col span={config.span} class={className}
-        nativeOnClick={event => { activeItem(currentItem); event.stopPropagation() }}>
+              nativeOnClick={event => { activeItem(currentItem); event.stopPropagation() }}>
         <el-form-item label-width={labelWidth}
-          label={config.showLabel ? config.label : ''} required={config.required}>
+                      label={config.showLabel ? config.label : ''} required={config.required}>
           <render key={config.renderKey} conf={currentItem} onInput={ event => {
             this.$set(config, 'defaultValue', event)
           }}>
@@ -52,16 +52,16 @@ const layouts = {
     let child = renderChildren.apply(this, arguments)
     if (currentItem.type === 'flex') {
       child = <el-row type={currentItem.type} justify={currentItem.justify} align={currentItem.align}>
-              {child}
-            </el-row>
+        {child}
+      </el-row>
     }
     return (
       <el-col span={config.span}>
         <el-row gutter={config.gutter} class={className}
-          nativeOnClick={event => { activeItem(currentItem); event.stopPropagation() }}>
+                nativeOnClick={event => { activeItem(currentItem); event.stopPropagation() }}>
           <span class="component-name">{config.componentName}</span>
           <draggable list={config.children || []} animation={340}
-            group="componentsGroup" class="drag-wrapper">
+                     group="componentsGroup" class="drag-wrapper">
             {child}
           </draggable>
           {components.itemBtns.apply(this, arguments)}
@@ -108,7 +108,7 @@ const layouts = {
               type="index"
               label="#"
               align="center"
-              width="50px"
+              width="30px"
             />
             {tableDataColumns}
           </el-table>
@@ -127,7 +127,7 @@ function tsSubformChildren(h, currentItem, index, list, formId) {
     el.__config__.showLabel = false
     if (layout) {
       const style = `width:${el.__config__.tag === 'el-input-number'
-        ? '240px' : '200px'};border:1px solid rgb(199 199 199)`
+        ? '240px' : el.width || '200px'};border:1px solid rgb(199 199 199)`
       return <div style={style}>
         <div style="width:100%;padding-left:20px">{el.__config__.label}</div>
         {layout.call(this, h, el, i, config.children, formId)}
