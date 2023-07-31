@@ -29,6 +29,40 @@
         order by rd.deploy_time_ desc
     </select>
 
+    <select id="selectDeployListLast" resultType="FlowProcDefDto">
+        SELECT *
+        FROM (
+        SELECT
+        ROW_NUMBER() OVER (PARTITION BY rp.KEY_ ORDER BY rp.VERSION_ DESC) AS rn,
+        rp.id_ as id,
+        rd.id_ as deploymentId,
+        rd.name_ as name,
+        rd.category_ as category,
+        rp.key_ as flowKey,
+        rp.version_ as version,
+        rp.suspension_state_ as suspensionState,
+        rd.deploy_time_  as deploymentTime,
+        sf.form_name as formName,
+        sf.form_id as formId
+        FROM
+        ACT_RE_PROCDEF rp
+        LEFT JOIN ACT_RE_DEPLOYMENT rd ON rp.deployment_id_ = rd.id_
+        LEFT JOIN sys_deploy_form df ON df.deploy_id = rd.id_
+        LEFT JOIN sys_form sf ON sf.form_id = df.form_id
+        <where>
+            <if test="tenantId != null and tenantId != ''">
+                AND rp.TENANT_ID_ = #{tenantId}
+            </if>
+            <if test="name != null and name != ''">
+                and rd.name_ like concat('%', #{name}, '%')
+            </if>
+        </where>
+        ORDER BY
+        rd.deploy_time_ DESC
+        )AS temp
+        WHERE rn = 1
+    </select>
+
     <select id="selectSysProcessTitle" resultType="SysProcessTitle" parameterType="string">
         SELECT id,proc_ins_id AS procInsId,process_title AS processTitle FROM sys_process_title WHERE proc_ins_id=#{procInsId}
     </select>

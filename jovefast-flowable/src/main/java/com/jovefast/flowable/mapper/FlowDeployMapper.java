@@ -20,6 +20,13 @@ public interface FlowDeployMapper {
     List<FlowProcDefDto> selectDeployList(String name);
 
     /**
+     * 各个流程定义最新版本列表
+     * @param name 流程名称
+     * @param tenantId 租户标识
+     */
+    List<FlowProcDefDto> selectDeployListLast(@Param("name") String name);
+
+    /**
      * 流程标题信息
      * @param procInsId 流程ID
      */

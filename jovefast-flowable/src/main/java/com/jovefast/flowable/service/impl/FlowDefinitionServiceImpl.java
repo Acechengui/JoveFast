@@ -69,6 +69,19 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         return flowDeployMapper.selectDeployList(name);
     }
 
+    /**
+     * 各个流程定义最新版本列表
+     *
+     * @param name  参数
+     * @return 流程定义分页列表数据
+     */
+    @Override
+    public List<FlowProcDefDto> listLast(String name) {
+        return flowDeployMapper.selectDeployListLast(
+                name
+        );
+    }
+
 
     /**
      * 导入流程文件

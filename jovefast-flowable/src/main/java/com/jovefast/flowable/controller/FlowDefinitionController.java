@@ -59,6 +59,15 @@ public class FlowDefinitionController extends BaseController {
         return getDataTable(flowDefinitionService.list(name));
     }
 
+    @GetMapping(value = "/list/last")
+    @ApiOperation(value = "流程定义最新版本列表", response = FlowProcDefDto.class)
+    @RequiresPermissions("flowable:definition:list")
+    public TableDataInfo listLast(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
+                                  @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize,
+                                  @ApiParam(value = "流程名称", required = false) @RequestParam(required = false) String name) {
+        startPage();
+        return getDataTable(flowDefinitionService.listLast(name));
+    }
 
     @ApiOperation(value = "导入流程文件", notes = "上传bpmn20的xml文件")
     @PostMapping("/import")

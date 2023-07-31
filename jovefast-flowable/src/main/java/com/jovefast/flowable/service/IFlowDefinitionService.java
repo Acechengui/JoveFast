@@ -24,6 +24,14 @@ public interface IFlowDefinitionService {
     List<FlowProcDefDto> list(String name);
 
     /**
+     * 各个流程定义最新版本列表
+     *
+     * @param name  参数
+     * @return 流程定义分页列表数据
+     */
+    List<FlowProcDefDto> listLast(String name);
+
+    /**
      * 导入流程文件
      *
      * @param name
