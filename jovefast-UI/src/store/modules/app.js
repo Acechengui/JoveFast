@@ -7,6 +7,7 @@ const state = {
     hide: false
   },
   device: 'desktop',
+  language: Cookies.get('language') || 'zh_CN' || 'en_US' || 'th_TH',
   size: Cookies.get('size') || 'medium'
 }
 
