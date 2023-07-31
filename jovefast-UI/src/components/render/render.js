@@ -92,6 +92,7 @@ function buildDataObject(confClone, dataObject) {
 }
 
 function clearAttrs(dataObject) {
+  dataObject.attrs.config = dataObject.attrs.__config__
   delete dataObject.attrs.__config__
   delete dataObject.attrs.__slot__
   delete dataObject.attrs.__methods__
@@ -122,7 +123,7 @@ export default {
     return {
       headers:{},
     }
-  }, 
+  },
   props: {
     conf: {
       type: Object,

@@ -2,6 +2,7 @@
 import { deepClone } from "@/utils/index";
 import render from "@/components/render/render.js";
 import { getToken } from "@/utils/auth";
+import axios from 'axios'
 
 const ruleTrigger = {
   "el-input": "blur",
@@ -19,17 +20,17 @@ const layouts = {
   colFormItem(h, scheme) {
     const config = scheme.__config__;
     const listeners = buildListeners.call(this, scheme);
+    const child = renderChildren.apply(this, arguments)
 
     let labelWidth = config.labelWidth ? `${config.labelWidth}px` : null;
     if (config.showLabel === false) labelWidth = "0";
     return (
       <el-col span={config.span}>
-        <el-form-item
-          label-width={labelWidth}
-          prop={scheme.__vModel__}
-          label={config.showLabel ? config.label : ""}
-        >
-          <render conf={scheme} on={listeners} />
+        <el-form-item label-width={labelWidth} prop={scheme.__vModel__}
+                      label={config.showLabel ? config.label : ''}>
+          <render conf={scheme} on={listeners}>
+            { child }
+          </render>
         </el-form-item>
       </el-col>
     );
@@ -53,6 +54,43 @@ const layouts = {
       </el-col>
     );
   },
+  raw(h, currentItem, index, list) {
+    const config = currentItem.__config__
+    const child = renderChildren.apply(this, arguments)
+    return <render key={config.renderKey} conf={currentItem} onInput={ event => {
+      this.$set(config, 'defaultValue', event)
+    }}>
+      {child}
+    </render>
+  },
+  tsSubform(h, scheme) {
+    const config = scheme.__config__
+    const data = JSON.parse(JSON.stringify(config.children))
+    data.forEach(item => {
+      item.config = {}
+      item.config = {}
+      item.config.label = item.__config__.label
+      item.config.formId = item.__config__.formId
+      item.config.align = item.__config__.align
+      item.config.optionType = item.__config__.optionType
+      item.config.width = item.__config__.width
+      item.config.tag = item.__config__.tag
+      item.config.prop = item.__vModel__
+      delete item.__config__
+      delete item.__vModel__
+    })
+    const tableData = data
+    let labelWidth = config.labelWidth ? `${config.labelWidth}px` : null
+    if (config.showLabel === false) labelWidth = '0'
+    return (
+      <el-col span={config.span}>
+        <el-form-item label-width={labelWidth}
+                      label={config.showLabel ? config.label : ''}>
+          <ts-sub-form table-data={tableData} value={config.defaultValue} addButton={scheme.addButton} deleteButton={scheme.deleteButton} canEdit={scheme.canEdit}></ts-sub-form>
+        </el-form-item>
+      </el-col>
+    )
+  }
 };
 
 function renderFrom(h) {
@@ -94,7 +132,6 @@ function renderFormItem(h, elementList) {
   return elementList.map((scheme) => {
     const config = scheme.__config__;
     const layout = layouts[config.layout];
-
     if (layout) {
       return layout.call(this, h, scheme);
     }
@@ -105,7 +142,13 @@ function renderFormItem(h, elementList) {
 function renderChildren(h, scheme) {
   const config = scheme.__config__;
   if (!Array.isArray(config.children)) return null;
-  return renderFormItem.call(this, h, config.children);
+  return config.children.map((el, i) => {
+    const layout = layouts[el.__config__.layout]
+    if (layout) {
+      return layout.call(this, h, el, i, config.children)
+    }
+    return renderFormItem.call(this)
+  })
 }
 
 function setValue(event, config, scheme) {
@@ -174,7 +217,7 @@ function deleteUpload(config, scheme, file, fileList) {
       JSON.stringify(newValue)
     );
   }
-  
+
 }
 
 //文件上传失败的回调
@@ -215,20 +258,28 @@ export default {
     this.buildRules(data.formConfCopy.fields, data[this.formConf.formRules]);
     return data;
   },
+  created(){
+    this.initFormData(this.formConfCopy.fields, this[this.formConf.formModel]);
+  },
   methods: {
     initFormData(componentList, formData) {
       componentList.forEach((cur) => {
-        const vModel = cur.__vModel__;
-        const val = formData[vModel];
-        const config = cur.__config__;
-        if (config.tag === "el-upload") {
-          // 如果需要token，可以设置
-          cur["headers"] = { Authorization: "Bearer " + getToken() };
+        if (cur.__config__.tag === 'ts-sub-form') {
+          const config = cur.__config__
+          formData[cur.__config__.layout] = config.defaultValue
+          if (this.formConf?.disabled) {
+            cur.canEdit = false
+          }
+        } else {
+          const config = cur.__config__
+          if (config.tag === "el-upload") {
+            // 如果需要token，可以设置
+            cur["headers"] = { Authorization: "Bearer " + getToken() };
+          }
+          if (cur.__vModel__) formData[cur.__vModel__] = config.defaultValue
+          if (config.children) this.initFormData(config.children, formData)
+          if (config.tag === 'el-table') formData[cur.__vModel__] = cur.data
         }
-        if (cur.__vModel__) {
-          formData[cur.__vModel__] = config.defaultValue;
-        }
-        if (config.children) this.initFormData(config.children, formData);
       });
     },
     buildRules(componentList, rules) {
@@ -245,7 +296,7 @@ export default {
               required.message = `请至少选择一个${config.label}`;
             }
             required.message === undefined &&
-              (required.message = `${config.label}不能为空`);
+            (required.message = `${config.label}不能为空`);
             config.regList.push(required);
           }
           rules[cur.__vModel__] = config.regList.map((item) => {

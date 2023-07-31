@@ -606,34 +606,10 @@ export const layoutComponents = [
           align: 'center',
           prop: 'date',
           label: '时间'
-        },
-        {
-          __config__: {
-            layout: 'raw',
-            tag: 'el-table-column'
-          },
-          align: 'center',
-          prop: 'address',
-          label: '地址'
         }
       ]
     },
-    data: [{
-      name: '张三',
-      sex: '男',
-      age: '18',
-      ah: '打球、游泳'
-    }, {
-      name: '李四',
-      sex: '男',
-      age: '18',
-      ah: '打球、游泳'
-    }, {
-      name: '老六',
-      sex: '男',
-      age: '18',
-      ah: '打球、游泳'
-    }],
+    data: [],
     directives: [{
       name: 'loading',
       value: true
@@ -643,6 +619,65 @@ export const layoutComponents = [
     size: 'medium',
     type: 'default',
     justify: 'start'
+  },
+  {
+    __config__: {
+      layout: 'colFormItem',
+      tagIcon: 'table',
+      tag: 'custom-table',
+      document: 'https://element.eleme.cn/#/zh-CN/component/table',
+      span: 24,
+      formId: 102,
+      renderKey: 1595761764204,
+      componentName: 'row102',
+      showLabel: true,
+      changeTag: true,
+      labelWidth: null,
+      label: '表格[查询]',
+      dataType: 'dynamic',
+      method: 'get',
+      dataPath: 'list',
+      params: ['key1','key2'],
+      dataConsumer: 'data',
+      url: 'https://www.fastmock.site/mock/f8d7a54fb1e60561e2f720d5a810009d/fg/tableData', // 请求数据的地址
+      children: [{
+        __config__: {
+          layout: 'raw',
+          tag: 'el-table-column',
+          renderKey: 15957617660153
+        },
+        prop: 'date',
+        label: '日期'
+      }, {
+        __config__: {
+          layout: 'raw',
+          tag: 'el-table-column',
+          renderKey: 15957617660152
+        },
+        prop: 'address',
+        label: '地址'
+      }, {
+        __config__: {
+          layout: 'raw',
+          tag: 'el-table-column',
+          renderKey: 15957617660151
+        },
+        prop: 'name',
+        label: '名称'
+      }]
+    },
+    data: [], // 数据
+    directives: [{
+      name: 'loading',
+      value: true
+    }],
+    border: true, // 是否带有纵向边框
+    stripe: true, // 是否为斑马纹 table
+    'show-header': true, // 是否显示表头
+    size: 'medium', // Table 的尺寸
+    type: 'default',
+    justify: 'start',
+    align: 'top'
   },
   {
     __config__: {

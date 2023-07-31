@@ -22,7 +22,7 @@ import './assets/icons' // icon
 import './permission' // permission control
 import { getDicts } from "@/api/system/dict/data";
 import { getConfigKey } from "@/api/system/config";
-import { parseTime,resetForm,addDateRange,addMultipleDateRange,addMultipleDateRangeThree,selectDictLabel,selectDictLabels,handleTree } from "@/utils/jove";
+import { parseTime,formatDateC,resetForm,addDateRange,addMultipleDateRange,addMultipleDateRangeThree,selectDictLabel,selectDictLabels,handleTree } from "@/utils/jove";
 
 import elDragDialog from '@/utils/el-drag-dialog' // 引入移动事件
 Vue.directive('el-drag-dialog', elDragDialog);//添加标签事件绑定 可以放大移动弹窗
@@ -51,14 +51,19 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 //自定义组件-子表单
-import TsSubFrom from '@/components/TsSubForm/index.vue'
+import TsSubFrom from '@/components/TsSubForm/'
 //自定义组件-万能选择
 import TsUniversalSelect from '@/components/TsSubForm/ts-universal-select.vue'
+//自定义组件-待查询能力的数据表格index.vue
+import CustomTable from '@/components/CustomTable/index.vue'
+//自定义组件-el-table横向滚动条固定在窗口底部
+import horizontalScroll from 'el-table-horizontal-scroll'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime
+Vue.prototype.formatDateC = formatDateC
 Vue.prototype.resetForm = resetForm
 Vue.prototype.addDateRange = addDateRange
 Vue.prototype.addMultipleDateRange = addMultipleDateRange
@@ -80,6 +85,8 @@ Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
 Vue.component('tsSubForm', TsSubFrom)
 Vue.component('tsUniversalSelect', TsUniversalSelect)
+Vue.component('CustomTable', CustomTable)
+Vue.use(horizontalScroll)
 
 Vue.use(Print)
 Vue.use(directive)

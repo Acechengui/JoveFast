@@ -199,7 +199,9 @@
           </el-form-item>
 
           <el-form-item
-            v-if="activeData.__config__.tag === 'el-table'"
+            v-if="
+              ['custom-table', 'el-table'].includes(activeData.__config__.tag)
+            "
             label="是否为斑马纹"
           >
             <el-switch v-model="activeData.__config__.stripe" />
@@ -241,7 +243,9 @@
           </el-form-item>
 
           <el-form-item
-            v-if="activeData.__config__.tag === 'el-table'"
+            v-if="
+              ['custom-table', 'el-table'].includes(activeData.__config__.tag)
+            "
             label="是否带有纵向边框"
           >
             <el-switch v-model="activeData.__config__.border" />
@@ -654,7 +658,7 @@
 
           <template
             v-if="
-              ['el-cascader', 'el-table'].includes(activeData.__config__.tag)
+              ['el-cascader', 'el-table','custom-table'].includes(activeData.__config__.tag)
             "
           >
             <el-divider>选项</el-divider>
@@ -664,6 +668,7 @@
             >
               <el-radio-group
                 v-model="activeData.__config__.dataType"
+                v-if="activeData.__config__.tag !== 'custom-table'"
                 size="small"
               >
                 <el-radio-button label="dynamic"> 动态数据 </el-radio-button>
@@ -700,9 +705,52 @@
                   @blur="$emit('fetch-data', activeData)"
                 />
               </el-form-item>
+              <template v-if="activeData.__config__.tag === 'custom-table'">
+                <el-divider>参数选项</el-divider>
+                <draggable
+                  :list="activeData.__config__.params"
+                  :animation="340"
+                  group="selectItem"
+                  handle=".option-drag"
+                >
+                  <div
+                    v-for="(item, index) in activeData.__config__.params"
+                    :key="index"
+                    class="select-item"
+                  >
+                    <div class="select-line-icon option-drag">
+                      <i class="el-icon-s-operation" />
+                    </div>
+                    <el-input
+                      v-model="activeData.__config__.params[index]"
+                      placeholder="选项名"
+                      size="small"
+                    />
+                    <div
+                      class="close-btn select-line-icon"
+                      @click="activeData.__config__.params.splice(index, 1)"
+                    >
+                      <i class="el-icon-remove-outline" />
+                    </div>
+                  </div>
+                </draggable>
+                <div style="margin-left: 20px">
+                  <el-button
+                    style="padding-bottom: 0"
+                    icon="el-icon-circle-plus-outline"
+                    type="text"
+                    @click="addtableParameterColumn"
+                  >
+                    添加参数
+                  </el-button>
+                </div>
+                <el-divider />
+              </template>
 
-              <template v-if="activeData.__config__.tag === 'el-table'">
-                <el-divider>选项</el-divider>
+              <template v-if="
+              ['custom-table', 'el-table'].includes(activeData.__config__.tag)
+            ">
+                <el-divider>结果映射</el-divider>
                 <draggable
                   :list="activeData.__config__.children"
                   :animation="340"
@@ -923,6 +971,7 @@
                 activeData.__config__.border ||
                 activeData.__config__.tag === 'el-color-picker' ||
                 activeData.__config__.tag === 'el-table' ||
+                activeData.__config__.tag === 'custom-table' ||
                 activeData.__config__.tag === 'el-button')
             "
             label="组件尺寸"
@@ -1166,7 +1215,7 @@ import IconsDialog from "./IconsDialog";
 import {
   inputComponents,
   selectComponents,
-  layoutComponents,
+  layoutComponents
 } from "@/utils/generator/config";
 import { saveFormConf } from "@/utils/db";
 import tsSubForm from "@/views/tool/build/ts-sub-form.vue";
@@ -1318,6 +1367,10 @@ export default {
           label: "选择型组件",
           options: selectComponents,
         },
+        {
+          label: "布局型组件",
+          options: layoutComponents,
+        },
       ];
     },
     activeTag() {
@@ -1363,9 +1416,12 @@ export default {
           tag: "el-table-column",
         },
         align: "center",
-        prop: "name",
-        label: "姓名",
+        prop: "key",
+        label: "参数名称",
       });
+    },
+    addtableParameterColumn() {
+      this.activeData.__config__.params.push('key');
     },
     addTreeItem() {
       ++this.idGlobal;
