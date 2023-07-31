@@ -138,9 +138,6 @@
             <if test="params.assignee != null and params.assignee != ''">
                 AND RES.START_USER_ID_ = #{params.assignee}
             </if>
-            <if test="tenantId != null and tenantId != ''">
-                AND RES.TENANT_ID_ = #{tenantId}
-            </if>
             <if test="params.beginTime != null and params.beginTime != ''">
                 AND RES.START_TIME_ &gt;= #{params.beginTime}
             </if>
@@ -170,9 +167,6 @@
         <where>
             <if test="params.assignee != null and params.assignee != ''">
                 AND RES.START_USER_ID_ = #{params.assignee}
-            </if>
-            <if test="tenantId != null and tenantId != ''">
-                AND RES.TENANT_ID_ = #{tenantId}
             </if>
             <if test="params.beginTime != null and params.beginTime != ''">
                 AND RES.START_TIME_ &gt;= #{params.beginTime}
