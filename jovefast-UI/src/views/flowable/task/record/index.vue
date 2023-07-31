@@ -110,9 +110,9 @@
                   style="margin-bottom: 20px" />
               </div>
               <div class="head-container">
-                <el-tree 
-                :data="deptOptions" 
-                :props="defaultProps" 
+                <el-tree
+                :data="deptOptions"
+                :props="defaultProps"
                 :expand-on-click-node="false"
                 :filter-node-method="filterNode"
                 ref="tree"
@@ -123,7 +123,7 @@
             <el-col :span="10" :xs="24">
               <h6>待选人员</h6>
               <el-table ref="singleTable" :data="userList" border style="width: 100%"
-                @selection-change="handleSelectionChange" v-horizontal-scroll="'always'">
+                @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50" align="center" />
                 <el-table-column label="用户名" align="center" prop="nickName" />
                 <el-table-column label="部门" align="center" prop="dept.deptName" />
@@ -210,9 +210,9 @@
                   style="margin-bottom: 20px" />
               </div>
               <div class="head-container">
-                <el-tree 
-                :data="deptOptions" 
-                :props="defaultProps" 
+                <el-tree
+                :data="deptOptions"
+                :props="defaultProps"
                 :expand-on-click-node="false"
                 :filter-node-method="filterNode"
                 ref="tree"
@@ -223,7 +223,7 @@
             <el-col :span="10" :xs="24">
               <h6>待选人员</h6>
               <el-table ref="singleTable" :data="userList" border style="width: 100%"
-                @selection-change="handleSelectionChange" v-horizontal-scroll="'always'">
+                @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50" align="center" />
                 <el-table-column label="用户名" align="center" prop="nickName" />
                 <el-table-column label="部门" align="center" prop="dept.deptName" />
@@ -452,10 +452,10 @@ export default {
       //   }else{
       //     this.$modal.msgError(res.msg);
       //   }
-        
+
       // }).catch(err => {
       //   console.error(err)
-      // }) 
+      // })
 
       this.checkSendUser=false;
       this.variablesData.disabled = false;
@@ -578,9 +578,9 @@ export default {
               this.fileDisplay = true
               this.fileList = JSON.parse(val)
             }
-            
+
           }
-          
+
         }
         // 设置各表单项的默认值（回填表单），包括el-upload的默认值
         if (val) {
@@ -776,7 +776,7 @@ export default {
         }else{
           this.applicationHandle(data);
         }
-        
+
       }
     },
     /** 申请提交 */

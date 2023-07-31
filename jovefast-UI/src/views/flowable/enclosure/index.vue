@@ -17,7 +17,7 @@
             <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
 
-        <el-table border v-loading="loading" :data="attachmentList" @selection-change="handleSelectionChange" v-horizontal-scroll="'always'">
+        <el-table border v-loading="loading" :data="attachmentList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column type="index" width="55" align="center" />
             <el-table-column label="ID" align="center" prop="hid" v-if="columns[0].visible"/>

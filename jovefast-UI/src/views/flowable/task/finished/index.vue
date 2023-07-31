@@ -54,7 +54,7 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="finishedList" border v-horizontal-scroll="'always'">
+    <el-table v-loading="loading" :data="finishedList" border>
       <el-table-column label="发起人ID" align="center" prop="startUserId" v-if="columns[0].visible"/>
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true" v-if="columns[1].visible"/>
       <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true" v-if="columns[2].visible"/>

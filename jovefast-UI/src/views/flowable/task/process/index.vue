@@ -55,7 +55,7 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="myProcessList" border v-horizontal-scroll="'always'">
+    <el-table v-loading="loading" :data="myProcessList" border>
       <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true" v-if="columns[0].visible"/>
       <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true" v-if="columns[1].visible"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true" v-if="columns[2].visible"/>
@@ -129,7 +129,7 @@
           <el-button icon="el-icon-refresh" size="mini" @click="resetProcessQuery">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
-      <el-table v-loading="processLoading" fit :data="definitionList" border v-horizontal-scroll="'always'">
+      <el-table v-loading="processLoading" fit :data="definitionList" border>
         <el-table-column label="流程名称" align="center" prop="name" />
         <el-table-column label="流程版本" align="center">
           <template slot-scope="scope">

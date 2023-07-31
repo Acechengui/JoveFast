@@ -46,7 +46,7 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="todoList" @selection-change="handleSelectionChange" border v-horizontal-scroll="'always'">
+    <el-table v-loading="loading" :data="todoList" @selection-change="handleSelectionChange" border>
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true" v-if="columns[0].visible"/>
       <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true" v-if="columns[1].visible"/>

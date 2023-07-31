@@ -62,7 +62,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="formList" @selection-change="handleSelectionChange" v-horizontal-scroll="'always'">
+    <el-table v-loading="loading" :data="formList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="表单ID" align="center" prop="formId" />
       <el-table-column label="表单名称" align="center" prop="formName" />
