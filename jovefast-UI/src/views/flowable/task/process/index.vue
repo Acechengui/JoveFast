@@ -4,7 +4,16 @@
       <el-form-item label="流程名称" prop="procDefName">
         <el-input
           v-model="queryParams.procDefName"
-          placeholder="请输入完整流程名称"
+          placeholder="请输入流程名称"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="流程标题" prop="processTitle">
+        <el-input
+          v-model="queryParams.processTitle"
+          placeholder="请输入流程标题"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -14,8 +23,8 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          :default-time="['00:00:00', '23:59:59']"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+              :default-time="['00:00:00', '23:59:59']"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -46,7 +55,7 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="myProcessList" border>
+    <el-table v-loading="loading" :data="myProcessList" border v-horizontal-scroll="'always'">
       <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true" v-if="columns[0].visible"/>
       <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true" v-if="columns[1].visible"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true" v-if="columns[2].visible"/>
@@ -83,7 +92,7 @@
               <el-dropdown-item icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)" v-hasPermi="['flowable:deployment:list']">
                 详情
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']">
+              <el-dropdown-item icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null">
                 取消申请
               </el-dropdown-item>
               <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:instance:del']">
@@ -120,7 +129,7 @@
           <el-button icon="el-icon-refresh" size="mini" @click="resetProcessQuery">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
-      <el-table v-loading="processLoading" fit :data="definitionList" border >
+      <el-table v-loading="processLoading" fit :data="definitionList" border v-horizontal-scroll="'always'">
         <el-table-column label="流程名称" align="center" prop="name" />
         <el-table-column label="流程版本" align="center">
           <template slot-scope="scope">
@@ -157,15 +166,15 @@ import {
   delDeployment
 } from "@/api/flowable/finished";
 import { myProcessList,stopProcess } from "@/api/flowable/process";
-import {listDefinition} from "@/api/flowable/definition";
+import {listDefinitionLast} from "@/api/flowable/definition";
 export default {
-  name: "Deploy",
+  name: "Process",
   components: {
   },
   data() {
     return {
       // 遮罩层
-      loading: true,
+      loading: false,
       processLoading: true,
       // 选中数组
       ids: [],
@@ -193,6 +202,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         procDefName: null,
+        processTitle: null,
         category: null,
         key: null,
         tenantId: null,
@@ -238,7 +248,6 @@ export default {
   },
   created() {
     this.dateRange = this.timeDefault();
-    this.getList();
   },
   methods: {
     // 默认时间
@@ -276,7 +285,7 @@ export default {
     getList() {
       this.loading = true;
       myProcessList(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.myProcessList = response.rows;
+        this.myProcessList = response.data;
         this.total = response.total;
         this.loading = false;
       });
@@ -329,7 +338,7 @@ export default {
       this.listDefinition();
     },
     listDefinition(){
-      listDefinition(this.queryProcessParams).then(response => {
+      listDefinitionLast(this.queryProcessParams).then(response => {
         this.definitionList = response.rows;
         this.processTotal = response.total;
         this.processLoading = false;
@@ -343,7 +352,7 @@ export default {
           deployId: row.deploymentId,
           procDefId: row.id,
           finished: true
-        }
+          }
       })
     },
     /**  取消流程申请 */
@@ -364,7 +373,7 @@ export default {
           deployId: row.deployId,
           taskId: row.taskId,
           finished: false
-        }})
+      }})
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

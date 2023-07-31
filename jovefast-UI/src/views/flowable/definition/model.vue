@@ -110,7 +110,7 @@ export default {
       listFormAll().then(res =>{
         this.forms = res.data;
       });
-
+      
     },
     /** 展示xml */
     showXML(data){
@@ -126,16 +126,16 @@ export default {
         if (data.dataType === 'dynamic') {
           if (data.userType === 'assignee') {
             this.users = [{nickName: "流程发起人", userId: "${INITIATOR}"},
-              {nickName: "${approval}", userId: "${approval}"}
-            ]
+                          {nickName: "${approval}", userId: "${approval}"}
+              ]
           } else if (data.userType === 'candidateUsers') {
             this.users = [{nickName: "流程发起人", userId: "${INITIATOR}"},
-              {nickName: "${approval}", userId: "${approval}"}
-            ]
+                          {nickName: "${approval}", userId: "${approval}"}
+              ]
           } else {
             this.groups = [{roleName: "${approval}", roleId: "${approval}"}]
           }
-        }
+        } 
         else {
           //created已加载过一次
           this.getDataList()

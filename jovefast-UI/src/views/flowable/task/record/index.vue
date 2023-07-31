@@ -1,35 +1,36 @@
 <template>
   <div class="app-container">
-    <div slot="header" class="clearfix">
-      <span class="el-icon-document">基础信息</span>
-      <el-button style="float: right;" icon="el-icon-arrow-left" type="primary"  size="mini" @click="goBack">返回</el-button>
-      <el-button style="float: right; margin-right: 10px;" icon="el-icon-video-camera" type="warning"  size="mini" v-print="printOption">全页打印</el-button>
-      <el-button style="float: right; margin-right: 10px;" icon="el-icon-picture-outline" type="danger" size="mini" @click="flowChart">流程图</el-button>
-    </div>
+      <div slot="header" class="clearfix" style="padding-bottom: 10px;">
+        <span class="el-icon-document">基础信息</span>
+        <el-button style="float: right;" icon="el-icon-arrow-left" type="primary"  size="mini" @click="goBack">返回</el-button>
+        <el-button style="float: right; margin-right: 10px;" icon="el-icon-edit" type="success" size="mini" v-if="finished === 'true'" @click="reEdit">重新编辑</el-button>
+        <el-button style="float: right; margin-right: 10px;" icon="el-icon-video-camera" type="warning"  size="mini" v-print="printOption">全页打印</el-button>
+        <el-button style="float: right; margin-right: 10px;" icon="el-icon-picture-outline" type="danger" size="mini" @click="flowChart">流程图</el-button>
+      </div>
     <div id="nbprint">
       <!--流程处理表单模块-->
       <el-col :span="24" v-if="variableOpen">
         <div>
-          <parser :key="new Date().getTime()" :form-conf="variablesData" @submit="submitVariable" ref="variableParser" />
+          <parser :key="timer" :form-conf="variablesData" @submit="submitVariable" ref="variableParser" />
         </div>
         <div style="margin-left:2%;margin-bottom: 20px" v-if="fileDisplay">
           <!--对上传文件进行显示处理 -->
           <el-tag type="success" effect="plain" v-if="fileList">附件列表:</el-tag>
 
           <el-card class="t-box-card">
-            <div v-for="o in fileList" :key="o" class="text item">
-              {{ o.name }}
-              <el-button type="text" class="button t-download" @click="handleFilePreview(o)">下载</el-button>
-            </div>
-          </el-card>
+              <div v-for="o in fileList" :key="o" class="text item">
+                {{ o.name }}
+                <el-button type="text" class="button t-download" @click="handleFilePreview(o)">下载</el-button>
+              </div>
+            </el-card>
         </div>
         <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
           <el-button icon="el-icon-edit-outline" type="success" size="mini" @click="handleComplete">审批</el-button>
           <!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleDelegate">委派</el-button>-->
-          <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleAssign">转办</el-button>-
+          <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleAssign">转办</el-button>
           <!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleDelegate">签收</el-button>-->
-          <el-button icon="el-icon-refresh-left" type="warning" size="mini" @click="handleReturn">退回</el-button>
-          <el-button icon="el-icon-circle-close" type="danger" size="mini" @click="handleReject">驳回</el-button>
+          <el-button icon="el-icon-refresh-left" type="warning" size="mini" @click="handleReturn">驳回到任意上一步</el-button>
+          <el-button icon="el-icon-circle-close" type="danger" size="mini" @click="handleReject">退回上一步</el-button>
         </div>
       </el-col>
 
@@ -37,55 +38,55 @@
       <el-col :span="24" v-if="formConfOpen">
         <div class="key-form">
           <parser :key="new Date().getTime()" :form-conf="formConf" @submit="initSubmitForm" ref="parser"
-                  @getData="getData" />
+            @getData="getData" />
         </div>
       </el-col>
 
-      <!--流程流转记录-->
-      <el-card class="box-card" v-if="flowRecordList">
-        <div slot="header" class="clearfix">
-          <span class="el-icon-notebook-1">审批记录</span>
+    <!--流程流转记录-->
+    <el-card class="box-card" v-if="flowRecordList">
+      <div slot="header" class="clearfix">
+        <span class="el-icon-notebook-1">审批记录</span>
+      </div>
+      <el-col :span="16" :offset="4">
+        <div class="block">
+          <el-timeline>
+            <el-timeline-item v-for="(item,index ) in flowRecordList" :key="index" :icon="setIcon(item.finishTime)"
+              :color="setColor(item.finishTime)">
+              <p style="font-weight: 700">{{item.taskName}}</p>
+              <el-card :body-style="{ padding: '10px' }">
+                <el-descriptions class="margin-top" :column="1" size="small" border>
+                  <el-descriptions-item v-if="item.assigneeName" label-class-name="my-label">
+                    <template slot="label"><i class="el-icon-user"></i>实际办理</template>
+                    {{item.assigneeName}}
+                    <el-tag type="info" size="mini" v-if="item.deptName">{{item.deptName}}</el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item v-if="item.candidate" label-class-name="my-label">
+                    <template slot="label"><i class="el-icon-user"></i>候选办理</template>
+                    {{item.candidate}}
+                  </el-descriptions-item>
+                  <el-descriptions-item label-class-name="my-label">
+                    <template slot="label"><i class="el-icon-date"></i>接收时间</template>
+                    {{item.createTime}}
+                  </el-descriptions-item>
+                  <el-descriptions-item v-if="item.finishTime" label-class-name="my-label">
+                    <template slot="label"><i class="el-icon-date"></i>处理时间</template>
+                    {{item.finishTime}}
+                  </el-descriptions-item>
+                  <el-descriptions-item v-if="item.duration" label-class-name="my-label">
+                    <template slot="label"><i class="el-icon-time"></i>耗时</template>
+                    {{item.duration}}
+                  </el-descriptions-item>
+                  <el-descriptions-item v-if="item.comment.comment" label-class-name="my-label">
+                    <template slot="label"><i class="el-icon-tickets"></i>处理意见</template>
+                    {{item.comment.comment}}
+                  </el-descriptions-item>
+                </el-descriptions>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
         </div>
-        <el-col :span="16" :offset="4">
-          <div class="block">
-            <el-timeline>
-              <el-timeline-item v-for="(item,index ) in flowRecordList" :key="index" :icon="setIcon(item.finishTime)"
-                                :color="setColor(item.finishTime)">
-                <p style="font-weight: 700">{{item.taskName}}</p>
-                <el-card :body-style="{ padding: '10px' }">
-                  <el-descriptions class="margin-top" :column="1" size="small" border>
-                    <el-descriptions-item v-if="item.assigneeName" label-class-name="my-label">
-                      <template slot="label"><i class="el-icon-user"></i>实际办理</template>
-                      {{item.assigneeName}}
-                      <el-tag type="info" size="mini" v-if="item.deptName">{{item.deptName}}</el-tag>
-                    </el-descriptions-item>
-                    <el-descriptions-item v-if="item.candidate" label-class-name="my-label">
-                      <template slot="label"><i class="el-icon-user"></i>候选办理</template>
-                      {{item.candidate}}
-                    </el-descriptions-item>
-                    <el-descriptions-item label-class-name="my-label">
-                      <template slot="label"><i class="el-icon-date"></i>接收时间</template>
-                      {{item.createTime}}
-                    </el-descriptions-item>
-                    <el-descriptions-item v-if="item.finishTime" label-class-name="my-label">
-                      <template slot="label"><i class="el-icon-date"></i>处理时间</template>
-                      {{item.finishTime}}
-                    </el-descriptions-item>
-                    <el-descriptions-item v-if="item.duration" label-class-name="my-label">
-                      <template slot="label"><i class="el-icon-time"></i>耗时</template>
-                      {{item.duration}}
-                    </el-descriptions-item>
-                    <el-descriptions-item v-if="item.comment.comment" label-class-name="my-label">
-                      <template slot="label"><i class="el-icon-tickets"></i>处理意见</template>
-                      {{item.comment.comment}}
-                    </el-descriptions-item>
-                  </el-descriptions>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
-          </div>
-        </el-col>
-      </el-card>
+      </el-col>
+    </el-card>
 
     </div>
 
@@ -106,23 +107,23 @@
               <h6>展开部门列表选择</h6>
               <div class="head-container">
                 <el-input v-model="deptName" placeholder="请输入部门名称" clearable size="small" prefix-icon="el-icon-search"
-                          style="margin-bottom: 20px" />
+                  style="margin-bottom: 20px" />
               </div>
               <div class="head-container">
-                <el-tree
-                  :data="deptOptions"
-                  :props="defaultProps"
-                  :expand-on-click-node="false"
-                  :filter-node-method="filterNode"
-                  ref="tree"
-                  highlight-current
-                  @node-click="handleNodeClick" />
+                <el-tree 
+                :data="deptOptions" 
+                :props="defaultProps" 
+                :expand-on-click-node="false"
+                :filter-node-method="filterNode"
+                ref="tree"
+                highlight-current
+                @node-click="handleNodeClick" />
               </div>
             </el-col>
             <el-col :span="10" :xs="24">
               <h6>待选人员</h6>
               <el-table ref="singleTable" :data="userList" border style="width: 100%"
-                        @selection-change="handleSelectionChange">
+                @selection-change="handleSelectionChange" v-horizontal-scroll="'always'">
                 <el-table-column type="selection" width="50" align="center" />
                 <el-table-column label="用户名" align="center" prop="nickName" />
                 <el-table-column label="部门" align="center" prop="dept.deptName" />
@@ -143,8 +144,8 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="快捷选择" prop="commentVar">
-          <el-select v-model="commentVar" clearable @change="bclxChange" placeholder="请选择">
+       <el-form-item label="快捷选择" prop="commentVar">
+        <el-select v-model="commentVar" clearable @change="bclxChange" placeholder="请选择">
             <el-option
               v-for="item in commentOptions"
               :key="item.value"
@@ -206,23 +207,23 @@
               <h6>展开部门列表选择</h6>
               <div class="head-container">
                 <el-input v-model="deptName" placeholder="请输入部门名称" clearable size="small" prefix-icon="el-icon-search"
-                          style="margin-bottom: 20px" />
+                  style="margin-bottom: 20px" />
               </div>
               <div class="head-container">
-                <el-tree
-                  :data="deptOptions"
-                  :props="defaultProps"
-                  :expand-on-click-node="false"
-                  :filter-node-method="filterNode"
-                  ref="tree"
-                  highlight-current
-                  @node-click="handleNodeClick" />
+                <el-tree 
+                :data="deptOptions" 
+                :props="defaultProps" 
+                :expand-on-click-node="false"
+                :filter-node-method="filterNode"
+                ref="tree"
+                highlight-current
+                @node-click="handleNodeClick" />
               </div>
             </el-col>
             <el-col :span="10" :xs="24">
               <h6>待选人员</h6>
               <el-table ref="singleTable" :data="userList" border style="width: 100%"
-                        @selection-change="handleSelectionChange">
+                @selection-change="handleSelectionChange" v-horizontal-scroll="'always'">
                 <el-table-column type="selection" width="50" align="center" />
                 <el-table-column label="用户名" align="center" prop="nickName" />
                 <el-table-column label="部门" align="center" prop="dept.deptName" />
@@ -263,7 +264,7 @@ import GoTop from "@/components/GoTop/index";
 import { flowRecord } from "@/api/flowable/finished";
 import Parser from '@/components/parser/Parser'
 import { definitionStart, getProcessVariables, readXml, getFlowViewer } from "@/api/flowable/definition";
-import { complete, rejectTask, returnList, returnTask, transferTask,getNextFlowNode, delegate } from "@/api/flowable/todo";
+import { complete, rejectTask, returnList, returnTask, transferTask,getNextFlowNode, delegate,verInItiator } from "@/api/flowable/todo";
 import flow from '@/views/flowable/task/record/flow'
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Treeselect from "@riophae/vue-treeselect";
@@ -280,29 +281,30 @@ export default {
   data() {
     return {
       printOption:{
-        id: 'nbprint', // 打印元素的id 不需要携带#号
-        preview: false, // 开启打印预览
-        previewTitle: '打印预览', // 打印预览标题
-        popTitle: '流程信息', // 页眉标题 默认浏览器标题 空字符串时显示undefined 使用html语言
-        previewBeforeOpenCallback: () => {
-          //console.log("触发打印预览打开前回调");
-        },
-        previewOpenCallback: () => {
-          //console.log("触发打开打印预览回调");
-        },
-        beforeOpenCallback: () => {
-          //console.log("触发打印工具打开前回调");
-        },
-        openCallback: () => {
-          //console.log("触发打开打印工具回调");
-        },
-        closeCallback: () => {
-          //console.log("触发关闭打印工具回调");
-        },
-        clickMounted: () => {
-          //console.log("触发点击打印回调");
-        }
+          id: 'nbprint', // 打印元素的id 不需要携带#号
+					preview: false, // 开启打印预览
+					previewTitle: '打印预览', // 打印预览标题
+					popTitle: '流程信息', // 页眉标题 默认浏览器标题 空字符串时显示undefined 使用html语言
+					previewBeforeOpenCallback: () => {
+						//console.log("触发打印预览打开前回调");
+					},
+					previewOpenCallback: () => {
+						//console.log("触发打开打印预览回调");
+					},
+					beforeOpenCallback: () => {
+						//console.log("触发打印工具打开前回调");
+					},
+					openCallback: () => {
+						//console.log("触发打开打印工具回调");
+					},
+					closeCallback: () => {
+						//console.log("触发关闭打印工具回调");
+					},
+					clickMounted: () => {
+						//console.log("触发点击打印回调");
+					}
       },
+      timer: new Date().getTime(),
       // 模型xml数据
       xmlData: "",
       taskList: [],
@@ -313,9 +315,9 @@ export default {
       commentVar:undefined,
       //是否同意快捷选项
       commentOptions:[{
-        value: '同意',
-        label: '同意'
-      }],
+          value: '同意',
+          label: '同意'
+        }],
       // 用户表格数据
       userList: null,
       //流程标题
@@ -415,9 +417,9 @@ export default {
     /** 查询用户列表 */
     getList() {
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
-        }
+        this.userList = response.rows;
+        this.total = response.total;
+      }
       );
     },
     // 筛选节点
@@ -429,6 +431,44 @@ export default {
     handleNodeClick(data) {
       this.queryParams.deptId = data.id;
       this.getList();
+    },
+    //重新编辑
+    reEdit(){
+      // const params = { instanceId: this.taskForm.procInsId}
+      // verInItiator(params).then(res => {
+      //   if(res.code == 200){
+      //     this.checkSendUser=false;
+      //     this.variablesData.disabled = false;
+      //     //对表格做是否读写处理
+      //     this.variablesData.fields.forEach(item => {
+      //             //判断是否子表单
+      //             if(item.__config__.layout==='tsSubform'){
+      //               item.canEdit=true;
+      //               item.addButton=true;
+      //               item.deleteButton=true;
+      //             }
+      //         })
+      //       this.timer = new Date().getTime()+1;
+      //   }else{
+      //     this.$modal.msgError(res.msg);
+      //   }
+        
+      // }).catch(err => {
+      //   console.error(err)
+      // }) 
+
+      this.checkSendUser=false;
+      this.variablesData.disabled = false;
+      //对表格做是否读写处理
+      this.variablesData.fields.forEach(item => {
+              //判断是否子表单
+              if(item.__config__.layout==='tsSubform'){
+                item.canEdit=true;
+                item.addButton=true;
+                item.deleteButton=true;
+              }
+          })
+      this.timer = new Date().getTime()+1;
     },
     // 回显流程记录
     flowChart(){
@@ -525,7 +565,7 @@ export default {
         const val = item.__config__.defaultValue
         // 特殊处理el-upload，包括 回显图片
         if (item.__config__.tag === 'el-upload') {
-          // 回显图片
+            // 回显图片
           if (item['list-type'] != 'text') {
             this.fileList = [];    //隐藏加的el-upload文件列表
             if(val){
@@ -538,9 +578,9 @@ export default {
               this.fileDisplay = true
               this.fileList = JSON.parse(val)
             }
-
+            
           }
-
+          
         }
         // 设置各表单项的默认值（回填表单），包括el-upload的默认值
         if (val) {
@@ -562,8 +602,26 @@ export default {
           //判断是否允许编辑数据
           if(res.data.whetherWritable){
             this.variablesData.disabled = false;
+            //对表格做是否读写处理
+            this.variablesData.fields.forEach(item => {
+                  //判断是否子表单
+                  if(item.__config__.layout==='tsSubform'){
+                    item.canEdit=true;
+                    item.addButton=true;
+                    item.deleteButton=true;
+                  }
+              })
           }else{
             this.variablesData.disabled = true;
+            //对表格做是否读写处理
+            this.variablesData.fields.forEach(item => {
+                  //判断是否子表单
+                  if(item.__config__.layout==='tsSubform'){
+                    item.canEdit=false;
+                    item.addButton=false;
+                    item.deleteButton=false;
+                  }
+              })
           }
           this.variablesData.formBtns = false;
           this.variableOpen = true
@@ -704,7 +762,7 @@ export default {
     initSubmitForm(data) {
       if (data) {
         if(!this.processTitle){
-          this.$prompt('请输入流程标题', '提示', {
+            this.$prompt('请输入流程标题', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消'
           }).then(({ value }) => {
@@ -718,7 +776,7 @@ export default {
         }else{
           this.applicationHandle(data);
         }
-
+        
       }
     },
     /** 申请提交 */
@@ -805,7 +863,7 @@ export default {
 <style lang="scss" scoped>
 .el-dialog-div{
   max-height: 90vh;//如果高度过高，可用max-height
-  overflow: auto;
+   overflow: auto;
 }
 
 .key-form {
@@ -836,9 +894,9 @@ export default {
 }
 
 .text {
-  font-size: 15px;
-  color: red;
-}
+    font-size: 15px;
+    color: red;
+  }
 
 .item {
   margin-bottom: 10px;

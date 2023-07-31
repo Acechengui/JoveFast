@@ -45,6 +45,9 @@
         <where>
             RES.ASSIGNEE_ = #{params.assignee}
             AND RES.END_TIME_ IS NOT NULL
+            <if test="tenantId != null and tenantId != ''">
+                AND RES.TENANT_ID_ = #{tenantId}
+            </if>
             <if test="params.beginTime != null and params.beginTime != ''">
                 AND RES.START_TIME_ &gt;= #{params.beginTime}
             </if>
@@ -75,4 +78,114 @@
         RES.END_TIME_ DESC
     </select>
 
+
+    <select id="selectFlowHistericTaskInstanceCount" parameterType="FlowTaskDto" resultType="integer">
+        SELECT
+        count(0)
+        FROM
+        (
+        SELECT
+        RES.*
+        FROM
+        ACT_HI_TASKINST RES
+        <where>
+            RES.ASSIGNEE_ = #{params.assignee}
+            AND RES.END_TIME_ IS NOT NULL
+            <if test="tenantId != null and tenantId != ''">
+                AND RES.TENANT_ID_ = #{tenantId}
+            </if>
+            <if test="params.beginTime != null and params.beginTime != ''">
+                AND RES.START_TIME_ &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND RES.START_TIME_ &lt;= #{params.endTime}
+            </if>
+        </where>
+        ) RES
+        LEFT OUTER JOIN ACT_HI_PROCINST AHP ON AHP.PROC_INST_ID_ = RES.PROC_INST_ID_
+        LEFT OUTER JOIN sys_process_title SPT ON RES.PROC_INST_ID_ = SPT.proc_ins_id
+        LEFT OUTER JOIN `jove-cloud`.sys_user SU ON AHP.START_USER_ID_ = SU.user_id
+        LEFT OUTER JOIN `jove-cloud`.sys_dept SD ON SD.dept_id = SU.dept_id
+        <where>
+            <if test="processTitle != null and processTitle != ''">
+                AND SPT.process_title like CONCAT('%', #{processTitle}, '%')
+            </if>
+            <if test="startUserName != null and startUserName != ''">
+                AND SU.nick_name like CONCAT('%', #{startUserName}, '%')
+            </if>
+            <if test="startDeptName != null and startDeptName != ''">
+                AND SD.dept_name like CONCAT('%', #{startDeptName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectFlowHistoricProcessInstance" parameterType="FlowTaskDto" resultType="HistoricProcessInstanceDTO">
+        SELECT
+        RES.START_USER_ID_ AS startUserId,
+        SP.process_title AS processTitle,
+        RES.ID_ AS resId,
+        RES.PROC_DEF_ID_ AS procDefId,
+        RES.START_TIME_ AS startTime,
+        RES.END_TIME_ AS endTime,
+        RES.PROC_INST_ID_ AS procInsId,
+        DEF.KEY_ AS procDefKey,
+        DEF.NAME_ AS porcDefName
+        FROM
+        ACT_HI_PROCINST RES
+        LEFT OUTER JOIN ACT_RE_PROCDEF DEF ON RES.PROC_DEF_ID_ = DEF.ID_
+        LEFT OUTER JOIN sys_process_title SP ON SP.proc_ins_id = RES.ID_
+        <where>
+            <if test="params.assignee != null and params.assignee != ''">
+                AND RES.START_USER_ID_ = #{params.assignee}
+            </if>
+            <if test="tenantId != null and tenantId != ''">
+                AND RES.TENANT_ID_ = #{tenantId}
+            </if>
+            <if test="params.beginTime != null and params.beginTime != ''">
+                AND RES.START_TIME_ &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND RES.START_TIME_ &lt;= #{params.endTime}
+            </if>
+            <if test="procDefName != null and procDefName != ''">
+                AND DEF.NAME_ like CONCAT('%', #{procDefName}, '%')
+            </if>
+            <if test="processTitle != null and processTitle != ''">
+                AND SP.process_title like CONCAT('%', #{processTitle}, '%')
+            </if>
+        </where>
+        ORDER BY
+        RES.END_TIME_ DESC
+        LIMIT #{params.pageSize} OFFSET #{params.pageNum}
+    </select>
+
+
+    <select id="selectFlowHistoricProcessInstanceCount" parameterType="FlowTaskDto" resultType="integer">
+        SELECT
+        count(0)
+        FROM
+        ACT_HI_PROCINST RES
+        LEFT OUTER JOIN ACT_RE_PROCDEF DEF ON RES.PROC_DEF_ID_ = DEF.ID_
+        LEFT OUTER JOIN sys_process_title SP ON SP.proc_ins_id = RES.ID_
+        <where>
+            <if test="params.assignee != null and params.assignee != ''">
+                AND RES.START_USER_ID_ = #{params.assignee}
+            </if>
+            <if test="tenantId != null and tenantId != ''">
+                AND RES.TENANT_ID_ = #{tenantId}
+            </if>
+            <if test="params.beginTime != null and params.beginTime != ''">
+                AND RES.START_TIME_ &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND RES.START_TIME_ &lt;= #{params.endTime}
+            </if>
+            <if test="procDefName != null and procDefName != ''">
+                AND DEF.NAME_ like CONCAT('%', #{procDefName}, '%')
+            </if>
+            <if test="processTitle != null and processTitle != ''">
+                AND SP.process_title like CONCAT('%', #{processTitle}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

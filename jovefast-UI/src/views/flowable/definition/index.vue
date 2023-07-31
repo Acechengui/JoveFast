@@ -1,26 +1,18 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="流程名称" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入名称"
+          placeholder="请输入流程名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="开始时间" prop="deployTime">
-        <el-date-picker clearable size="small"
-                        v-model="queryParams.deployTime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择时间">
-        </el-date-picker>
-      </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{ $t('common.search') }}</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{ $t('common.reset') }}</el-button>
       </el-form-item>
     </el-form>
 
@@ -33,7 +25,7 @@
           size="mini"
           @click="handleImport"
           v-hasPermi="['flowable:definition:export']"
-        >导入</el-button>
+        >{{ $t('common.import') }}</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -42,7 +34,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleLoadXml"
-        >新增</el-button>
+        >{{ $t('common.add') }}</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -53,12 +45,12 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['flowable:instance:del']"
-        >删除</el-button>
+        >{{ $t('common.del') }}</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" fit :data="definitionList" border   @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" fit :data="definitionList" border   @selection-change="handleSelectionChange" v-horizontal-scroll="'always'">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="流程编号" align="center" prop="deploymentId" :show-overflow-tooltip="true"/>
       <el-table-column label="流程标识" align="center" prop="flowKey" :show-overflow-tooltip="true" />
@@ -90,7 +82,7 @@
         </template>
       </el-table-column>
       <el-table-column label="部署时间" align="center" prop="deploymentTime" width="180"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-dropdown>
             <span class="el-dropdown-link">
@@ -100,8 +92,8 @@
               <el-dropdown-item icon="el-icon-edit-outline" @click.native="handleLoadXml(scope.row)" v-hasPermi="['flowable:definition:edit']">
                 编辑
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-connection" @click.native="handleAddForm(scope.row)" v-if="scope.row.formId == null" v-hasPermi="['flowable:definition:configureform']">
-                配置表单
+              <el-dropdown-item icon="el-icon-connection" @click.native="handleAddForm(scope.row)" v-hasPermi="['flowable:definition:configureform']">
+                挂载表单
               </el-dropdown-item>
               <el-dropdown-item icon="el-icon-video-pause" @click.native="handleUpdateSuspensionState(scope.row)" v-if="scope.row.suspensionState === 1" v-hasPermi="['flowable:definition:state']">
                 挂起
@@ -151,8 +143,8 @@
         <div class="el-upload__tip" style="color:red" slot="tip">提示：仅允许导入“bpmn20.xml”格式文件！</div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFileForm">确 定</el-button>
-        <el-button @click="upload.open = false">取 消</el-button>
+        <el-button type="primary" @click="submitFileForm">{{ $t('common.determine') }}</el-button>
+        <el-button @click="upload.open = false">{{ $t('common.cancel') }}</el-button>
       </div>
     </el-dialog>
 
@@ -180,7 +172,7 @@
             style="width: 100%">
             <el-table-column label="表单编号" align="center" prop="formId" />
             <el-table-column label="表单名称" align="center" prop="formName" />
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+            <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
               <template slot-scope="scope">
                 <el-button size="mini" type="text" @click="handleCurrentChange(scope.row)">展开/收起</el-button>
                 <el-button size="mini" type="text" @click="submitFormDeploy(scope.row)">确定</el-button>
@@ -267,15 +259,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        name: null,
-        category: null,
-        key: null,
-        tenantId: null,
-        deployTime: null,
-        derivedFrom: null,
-        derivedFromRoot: null,
-        parentDeploymentId: null,
-        engineVersion: null
+        name: null
       },
       formQueryParams:{
         pageNum: 1,
@@ -349,7 +333,7 @@ export default {
         this.$modal.msgSuccess(res.msg);
       })
     },
-    /** 挂载表单弹框 */
+    /** 配置挂载表单弹框 */
     handleAddForm(row){
       this.formDeployParam.deployId = row.deploymentId
       this.ListFormDeploy()
@@ -362,7 +346,7 @@ export default {
         this.currentRow =null;
         this.showCurrent=false;
         this.formDeployOpen = true;
-        this.formDeployTitle = "挂载表单";
+        this.formDeployTitle = "配置挂载表单";
       })
     },
     /** 提交挂载表单 */

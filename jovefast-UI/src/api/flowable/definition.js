@@ -9,6 +9,15 @@ export function listDefinition(query) {
   })
 }
 
+// 查询最新版本的流程定义列表
+export function listDefinitionLast(query) {
+  return request({
+    url: '/flowable/definition/list/last',
+    method: 'get',
+    params: query
+  })
+}
+
 // 部署流程实例
 export function definitionStart(procDefId, data) {
   return request({

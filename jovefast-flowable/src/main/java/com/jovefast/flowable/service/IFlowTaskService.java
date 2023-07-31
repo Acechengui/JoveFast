@@ -94,7 +94,7 @@ public interface IFlowTaskService {
      * @param pageSize 页大小
      * @param params 参数
      */
-    List<FlowTaskDto> myProcess(Integer pageNum, Integer pageSize,FlowTaskDto params);
+    Map<String, Object> myProcess(Integer pageNum, Integer pageSize,FlowTaskDto params);
 
     /**
      * 取消申请
@@ -121,7 +121,7 @@ public interface IFlowTaskService {
      * @param pageSize 每页条数
      * @param flowTaskDto 参数
      */
-    List<FlowTaskDto> finishedList(Integer pageNum, Integer pageSize,FlowTaskDto flowTaskDto);
+    Map<String, Object> finishedList(Integer pageNum, Integer pageSize,FlowTaskDto flowTaskDto);
 
     /**
      * 流程历史流转记录
@@ -161,4 +161,10 @@ public interface IFlowTaskService {
      * @param flowTaskVo 任务
      */
     FlowNextDto getNextFlowNode(FlowTaskVo flowTaskVo);
+
+    /**
+     * 验证当然节点处理人是否为发起人
+     * @param procInsId 流程ID
+     */
+    Boolean verifyTheCurrentNodeHandler(String procInsId);
 }

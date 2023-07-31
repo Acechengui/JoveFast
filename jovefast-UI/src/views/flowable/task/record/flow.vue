@@ -1,11 +1,5 @@
 <template>
   <div>
-    <!--<bpmn-modeler
-      ref="refNode"
-      :xml="xmlData"
-      :is-view="true"
-      :taskList="taskData"
-    />-->
     <flow-view :xmlData="xmlData" :taskList="taskData"/>
   </div>
 </template>

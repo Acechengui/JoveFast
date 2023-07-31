@@ -14,8 +14,8 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          :default-time="['00:00:00', '23:59:59']"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+              :default-time="['00:00:00', '23:59:59']"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -46,7 +46,7 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="todoList" @selection-change="handleSelectionChange" border>
+    <el-table v-loading="loading" :data="todoList" @selection-change="handleSelectionChange" border v-horizontal-scroll="'always'">
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true" v-if="columns[0].visible"/>
       <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true" v-if="columns[1].visible"/>
@@ -144,8 +144,8 @@ export default {
     };
   },
   created() {
-    this.dateRange = this.timeDefault();
-    this.getList();
+     this.dateRange = this.timeDefault();
+     this.getList();
   },
   methods: {
     // 默认时间

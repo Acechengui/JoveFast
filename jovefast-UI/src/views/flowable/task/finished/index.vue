@@ -4,7 +4,7 @@
       <el-form-item label="流程标题" prop="processTitle">
         <el-input
           v-model="queryParams.processTitle"
-          placeholder="请输入完整流程名称"
+          placeholder="请输入流程标题"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -32,8 +32,8 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          :default-time="['00:00:00', '23:59:59']"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+              :default-time="['00:00:00', '23:59:59']"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -54,7 +54,7 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="finishedList" border>
+    <el-table v-loading="loading" :data="finishedList" border v-horizontal-scroll="'always'">
       <el-table-column label="发起人ID" align="center" prop="startUserId" v-if="columns[0].visible"/>
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true" v-if="columns[1].visible"/>
       <el-table-column label="流程标题" align="center" prop="processTitle" :show-overflow-tooltip="true" v-if="columns[2].visible"/>
@@ -180,7 +180,7 @@ export default {
     getList() {
       this.loading = true;
       finishedList(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.finishedList = response.rows;
+        this.finishedList = response.data;
         this.total = response.total;
         this.loading = false;
       });
@@ -224,7 +224,7 @@ export default {
           deployId: row.deployId,
           taskId: row.taskId,
           finished: false
-        }})
+      }})
     }
   }
 };

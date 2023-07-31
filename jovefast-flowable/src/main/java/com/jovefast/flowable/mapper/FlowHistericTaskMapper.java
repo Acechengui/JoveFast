@@ -1,6 +1,7 @@
 package com.jovefast.flowable.mapper;
 
 import com.jovefast.flowable.domain.dto.FlowTaskDto;
+import com.jovefast.flowable.domain.dto.HistoricProcessInstanceDTO;
 import com.jovefast.flowable.domain.dto.HistoricTaskInstanceDTO;
 
 import java.util.List;
@@ -12,5 +13,12 @@ import java.util.List;
  */
 public interface FlowHistericTaskMapper {
 
-    List<HistoricTaskInstanceDTO>  selectFlowHistericTaskInstance(FlowTaskDto param);
+    List<HistoricTaskInstanceDTO> selectFlowHistericTaskInstance(FlowTaskDto param);
+
+    Integer selectFlowHistericTaskInstanceCount(FlowTaskDto param);
+
+    List<HistoricProcessInstanceDTO> selectFlowHistoricProcessInstance(FlowTaskDto param);
+
+    Integer selectFlowHistoricProcessInstanceCount(FlowTaskDto param);
+
 }

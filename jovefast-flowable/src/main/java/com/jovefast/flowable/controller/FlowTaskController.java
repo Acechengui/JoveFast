@@ -41,10 +41,10 @@ public class FlowTaskController extends BaseController {
     @ApiOperation(value = "我发起的流程", response = FlowTaskDto.class)
     @GetMapping(value = "/myProcess")
     @RequiresPermissions("flowable:task:myProcess")
-    public TableDataInfo myProcess(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                                   @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize,
-                                   FlowTaskDto params) {
-        return getDataTable(flowTaskService.myProcess(pageNum, pageSize,params));
+    public Map<String, Object> myProcess(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
+                                         @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize,
+                                         FlowTaskDto params) {
+        return flowTaskService.myProcess(pageNum, pageSize,params);
     }
 
     @ApiOperation(value = "取消申请", response = FlowTaskDto.class)
@@ -70,10 +70,10 @@ public class FlowTaskController extends BaseController {
     @ApiOperation(value = "获取已办任务", response = FlowTaskDto.class)
     @GetMapping(value = "/finishedList")
     @RequiresPermissions("flowable:task:finishedList")
-    public TableDataInfo finishedList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
-                                      @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize,
-                                      FlowTaskDto params) {
-        return getDataTable(flowTaskService.finishedList(pageNum, pageSize,params));
+    public Map<String, Object> finishedList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
+                                            @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize,
+                                            FlowTaskDto params) {
+        return flowTaskService.finishedList(pageNum, pageSize, params);
     }
 
 
@@ -188,6 +188,15 @@ public class FlowTaskController extends BaseController {
     @PostMapping(value = "/nextFlowNode")
     public AjaxResult getNextFlowNode(@RequestBody FlowTaskVo flowTaskVo) {
         return AjaxResult.success(flowTaskService.getNextFlowNode(flowTaskVo));
+    }
+
+    @ApiOperation(value = "验证当前节点处理人")
+    @PostMapping(value = "/verification/originator")
+    public AjaxResult verifyTheCurrentNodeHandler(@RequestBody FlowTaskVo flowTaskVo) {
+        if(flowTaskService.verifyTheCurrentNodeHandler(flowTaskVo.getInstanceId())){
+            return AjaxResult.success();
+        }
+        return AjaxResult.error("非流程发起人不允许重新编辑");
     }
 
     /**

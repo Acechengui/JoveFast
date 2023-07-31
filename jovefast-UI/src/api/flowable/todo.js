@@ -8,8 +8,24 @@ export function todoList(query) {
     params: query
   })
 }
+//验证当前处理人是否为发起人
+export function verInItiator(data) {
+  return request({
+    url: '/flowable/task/verification/originator',
+    method: 'post',
+    data: data
+  })
+}
 
-// 完成任务
+// 批量完成任务
+export function batchComplete(taskIds) {
+  return request({
+    url: '/flowable/task/complete/batch/' + taskIds,
+    method: 'post'
+  })
+}
+
+// 单个完成任务
 export function complete(data) {
   return request({
     url: '/flowable/task/complete',
