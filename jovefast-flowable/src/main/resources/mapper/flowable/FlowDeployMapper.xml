@@ -50,9 +50,6 @@
         LEFT JOIN sys_deploy_form df ON df.deploy_id = rd.id_
         LEFT JOIN sys_form sf ON sf.form_id = df.form_id
         <where>
-            <if test="tenantId != null and tenantId != ''">
-                AND rp.TENANT_ID_ = #{tenantId}
-            </if>
             <if test="name != null and name != ''">
                 and rd.name_ like concat('%', #{name}, '%')
             </if>
