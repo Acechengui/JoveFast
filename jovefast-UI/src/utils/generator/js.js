@@ -77,7 +77,7 @@ function buildAttributes(scheme, dataList, ruleList, optionsList, methodList, pr
   if (scheme.action && config.tag === 'el-upload') {
     uploadVarList.push(
       `${scheme.__vModel__}Action: '${scheme.action}',
-      ${scheme.__vModel__}fileList: [],`
+      `
     )
     methodList.push(buildBeforeUpload(scheme))
     // 非自动上传时，生成手动上传的函数
@@ -177,7 +177,7 @@ function buildData(scheme, dataList, other) {
     return
   }
   if (scheme.__vModel__ === undefined) return
-  
+
   const defaultValue = JSON.stringify(config.defaultValue)
   dataList.push(`${scheme.__vModel__}: ${defaultValue},`)
 }

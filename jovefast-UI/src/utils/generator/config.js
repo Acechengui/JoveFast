@@ -528,7 +528,8 @@ export const selectComponents = [
     name: 'files',
     'auto-upload': true,
     'list-type': 'text',
-    multiple: false
+    multiple: false,
+    'clear-files': false
   }
 ]
 
