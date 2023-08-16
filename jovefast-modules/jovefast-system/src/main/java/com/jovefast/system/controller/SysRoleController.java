@@ -34,7 +34,7 @@ import com.jovefast.system.service.ISysUserService;
 
 /**
  * 角色信息
- * 
+ *
  * @author Acechengui
  */
 @RestController
@@ -119,11 +119,11 @@ public class SysRoleController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysRole role)
     {
-        if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleNameUnique(role)))
+        if (!roleService.checkRoleNameUnique(role))
         {
             return error("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
         }
-        else if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleKeyUnique(role)))
+        else if (!roleService.checkRoleKeyUnique(role))
         {
             return error("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
         }
@@ -142,11 +142,11 @@ public class SysRoleController extends BaseController
     {
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
-        if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleNameUnique(role)))
+        if (!roleService.checkRoleNameUnique(role))
         {
             return error("修改角色'" + role.getRoleName() + "'失败，角色名称已存在");
         }
-        else if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleKeyUnique(role)))
+        else if (!roleService.checkRoleKeyUnique(role))
         {
             return error("修改角色'" + role.getRoleName() + "'失败，角色权限已存在");
         }
