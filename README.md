@@ -82,7 +82,7 @@
         util.exportExcel(response, list, "客户组别信息",true,true);
     }
 ```
-* 菜单表调整，增加了一列 dictionaryId，主要作用于设置菜单国际化字典ID
+* 菜单表调整，增加了一列 dictionaryId，主要作用于设置菜单国际化字典ID,对应文件夹src/lang/下的语言文件的key名
   ![输入图片说明](doc/preview/0.png)
 
 ## 积木报表
