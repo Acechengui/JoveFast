@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RegExUtils;
@@ -42,6 +43,8 @@ import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.core.utils.file.FileTypeUtils;
 import com.jovefast.common.core.utils.file.ImageUtils;
 import com.jovefast.common.core.utils.reflect.ReflectUtils;
+
+import static com.alibaba.excel.support.ExcelTypeEnum.XLSX;
 
 /**
  * Excel相关处理
@@ -219,6 +222,16 @@ public class ExcelUtil<T>
 
     }
 
+    public static void write(HttpServletResponse response, Workbook book, String fileName) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String name = new String(fileName.getBytes("GBK"), "ISO8859_1") + XLSX;
+        response.addHeader("Content-Disposition", "attachment;filename=" + name);
+        ServletOutputStream out = response.getOutputStream();
+        book.write(out);
+        out.flush();
+        out.close();
+    }
     /**
      * 创建对象的子列表名称
      */
@@ -414,7 +427,7 @@ public class ExcelUtil<T>
                         }
                         else if (!attr.handler().equals(ExcelHandlerAdapter.class))
                         {
-                            val = dataFormatHandlerAdapter(val, attr);
+                            val = dataFormatHandlerAdapter(val, attr, null);
                         }
                         ReflectUtils.invokeSetter(entity, propertyName, val);
                     }
@@ -912,7 +925,7 @@ public class ExcelUtil<T>
                 }
                 else if (!attr.handler().equals(ExcelHandlerAdapter.class))
                 {
-                    cell.setCellValue(dataFormatHandlerAdapter(value, attr));
+                    cell.setCellValue(dataFormatHandlerAdapter(value, attr, cell));
                 }
                 else
                 {
@@ -1099,13 +1112,13 @@ public class ExcelUtil<T>
      * @param excel 数据注解
      * @return
      */
-    public String dataFormatHandlerAdapter(Object value, Excel excel)
+    public String dataFormatHandlerAdapter(Object value, Excel excel, Cell cell)
     {
         try
         {
             Object instance = excel.handler().newInstance();
-            Method formatMethod = excel.handler().getMethod("format", new Class[] { Object.class, String[].class });
-            value = formatMethod.invoke(instance, value, excel.args());
+            Method formatMethod = excel.handler().getMethod("format", new Class[] { Object.class, String[].class, Cell.class, Workbook.class });
+            value = formatMethod.invoke(instance, value, excel.args(), cell, this.wb);
         }
         catch (Exception e)
         {
