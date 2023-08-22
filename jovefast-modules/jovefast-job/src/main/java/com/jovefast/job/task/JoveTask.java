@@ -3,25 +3,20 @@ package com.jovefast.job.task;
 import com.jovefast.common.core.utils.DateUtils;
 import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.core.utils.file.FileUtils;
-import com.jovefast.common.core.utils.poi.PoiExcelUtils;
 import com.jovefast.job.domain.dto.*;
 import com.jovefast.job.domain.excelModel.MaterialConsumptionTableModel;
 import com.jovefast.job.enums.RobotsTarget;
 import com.jovefast.job.util.QiWxUtil;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 定时任务调度
