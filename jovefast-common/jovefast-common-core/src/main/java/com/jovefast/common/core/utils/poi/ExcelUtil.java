@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+
+import com.jovefast.common.core.exception.UtilException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -269,7 +271,21 @@ public class ExcelUtil<T>
      */
     public List<T> importExcel(InputStream is) throws Exception
     {
-        return importExcel(is, 0);
+        List<T> list = null;
+        try
+        {
+            list = importExcel(is, 0);
+        }
+        catch (Exception e)
+        {
+            log.error("导入Excel异常{}", e.getMessage());
+            throw new UtilException(e.getMessage());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(is);
+        }
+        return list;
     }
 
     /**
