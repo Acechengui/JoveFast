@@ -73,7 +73,7 @@ export default {
     myAttachment: '我的附件',
   },
   login: {
-    title: '中富-云平台',
+    title: 'xxx-云平台',
     logIn: '登录',
     username: '七位工号',
     password: '密码',
@@ -87,7 +87,7 @@ export default {
     language: '切换语言',
   },
   register: {
-    title: '中富-云平台',
+    title: 'xxx-云平台',
     login: '使用已有账户登录',
     username: '七位工号',
     password: '密码',
@@ -143,7 +143,7 @@ export default {
     information: '联系信息',
     developer: '开发者：',
     website: '官网：',
-    logoTitle: '中富-云平台'
+    logoTitle: 'xxx-云平台'
   },
   profile: {
     information: '个人信息',
