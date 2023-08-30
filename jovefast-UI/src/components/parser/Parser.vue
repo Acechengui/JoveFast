@@ -189,7 +189,10 @@ function setUpload(config, scheme, response, file, fileList) {
     this.$modal.msgSuccess('文件:'+file.name+'上传成功');
     var filename = response.data.substring(response.data.lastIndexOf("/") + 1); //获取文件名称
     let fileObj = { name: filename, url: response.data };
-    let oldValue = JSON.parse(this[this.formConf.formModel][scheme.__vModel__]);
+    let oldValue=[];
+    if(this[this.formConf.formModel][scheme.__vModel__]){
+      oldValue = JSON.parse(this[this.formConf.formModel][scheme.__vModel__]);
+    }
     if (oldValue) {
       oldValue.push(fileObj);
     } else {
