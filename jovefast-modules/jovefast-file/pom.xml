@@ -53,36 +53,16 @@
             <artifactId>minio</artifactId>
             <version>${minio.version}</version>
         </dependency>
-        
+
         <!-- jovefast Api System -->
         <dependency>
             <groupId>com.jovefast</groupId>
             <artifactId>jovefast-api-system</artifactId>
         </dependency>
-        
-        <!-- jovefast Common Swagger -->
+
         <dependency>
             <groupId>com.jovefast</groupId>
             <artifactId>jovefast-common-swagger</artifactId>
-        </dependency>
-
-        <!-- Mysql Connector -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-
-        <!-- sqlserver-->
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- Common DataSource -->
-        <dependency>
-            <groupId>com.jovefast</groupId>
-            <artifactId>jovefast-common-datasource</artifactId>
         </dependency>
 
     </dependencies>

@@ -1,6 +1,5 @@
 package com.jovefast.file;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -12,7 +11,6 @@ import com.jovefast.common.swagger.annotation.EnableCustomSwagger2;
  * @author Acechengui
  */
 @EnableCustomSwagger2
-@MapperScan("com.jovefast.file.mapper")
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class },scanBasePackages = {"com.jovefast"})
 public class JoveFileApplication
 {
