@@ -5,7 +5,6 @@ import com.jovefast.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -17,6 +16,10 @@ import java.util.Date;
 public class FlowTaskDto extends BaseEntity {
 
     private static final long serialVersionUID = 7223678899590929865L;
+
+    @ApiModelProperty("租户标识")
+    private String tenantId;
+
     @ApiModelProperty("任务编号")
     private String taskId;
 
@@ -90,8 +93,16 @@ public class FlowTaskDto extends BaseEntity {
     private String candidate;
 
     @ApiModelProperty("任务完成时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",locale = "zh_CN",timezone = "GMT+8")
     private Date finishTime;
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public String getProcessTitle() {
         return processTitle;
