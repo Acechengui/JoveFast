@@ -19,7 +19,7 @@ npm run dev
 
 浏览器访问 http://localhost:80
 
-登录:admin/Psitadmin
+登录:admin/123456
 
 ## 发布
 
