@@ -8,7 +8,8 @@
 基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),工作流[flowable](https://www.flowable.com/)
 
 
-* 账号密码admin/joveadmin
+* 登录账号密码admin/123456
+* naocs账号密码nacos/nacos
 * 采用前后端分离的模式
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
 * 注册中心、配置中心选型Nacos，权限认证使用Redis。
