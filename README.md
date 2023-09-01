@@ -96,6 +96,11 @@
 ![输入图片说明](doc/preview/flowable02.png)
 ![输入图片说明](doc/preview/flowable03.png)
 
+## 移动端效果
+![输入图片说明](doc/preview/mobile01.jpg)
+![输入图片说明](doc/preview/mobile02.jpg)
+![输入图片说明](doc/preview/mobile03.jpg)
+
 ## 分布式锁
 Redisson是Redis官方推荐的Java版的Redis客户端,此处我们只用它的分布式锁功能。使用:
 1. 在需要引入分布式锁的模块中pom引入,yml增加配置
