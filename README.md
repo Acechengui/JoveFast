@@ -243,6 +243,7 @@ redisLock.unlock(lock);
 ~~~
 com.jovefast     
 ├── jovefast-gateway         // 网关模块
+├── jovefast-mobile         // 移动端
 ├── jovefast-auth            // 认证中心
 ├── jovefast-flowable        // 工作流中心
 ├── jovefast-api             // 接口模块
