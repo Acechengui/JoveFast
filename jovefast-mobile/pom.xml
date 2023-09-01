@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jovefast</groupId>
+        <artifactId>jovefast</artifactId>
+        <version>3.6.3</version>
+    </parent>
+
+    <artifactId>jovefast-mobile</artifactId>
+
+    <description>
+        jovefast-mobile 移动app模块
+    </description>
+
+
+    <dependencies>
+
+        <!-- SpringCloud Alibaba Nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Nacos Config -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Sentinel -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
+        <!-- SpringBoot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
+
+        <!-- jovefast Common DataSource -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-datasource</artifactId>
+        </dependency>
+
+        <!-- jovefast Common DataScope -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-datascope</artifactId>
+        </dependency>
+
+        <!-- jovefast Common Log -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-log</artifactId>
+        </dependency>
+
+        <!-- jovefast Common security -->
+        <dependency>
+            <groupId>com.jovefast</groupId>
+            <artifactId>jovefast-common-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <!--重要 如果不设置resource 会导致application.yaml中的@@找不到pom文件中的配置-->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+    <profiles>
+        <profile>
+            <!-- 本地环境 -->
+            <id>dev</id>
+            <properties>
+                <spring.profile>dev</spring.profile>
+                <spring.application.name>jove-mobile-dev</spring.application.name>
+                <nacos.server.address>127.0.0.1:8848</nacos.server.address>
+                <nacos.namespace/>
+            </properties>
+            <activation>
+                <!-- 是否默认激活 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <!-- 测试环境 -->
+            <id>test</id>
+            <properties>
+                <spring.profile>test</spring.profile>
+                <spring.application.name>jove-mobile-test</spring.application.name>
+                <nacos.server.address>10.10.0.151:5000,10.10.0.115:8000,192.168.71.70:5000</nacos.server.address>
+                <nacos.namespace>6ffa6af4-6606-4f7c-91bd-5d09d669d61a</nacos.namespace>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <!-- 生产环境 -->
+            <id>prod</id>
+            <properties>
+                <spring.profile>prod</spring.profile>
+                <spring.application.name>jove-mobile-prod</spring.application.name>
+                <nacos.server.address>10.10.0.151:5000,10.10.0.115:8000,192.168.71.70:5000</nacos.server.address>
+                <nacos.namespace>457ea067-0192-4a23-baab-cc1bc538522b</nacos.namespace>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
+
+</project>
