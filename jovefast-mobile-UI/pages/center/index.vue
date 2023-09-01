@@ -69,7 +69,7 @@ export default {
     return {
       user: {},
       resetPassword: false,
-	  tel:'17375590410'
+	    tel:'19972025640'
     }
   },
   created () {
