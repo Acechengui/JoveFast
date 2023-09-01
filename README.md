@@ -97,7 +97,7 @@
 ![输入图片说明](doc/preview/flowable03.png)
 
 ## 移动端效果
-![输入图片说明](doc/preview/mobile01.jpg)
+![输入图片说明](doc/preview/mobile01.jpgimage.png)
 ![输入图片说明](doc/preview/mobile02.jpg)
 ![输入图片说明](doc/preview/mobile03.jpg)
 
@@ -283,4 +283,4 @@ com.jovefast
 本人普通码农一枚，产生了想搞开源项目的想法，虽能力有限，但竭尽所能，说干就干~~
 欢迎大家进群交流，本项目将一直开源。
 点击链接加入群聊【Java/Vue摸鱼交流群】：
-[![加入QQ群](https://img.shields.io/badge/603446086-blue.svg)](https://jq.qq.com/?_wv=1027&k=Y2XSJ0BC) 
+[![加入QQ群](https://img.shields.io/badge/603446086-blue.svg)](https://jq.qq.com/?_wv=1027&k=Y2XSJ0BC) ![输入图片说明](doc/preview/mobile01.jpgmobile01.jpg)
