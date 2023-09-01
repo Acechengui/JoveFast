@@ -5,8 +5,14 @@
 
 
 ## 项目简介
-基于若依Cloud的Jove-Fast微服务项目，主要集成了 [积木报表](http://jimureport.com/),工作流[flowable](https://www.flowable.com/)
+基于若依Cloud的Jove-Fast微服务项目，
+主要集成了
 
+1.  [积木报表](http://jimureport.com/),
+1. 工作流[flowable](https://www.flowable.com/)，
+1. 移动端开源项目扩展[https://gitee.com/yinm/RuoYi-Mobile](https://gitee.com/yinm/RuoYi-Mobile)
+
+ **说明：** 
 
 * 登录账号密码admin/123456
 * naocs账号密码nacos/nacos
