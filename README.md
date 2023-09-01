@@ -97,7 +97,7 @@
 ![输入图片说明](doc/preview/flowable03.png)
 
 ## 移动端效果
-![输入图片说明](doc/preview/mobile01.jpgimage.png)
+![输入图片说明](doc/preview/mobile01.jpg)
 ![输入图片说明](doc/preview/mobile02.jpg)
 ![输入图片说明](doc/preview/mobile03.jpg)
 
