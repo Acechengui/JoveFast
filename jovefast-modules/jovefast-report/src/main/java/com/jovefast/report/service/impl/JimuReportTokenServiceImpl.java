@@ -29,14 +29,11 @@ public class JimuReportTokenServiceImpl implements JmReportTokenServiceI {
     @Autowired
     private TokenService tokenService;
 
-    /**
-     * 通过请求获取Token
-     */
     @Override
     public String getToken(HttpServletRequest request) {
         String token = request.getParameter("token");
         String jmToken = request.getHeader("token");
-        if (token == null || token.length() == 0) {
+        if (token == null || token.isEmpty()) {
             token = jmToken;
         }
         LoginUser loginUser = tokenService.getLoginUser(token);
@@ -55,12 +52,17 @@ public class JimuReportTokenServiceImpl implements JmReportTokenServiceI {
         return loginUser.getUsername();
     }
 
+    @Override
+    public String[] getRoles(String s) {
+        return tokenService.getLoginUser(s).getRoles().toArray(new String[5]);
+    }
+
     /**
      * Token校验
      */
     @Override
     public Boolean verifyToken(String s) {
-        if (s != null && s.length() > 0) {
+        if (s != null && !s.isEmpty()) {
             LoginUser loginUser = tokenService.getLoginUser(s);
             return loginUser !=null;
         }
@@ -82,6 +84,7 @@ public class JimuReportTokenServiceImpl implements JmReportTokenServiceI {
      * 获取多租户id
      * @return tenantId
      */
+    /*@Override
     public String getTenantId() {
         String token = SecurityUtils.getCurrentRequestInfo().getParameter("token");
         String header = SecurityUtils.getCurrentRequestInfo().getHeader("X-Access-Token");
@@ -95,13 +98,13 @@ public class JimuReportTokenServiceImpl implements JmReportTokenServiceI {
             return "NO";
         }
         //具备admin或者管理员权限才可访问所有报表
-        if(SecurityUtils.isAdmin(loginUser.getUserid())
+       *//* if(SecurityUtils.isAdmin(loginUser.getUserid())
                 || loginUser.getRoles().contains("it")
-                || loginUser.getRoles().contains("manger")){
+                || loginUser.getRoles().contains("manager")){
             return "";
-        }
+        }*//*
         return loginUser.getUsername();
-    }
+    }*/
 
     @Override
     public Map<String, Object> getUserInfo(String token) {
