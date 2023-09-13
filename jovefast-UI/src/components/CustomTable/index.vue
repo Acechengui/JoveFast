@@ -6,6 +6,7 @@
     <el-table
       ref="singleTable"
       :data="data"
+      v-loading="loading"
       :border="true"
       style="width: 100%"
     >
@@ -21,7 +22,7 @@
 </template>
 
 <script>
-
+import { getToken } from "@/utils/auth";
 export default {
   name: 'CustomTable',
   props: {
@@ -46,7 +47,8 @@ export default {
       data: [],
       path: this.url,
       conf: this.config,
-      children: this.config.children
+      children: this.config.children,
+      loading:false,
     }
   },
   watch: {
@@ -91,26 +93,50 @@ export default {
       const body = this.splicingParams(method, params)
       if(body ==='?') return;
       if (tag === 'custom-table' && method && url) {
+        this.loading = true;
         if (method === 'GET' || method === 'get') {
           this.$axios({
             method,
-            url: `${url}${body}`
+            url: `${url}${body}`,
+            headers: {
+              authorization: `Bearer ${getToken()}`,
+            }
           }).then(res => {
             if (res && res.data && res.data[dataPath]) {
-              this.data = res.data[dataPath]
+              if(res.data.code == 200){
+                this.data = res.data[dataPath];
+              }else{
+                this.$modal.msgError("载入数据出现错误");
+              }
+              this.loading = false;
             }
+          }).catch(err =>{
+            this.$modal.msgError(err);
+            this.loading = false;
           })
         } else {
           this.$axios({
             method,
             url,
-            data: body
+            data: body,
+            headers: {
+              authorization: `Bearer ${getToken()}`,
+            }
           }).then(res => {
             if (res && res.data && res.data[dataPath]) {
-              this.data = res.data[dataPath]
+              if(res.data.code == 200){
+                this.data = res.data[dataPath];
+              }else{
+                this.$modal.msgError("载入数据出现错误");
+              }
+              this.loading = false;
             }
+          }).catch(err =>{
+            this.$modal.msgError(err);
+            this.loading = false;
           })
         }
+
       }
     },
     getFrom(node) {
