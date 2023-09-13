@@ -56,6 +56,8 @@ import TsSubFrom from '@/components/TsSubForm/'
 import TsUniversalSelect from '@/components/TsSubForm/ts-universal-select.vue'
 //自定义组件-待查询能力的数据表格index.vue
 import CustomTable from '@/components/CustomTable/index.vue'
+//自定义组件-el-table横向滚动条固定在窗口底部
+import horizontalScroll from 'el-table-horizontal-scroll'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -84,6 +86,7 @@ Vue.component('ImagePreview', ImagePreview)
 Vue.component('tsSubForm', TsSubFrom)
 Vue.component('tsUniversalSelect', TsUniversalSelect)
 Vue.component('CustomTable', CustomTable)
+Vue.use(horizontalScroll)
 
 Vue.use(Print)
 Vue.use(directive)
