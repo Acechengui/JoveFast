@@ -102,14 +102,14 @@ export default {
               authorization: `Bearer ${getToken()}`,
             }
           }).then(res => {
-            if (res && res.data && res.data[dataPath]) {
-              if(res.data.code == 200){
+            if(res.data.code == 200){
+              if (res && res.data && res.data[dataPath]) {
                 this.data = res.data[dataPath];
-              }else{
-                this.$modal.msgError("载入数据出现错误");
               }
-              this.loading = false;
+            }else{
+              this.$modal.msgError(res.data.msg);
             }
+            this.loading = false;
           }).catch(err =>{
             this.$modal.msgError(err);
             this.loading = false;
@@ -123,14 +123,14 @@ export default {
               authorization: `Bearer ${getToken()}`,
             }
           }).then(res => {
-            if (res && res.data && res.data[dataPath]) {
-              if(res.data.code == 200){
+            if(res.data.code == 200){
+              if (res && res.data && res.data[dataPath]) {
                 this.data = res.data[dataPath];
-              }else{
-                this.$modal.msgError("载入数据出现错误");
               }
-              this.loading = false;
+            }else{
+              this.$modal.msgError(res.data.msg);
             }
+            this.loading = false;
           }).catch(err =>{
             this.$modal.msgError(err);
             this.loading = false;
