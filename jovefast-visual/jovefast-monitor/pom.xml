@@ -11,8 +11,6 @@
     <artifactId>jovefast-visual-monitor</artifactId>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
         <weixin.java.sdk.version>4.3.0</weixin.java.sdk.version>
     </properties>
 
