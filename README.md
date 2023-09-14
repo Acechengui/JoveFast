@@ -12,6 +12,9 @@
 1. 工作流[flowable](https://www.flowable.com/)，
 1. 移动端开源项目扩展[https://gitee.com/yinm/RuoYi-Mobile](https://gitee.com/yinm/RuoYi-Mobile)
 
+ **常见问题：** 
+[https://gitee.com/wxjstudy/jove-fast/wikis/Home](https://gitee.com/wxjstudy/jove-fast/wikis/Home)
+
  **说明：** 
 
 * 登录账号密码admin/123456
