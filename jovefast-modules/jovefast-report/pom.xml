@@ -15,7 +15,7 @@
         <jsqlparser.version>4.3</jsqlparser.version>
         <mysql.connector.version>8.0.11</mysql.connector.version>
         <mssql.jdbc.version>8.2.2.jre8</mssql.jdbc.version>
-        <jeccg.jimureport.version>1.6.2-GA2</jeccg.jimureport.version>
+        <jeccg.jimureport.version>1.6.2-GA5</jeccg.jimureport.version>
     </properties>
     <description>
         jovefast-modules-report报表模块
