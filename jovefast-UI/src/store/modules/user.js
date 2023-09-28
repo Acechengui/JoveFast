@@ -4,6 +4,7 @@ import { getToken, setToken, setExpiresIn, removeToken } from '@/utils/auth'
 const user = {
   state: {
     token: getToken(),
+    id: '',
     name: '',
     nickname:'',
     avatar: '',
@@ -17,6 +18,9 @@ const user = {
     },
     SET_EXPIRES_IN: (state, time) => {
       state.expires_in = time
+    },
+    SET_ID: (state, id) => {
+      state.id = id
     },
     SET_NAME: (state, name) => {
       state.name = name
@@ -68,6 +72,7 @@ const user = {
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
+          commit('SET_ID', user.userId)
           commit('SET_NAME', user.userName)
           commit('SET_NICK_NAME', user.nickName)
           commit('SET_AVATAR', avatar)
@@ -90,7 +95,7 @@ const user = {
         })
       })
     },
-    
+
     // 退出系统
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
