@@ -32,21 +32,25 @@
     "management-system"
   ],
   "repository": {
-    "type": "svn",
+    "type": "git",
     "url": "https://gitee.com/wxjstudy/jove-fast/tree/master/jovefast-UI"
   },
   "dependencies": {
     "@antv/g6": "^4.7.8",
+    "@braid/vue-formulate": "^2.5.3",
+    "@gcpaas/data-room-ui": "^1.0.1-2023101301-Alpha",
     "@riophae/vue-treeselect": "0.4.0",
     "@types/echarts": "^4.9.16",
     "@wangeditor/editor": "^5.1.21",
     "@wangeditor/editor-for-vue": "^1.0.2",
     "axios": "0.24.0",
+    "babel-polyfill": "^6.26.0",
     "bpmn-js": "^7.5.0",
+    "caniuse-lite": "^1.0.30001477",
     "clipboard": "2.0.8",
     "core-js": "3.25.2",
     "css-loader": "^3.5.3",
-    "echarts": "5.4.0",
+    "echarts": "4.9.0",
     "el-table-horizontal-scroll": "^1.2.5",
     "element-ui": "2.15.13",
     "eslint-loader": "^2.2.1",
@@ -54,11 +58,14 @@
     "fuse.js": "6.4.3",
     "highlight.js": "10.4.1",
     "jimp": "^0.16.1",
+    "jquery": "^3.7.1",
     "js-base64": "^3.7.2",
     "js-beautify": "1.14.1",
     "js-cookie": "3.0.1",
     "jsencrypt": "3.0.0-rc.1",
     "jsqr": "^1.4.0",
+    "moment": "^2.29.4",
+    "node-abort-controller": "^3.1.1",
     "nprogress": "0.2.0",
     "postcss-loader": "^3.0.0",
     "qrcode-decoder": "^0.3.1",
@@ -81,7 +88,8 @@
     "vue-router": "3.4.9",
     "vuedraggable": "2.24.3",
     "vuex": "3.6.0",
-    "xcrud": "^0.4.19"
+    "xcrud": "^0.4.19",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.4.6",
@@ -98,14 +106,15 @@
     "less-loader": "^11.1.0",
     "lint-staged": "10.5.3",
     "node-less": "^1.0.0",
+    "node-sass": "^4.14.1",
     "runjs": "4.4.2",
     "sass": "1.32.13",
     "sass-loader": "^10.1.1",
     "script-ext-html-webpack-plugin": "^2.1.5",
     "svg-sprite-loader": "5.1.1",
+    "vue-i18n": "7.3.2",
     "vue-template-compiler": "2.6.12",
-    "watermark-dom": "2.3.0",
-    "vue-i18n": "7.3.2"
+    "watermark-dom": "2.3.0"
   },
   "engines": {
     "node": ">=8.9",

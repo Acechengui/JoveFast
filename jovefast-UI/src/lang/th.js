@@ -73,6 +73,7 @@ export default {
     QRcodegeneration: 'การสร้างรหัส QR',
     attachmentManagement: 'การจัดการอุปกรณ์เสริม',
     myAttachment: 'อุปกรณ์เสริมของฉัน',
+    dataroom: 'บิ๊กปิง',
   },
   login: {
     title: 'แพลตฟอร์มคลาวด์ JOVE',

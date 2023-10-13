@@ -7,6 +7,7 @@ import tagsView from './modules/tagsView'
 import permission from './modules/permission'
 import settings from './modules/settings'
 import getters from './getters'
+import { $dataRoomStore } from '@gcpaas/data-room-ui'
 
 Vue.use(Vuex)
 
@@ -18,6 +19,8 @@ const store = new Vuex.Store({
     tagsView,
     permission,
     settings,
+    // 注册大屏设计器的store
+    bigScreen: $dataRoomStore
   },
   getters
 })

@@ -72,6 +72,7 @@ export default {
     QRcodegeneration: 'QR code generation',
     attachmentManagement: 'Attachment Management',
     myAttachment: 'My attachment',
+    dataroom: 'Large Screen',
   },
   login: {
     title: 'JOVE Cloud Platform',

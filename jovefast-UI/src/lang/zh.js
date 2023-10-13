@@ -71,6 +71,7 @@ export default {
     QRcodegeneration: '二维码生成',
     attachmentManagement: '附件管理',
     myAttachment: '我的附件',
+    dataroom: '可视化大屏',
   },
   login: {
     title: 'xxx-云平台',

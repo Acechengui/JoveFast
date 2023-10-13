@@ -1,5 +1,6 @@
 'use strict'
 const path = require('path')
+const webpack = require('webpack')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -7,7 +8,7 @@ function resolve(dir) {
 
 const CompressionPlugin = require('compression-webpack-plugin')
 
-const name = process.env.VUE_APP_TITLE || '天河科技' // 网页标题
+const name = process.env.VUE_APP_TITLE || 'xxx-微服务平台' // 网页标题
 
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
 
@@ -18,7 +19,6 @@ module.exports = {
   // 部署生产环境和开发环境下的URL。
   // 默认情况下，Vue CLI 会假设你的应用是被部署在一个域名的根路径上
   // 例如 https://www.xxx.vip/。如果应用被部署在一个子路径上，你就需要用这个选项指定这个子路径。例如，如果你的应用被部署在 https://www.xxx.vip/admin/，则设置 baseUrl 为 /admin/。
-  // 用github page部署需要改为  ./,否则访问静态资源404
   publicPath: process.env.NODE_ENV === "production" ? "/" : "/",
   // 在npm run build 或 yarn build 时 ，生成文件的目录名称（要和baseUrl的生产环境路径一致）（默认dist）
   outputDir: 'dist',
@@ -56,7 +56,8 @@ module.exports = {
     name: name,
     resolve: {
       alias: {
-        '@': resolve('src')
+        '@': resolve('src'),
+        'data-room-ui': resolve('node_modules/@gcpaas/data-room-ui/packages')
       }
     },
     plugins: [
@@ -67,12 +68,41 @@ module.exports = {
         filename: '[path].gz[query]',   // 压缩后的文件名
         algorithm: 'gzip',              // 使用gzip压缩
         minRatio: 0.8                   // 压缩率小于1才会压缩
+      }),
+      new webpack.ProvidePlugin({
+        jQuery: 'jquery',
+        $: 'jquery',
+        'window.jQuery': 'jquery'
       })
     ],
   },
   chainWebpack(config) {
     config.plugins.delete('preload') // TODO: need test
     config.plugins.delete('prefetch') // TODO: need test
+
+    config.module
+          .rule('svg')
+          .exclude.add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/dataSourceIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/pageIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/bigScreenIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/Svgs/svg'))
+          .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/alignIcon/svg'))
+          .end()
+        config.module
+          .rule('icons')
+          .test(/\.svg$/)
+          .include.add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/dataSourceIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/pageIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/bigScreenIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/Svgs/svg'))
+          .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/alignIcon/svg'))
+          .end()
+          .use('svg-sprite-loader')
+          .loader('svg-sprite-loader')
+          .options({
+            symbolId: 'icon-[name]'
+          })
+          .end()
 
     // set svg-sprite-loader
     config.module
@@ -91,9 +121,7 @@ module.exports = {
       })
       .end()
 
-    config
-      .when(process.env.NODE_ENV !== 'development',
-        config => {
+      config.when(process.env.NODE_ENV !== 'development', config => {
           config
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
@@ -133,5 +161,11 @@ module.exports = {
           }
         }
       )
-  }
+  },
+  // 加排除node_modules中对需要进行语法转义的依赖
+  transpileDependencies: [
+    '@gcpaas/data-room-ui'
+  ]
 }
+
+ 

@@ -17,6 +17,7 @@ import router from './router'
 import directive from './directive' // directive
 import plugins from './plugins' // plugins
 import { download } from '@/utils/request'
+import * as $dataroomhttpaxios from '@/utils/dataroom-http.js'
 
 import './assets/icons' // icon
 import './permission' // permission control
@@ -58,6 +59,8 @@ import TsUniversalSelect from '@/components/TsSubForm/ts-universal-select.vue'
 import CustomTable from '@/components/CustomTable/index.vue'
 //自定义组件-el-table横向滚动条固定在窗口底部
 import horizontalScroll from 'el-table-horizontal-scroll'
+//大屏设计组件
+import { registerConfig as registerConfigDataRoom, $dataRoomAxios } from '@gcpaas/data-room-ui'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -73,6 +76,8 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.$axios = axios
+// 将大屏的aixos实例挂载到Vue上
+Vue.prototype.$dataRoomAxios = $dataroomhttpaxios
 
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
@@ -97,6 +102,40 @@ Vue.use(Element, {
   i18n: (key, value) => i18n.t(key, value)
 })
 DictData.install()
+// 使用大屏提供的方法，进行后端服务地址注册
+registerConfigDataRoom({
+  routers: {
+    // 大屏列表页面
+    pageListUrl: '/big-screen-list',
+    // 大屏设计页面
+    designUrl: '/big-screen/design',
+    // 大屏预览页面
+    previewUrl: '/big-screen/preview',
+    // 数据源管理页面
+    dataSourceUrl: '/big-screen-dataSource',
+    // 数据集管理页面
+    dataSetUrl: '/big-screen-dataSet',
+    // 资源库页面
+    sourceUrl: '/big-screen-source',
+    // 组件库页面
+  	componentUrl: '/big-screen-components',
+    //指定回退的路由
+    pageManagementUrl:'/big-screen-list'
+  },
+  httpConfigs: {
+    // 这里是大屏设计器对应的后端服务地址，可以为具体值，也可以在其他地方进行配置
+		// 比如环境变量文件中，假设在 .env.development中配置了地址为：VUE_BIGSCREEN_BASE_URL='http://192.168.xx.xx:xxxx/xxx'
+    baseURL: process.env.VUE_APP_BASE_API + '/dataroom',
+    // 这里是大屏文件的访问前缀，一般和后端配置的gc.starter.file.urlPrefix保持一致即可
+    //fileUrlPrefix: 'http://192.168.20.98:9000/server/static'
+  },
+  // 自定义title和logo等属性 
+  starter: {
+    title: '大屏设计器',
+    logo: 'https://jovepcb.oss-cn-shenzhen.aliyuncs.com/jove-cloud/static/logo.png'
+  }
+// 此处第二个参数为自己项目中的路由实例对象
+}, router)
 
 /**
  * If you don't want to use mock-server
