@@ -282,11 +282,12 @@ export default {
         that.form = res.data;
       })
     }else {
-      that.formConf=[];
-      if (formConfInDB) {
+      console.log(formConfInDB)
+      if (!formConfInDB === null || !Object.keys(formConfInDB).length === 0) {
         that.formConf = formConfInDB
       }
     }
+    console.log('11111==>'+ JSON.stringify(that.formConf))
     loadBeautifier(btf => {
       beautifier = btf
     })

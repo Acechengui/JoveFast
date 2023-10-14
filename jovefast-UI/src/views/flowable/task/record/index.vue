@@ -498,14 +498,17 @@ export default {
       this.checkSendUser=false;
       this.variablesData.disabled = false;
       //对表格做是否读写处理
-      this.variablesData.fields.forEach(item => {
-        //判断是否子表单
-        if(item.__config__.layout==='tsSubform'){
-          item.canEdit=true;
-          item.addButton=true;
-          item.deleteButton=true;
-        }
-      })
+      if(this.variablesData.fields){
+          this.variablesData.fields.forEach(item => {
+          //判断是否子表单
+          if(item.__config__.layout==='tsSubform'){
+            item.canEdit=true;
+            item.addButton=true;
+            item.deleteButton=true;
+          }
+        })
+      }
+      
       this.timer = new Date().getTime()+1;
       this.$modal.msgSuccess('重新编辑激活成功,可以编辑内容了~');
     },
