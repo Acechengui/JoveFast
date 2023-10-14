@@ -38,7 +38,6 @@ import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
@@ -56,10 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * @author Acecehgnui
@@ -157,7 +153,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         // 获取当前节点的所有父级用户任务节点
         // 深度优先算法思想：延边迭代深入
         List<UserTask> parentUserTaskList = FlowableUtils.iteratorFindParentUserTasks(source, null, null);
-        if (parentUserTaskList == null || parentUserTaskList.size() == 0) {
+        if (parentUserTaskList == null || parentUserTaskList.isEmpty()) {
             throw new CheckedException("当前节点为初始任务节点，不能驳回");
         }
         // 获取活动 ID 即节点 Key
@@ -354,7 +350,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         // 可回退的节点列表
         List<UserTask> userTaskList = new ArrayList<>();
         for (List<UserTask> road : roads) {
-            if (userTaskList.size() == 0) {
+            if (userTaskList.isEmpty()) {
                 // 还没有可回退节点直接添加
                 userTaskList = road;
             } else {
@@ -457,13 +453,13 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setProcInsId(hisIns.getProcInsId());
             flowTask.setProcessTitle(hisIns.getProcessTitle());
             // 计算耗时
+            long time;
             if (Objects.nonNull(hisIns.getEndTime())) {
-                long time = hisIns.getEndTime().getTime() - hisIns.getStartTime().getTime();
-                flowTask.setDuration(DateUtils.getProcessCompletionTime(time));
+                time = hisIns.getEndTime().getTime() - hisIns.getStartTime().getTime();
             } else {
-                long time = System.currentTimeMillis() - hisIns.getStartTime().getTime();
-                flowTask.setDuration(DateUtils.getProcessCompletionTime(time));
+                time = System.currentTimeMillis() - hisIns.getStartTime().getTime();
             }
+            flowTask.setDuration(DateUtils.getProcessCompletionTime(time));
             // 流程定义信息
             ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
                     .processDefinitionId(hisIns.getProcDefId())
@@ -483,10 +479,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setStartDeptName(startUser.getData().getDept().getDeptName());
             List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getProcInsId()).orderByTaskCreateTime().desc().list();
             if (CollectionUtils.isNotEmpty(taskList)) {
-                flowTask.setTaskId(taskList.get(0).getId());
-                flowTask.setTaskName(taskList.get(0).getName());
-                if(taskList.get(0).getAssignee() !=null){
-                    R<SysUser> assigneeName = remoteuserservice.selectUserInFoById(Long.parseLong(taskList.get(0).getAssignee()), SecurityConstants.INNER);
+                Task currtask = taskList.get(0);
+                flowTask.setTaskId(currtask.getId());
+                flowTask.setTaskName(currtask.getName());
+                if(currtask.getAssignee() !=null){
+                    R<SysUser> assigneeName = remoteuserservice.selectUserInFoById(Long.parseLong(currtask.getAssignee()), SecurityConstants.INNER);
                     if(assigneeName.getCode() == HttpStatus.ERROR){
                         throw new CheckedException("获取用户信息失败");
                     }
@@ -496,14 +493,17 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             }else{
                 List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery().
                         processInstanceId(hisIns.getProcInsId()).orderByHistoricTaskInstanceEndTime().desc().list();
-                flowTask.setTaskId(historicTaskInstance.get(0).getId());
-                flowTask.setTaskName(historicTaskInstance.get(0).getName());
-                if(historicTaskInstance.get(0).getAssignee()!=null){
-                    R<SysUser> assigneeName = remoteuserservice.selectUserInFoById(Long.parseLong(historicTaskInstance.get(0).getAssignee()), SecurityConstants.INNER);
-                    if(assigneeName.getCode() == HttpStatus.ERROR){
-                        throw new CheckedException("获取用户信息失败");
+                if(CollectionUtils.isNotEmpty(historicTaskInstance)){
+                    HistoricTaskInstance histask = historicTaskInstance.get(0);
+                    flowTask.setTaskId(histask.getId());
+                    flowTask.setTaskName(histask.getName());
+                    if(histask.getAssignee()!=null){
+                        R<SysUser> assigneeName = remoteuserservice.selectUserInFoById(Long.parseLong(histask.getAssignee()), SecurityConstants.INNER);
+                        if(assigneeName.getCode() == HttpStatus.ERROR){
+                            throw new CheckedException("获取用户信息失败");
+                        }
+                        flowTask.setAssigneeName(assigneeName.getData().getNickName());
                     }
-                    flowTask.setAssigneeName(assigneeName.getData().getNickName());
                 }
             }
             flowList.add(flowTask);
@@ -593,8 +593,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     }
 
     /**
-     * @description: 待办任务列表整合
-     * @date 2022/10/15 21:53
+     *  待办任务列表整合
      */
     private List<FlowTaskDto> todoListIntegration(List<Task> taskList){
         List<FlowTaskDto> flowList = new ArrayList<>();
@@ -683,11 +682,6 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         re.put("data",hisTaskList);
         re.put("total",hcount);
         return re;
-    }
-
-    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> seen.add(keyExtractor.apply(t));
     }
 
     /**
