@@ -57,6 +57,7 @@
           <label v-if="scope.row.assigneeName">{{scope.row.assigneeName}} <el-tag type="info" size="mini" v-if="scope.row.deptName">{{scope.row.deptName}}</el-tag></label>
           <label v-if="scope.row.candidate">{{scope.row.candidate}}</label>
           <label v-if="scope.row.taskName && scope.row.assigneeName===null && scope.row.candidate===null">{{scope.row.taskName}}</label>
+          <label v-if="scope.row.taskName && scope.row.assigneeName===undefined && scope.row.candidate===undefined">{{scope.row.taskName}}</label>
         </template>
       </el-table-column>
       <el-table-column label="流程版本" align="center" v-if="columns[5].visible">
