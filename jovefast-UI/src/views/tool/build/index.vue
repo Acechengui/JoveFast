@@ -282,8 +282,8 @@ export default {
         that.form = res.data;
       })
     }else {
-      if (!formConfInDB === null || !Object.keys(formConfInDB).length === 0) {
-        that.formConf = formConfInDB
+      if (formConfInDB !== null && Object.keys(formConfInDB).length !== 0) {
+        that.formConf = formConfInDB;
       }
     }
     loadBeautifier(btf => {
