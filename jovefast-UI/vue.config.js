@@ -43,7 +43,11 @@ module.exports = {
         }
       }
     },
-    disableHostCheck: true
+    disableHostCheck: true,
+    //热模块替换功能开启
+    client: {
+      overlay: false
+    }
   },
   css: {
     loaderOptions: {
