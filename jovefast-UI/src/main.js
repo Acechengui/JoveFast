@@ -62,6 +62,10 @@ import horizontalScroll from 'el-table-horizontal-scroll'
 //大屏设计组件
 import { registerConfig as registerConfigDataRoom, $dataRoomAxios } from '@gcpaas/data-room-ui'
 
+//引入ng-form-element表单设计器
+import NgForm  from 'ng-form-element'
+import 'ng-form-element/lib/ng-form-element.css'
+
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -92,6 +96,8 @@ Vue.component('tsSubForm', TsSubFrom)
 Vue.component('tsUniversalSelect', TsUniversalSelect)
 Vue.component('CustomTable', CustomTable)
 Vue.use(horizontalScroll)
+// 注册ng-form-element组件库
+Vue.use(NgForm) 
 
 Vue.use(Print)
 Vue.use(directive)
