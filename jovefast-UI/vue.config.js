@@ -44,10 +44,8 @@ module.exports = {
       }
     },
     disableHostCheck: true,
-    //热模块替换功能开启
-    client: {
-      overlay: false
-    }
+    //热模块替换功能
+    hot: true
   },
   css: {
     loaderOptions: {
