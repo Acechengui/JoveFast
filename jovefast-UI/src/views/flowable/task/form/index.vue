@@ -2,62 +2,28 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="表单名称" prop="formName">
-        <el-input
-          v-model="queryParams.formName"
-          placeholder="请输入表单名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.formName" placeholder="请输入表单名称" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{ $t('common.search') }}</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{ $t('common.search')
+        }}</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{ $t('common.reset') }}</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['flowable:form:add']"
-        >{{ $t('common.add') }}</el-button>
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+          v-hasPermi="['flowable:form:add']">{{ $t('common.add') }}</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['flowable:form:edit']"
-        >{{ $t('common.edit') }}</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['flowable:form:del']">{{ $t('common.del') }}</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['flowable:form:del']"
-        >{{ $t('common.del') }}</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['flowable:form:export']"
-        >{{ $t('common.export') }}</el-button>
+        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+          v-hasPermi="['flowable:form:export']">{{ $t('common.export') }}</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -69,76 +35,39 @@
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-view"
-            @click="handleDetail(scope.row)"
-            v-hasPermi="['flowable:form:list']"
-          >详情</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['flowable:form:edit']"
-          >{{ $t('common.edit') }}</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['flowable:form:del']"
-          >{{ $t('common.del') }}</el-button>
+          <el-button size="mini" type="text" icon="el-icon-view" @click="handleDetail(scope.row)"
+            v-hasPermi="['flowable:form:list']">详情</el-button>
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+            v-hasPermi="['flowable:form:edit']">{{ $t('common.edit') }}</el-button>
+          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+            v-hasPermi="['flowable:form:del']">{{ $t('common.del') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
-
-    <!-- 添加或修改流程表单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="表单名称" prop="formName">
-          <el-input v-model="form.formName" placeholder="请输入表单名称" />
-        </el-form-item>
-        <el-form-item label="表单内容">
-          <editor v-model="form.formContent" :min-height="192"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">{{ $t('common.determine') }}</el-button>
-        <el-button @click="cancel">{{ $t('common.cancel') }}</el-button>
-      </div>
-    </el-dialog>
+    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+      @pagination="getList" />
 
     <!--表单配置详情-->
-    <el-dialog :title="formTitle" :visible.sync="formConfOpen" width="60%" append-to-body>
-      <div class="key-form">
-        <!-- <parser :key="new Date().getTime()"  :form-conf="formConf" /> -->
+    <el-dialog :title="formTitle" :visible.sync="formConfOpen">
+      <div>
+        <ng-form-build ref="formBuild" :preview="true" :formTemplate="formConf" :config="formBuildConfig"
+          :custom-components="customComponents" />
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { listForm, delForm, addForm, updateForm } from "@/api/flowable/form";
-import Editor from '@/components/Editor';
-// import Parser from '@/components/parser/Parser'
+import { listForm, delForm } from "@/api/flowable/form";
+import { getToken } from '@/utils/auth'
+//自定义
+import BackgroundImageComponent from '../../../ngform/customComponents/backgroundImage/index.vue'
+import BackgroundImagePropertie from '../../../ngform/customComponents/backgroundImage/properties.vue'
 export default {
   name: "Form",
   components: {
-    Editor,
-    // Parser
+    BackgroundImageComponent, BackgroundImagePropertie
   },
   data() {
     return {
@@ -156,13 +85,37 @@ export default {
       total: 0,
       // 流程表单表格数据
       formList: [],
-      // 弹出层标题
-      title: "",
-      formConf: {}, // 默认表单数据
+      formConf: null,
       formConfOpen: false,
       formTitle: "",
-      // 是否显示弹出层
-      open: false,
+      formBuildConfig: {
+        httpConfig: (config) => {
+          config.headers['Authorization'] = 'Bearer ' + getToken()
+          return config
+        }
+      },
+      customComponents: [
+        /**
+         {
+            type: '类型', // 唯一，不能和已有组件冲突
+            label: '组件名称', // 唯一，不能和已有组件冲突
+            component: 组件实际的渲染文件 ,// .vue
+            properties: 组件的属性配置面板 , // .vue
+            icon: 组件显示的图标 // base64
+            ..... // 其他配置项
+        } */
+        {
+          type: 'ngImage',
+          label: '自定义组件',
+          component: BackgroundImageComponent,
+          properties: BackgroundImagePropertie,
+          options: {
+            style: null,
+            imgurl: null
+          },
+          icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNS44IiB5PSIxMC44IiB3aWR0aD0iMzYuNCIgaGVpZ2h0PSIyNi40IiByeD0iMy4yIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM3NTc1NzUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTMuNSIgY3k9IjE4LjUiIHI9IjMuNSIgZmlsbD0iI0VFQ0E4NiIvPjxwYXRoIGQ9Ik0yNy45MjMgMTguMzY2YTEgMSAwIDAgMSAxLjY5Ni0uMDE4bDguMzk1IDEzLjExM0ExIDEgMCAwIDEgMzcuMTcyIDMzSDIwLjc4MWExIDEgMCAwIDEtLjg1NC0xLjUybDcuOTk2LTEzLjExNFoiIGZpbGw9IiM4MkJGOTkiLz48cGF0aCBkPSJNMTYuNjc2IDI2LjE5OWExIDEgMCAwIDEgMS42NDggMGwzLjU5OSA1LjIzNEExIDEgMCAwIDEgMjEuMDk5IDMzSDEzLjlhMSAxIDAgMCAxLS44MjQtMS41NjdsMy41OTktNS4yMzRaIiBmaWxsPSIjODJCRjk5Ii8+PC9zdmc+Cg==',
+        }
+      ],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -190,25 +143,6 @@ export default {
         this.loading = false;
       });
     },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        formId: null,
-        formName: null,
-        formContent: null,
-        createTime: null,
-        updateTime: null,
-        createBy: null,
-        updateBy: null,
-        remark: null
-      };
-      this.resetForm("form");
-    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -222,43 +156,23 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.formId)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 表单配置信息 */
-    handleDetail(row){
+    handleDetail(row) {
       this.formConfOpen = true;
-      this.formTitle = "流程表单配置详细";
+      this.formTitle = "流程表单详细";
+      console.info(row.formContent)
       this.formConf = JSON.parse(row.formContent)
-      this.formConf.disabled = true;
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/ngform/ngformDesign', query: {formId: null }})
+      this.$router.push({ path: '/ngform/ngformDesign', query: { formId: null } })
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$router.push({ path: '/ngform/ngformDesign', query: {formId: row.formId }})
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.formId != null) {
-            updateForm(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addForm(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+      this.$router.push({ path: '/ngform/ngformDesign', query: { formId: row.formId } })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -267,7 +181,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(function() {
+      }).then(function () {
         return delForm(formIds);
       }).then(() => {
         this.getList();
@@ -288,11 +202,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.key-form {
-  margin: 15px auto;
-  width: 95%;
-  padding: 15px;
-}
-</style>

@@ -2,57 +2,35 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="流程名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入流程名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.name" placeholder="请输入流程名称" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{ $t('common.search') }}</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{ $t('common.search')
+        }}</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{ $t('common.reset') }}</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-upload"
-          size="mini"
-          @click="handleImport"
-          v-hasPermi="['flowable:definition:export']"
-        >{{ $t('common.import') }}</el-button>
+        <el-button type="primary" plain icon="el-icon-upload" size="mini" @click="handleImport"
+          v-hasPermi="['flowable:definition:export']">{{ $t('common.import') }}</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleLoadXml"
-        >{{ $t('common.add') }}</el-button>
+        <el-button type="success" plain icon="el-icon-plus" size="mini" @click="handleLoadXml">{{ $t('common.add')
+        }}</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['flowable:instance:del']"
-        >{{ $t('common.del') }}</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['flowable:instance:del']">{{ $t('common.del') }}</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" fit :data="definitionList" border   @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" fit :data="definitionList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="流程编号" align="center" prop="deploymentId" :show-overflow-tooltip="true"/>
+      <el-table-column label="流程编号" align="center" prop="deploymentId" :show-overflow-tooltip="true" />
       <el-table-column label="流程标识" align="center" prop="flowKey" :show-overflow-tooltip="true" />
       <el-table-column label="流程分类" align="center" prop="category" />
       <el-table-column label="流程名称" align="center" :show-overflow-tooltip="true">
@@ -72,7 +50,7 @@
       </el-table-column>
       <el-table-column label="流程版本" align="center">
         <template slot-scope="scope">
-          <el-tag size="medium" >v{{ scope.row.version }}</el-tag>
+          <el-tag size="medium">v{{ scope.row.version }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -81,7 +59,7 @@
           <el-tag type="warning" v-if="scope.row.suspensionState === 2">挂起</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="部署时间" align="center" prop="deploymentTime" width="180"/>
+      <el-table-column label="部署时间" align="center" prop="deploymentTime" width="180" />
       <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-dropdown>
@@ -89,19 +67,24 @@
               更多操作<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item icon="el-icon-edit-outline" @click.native="handleLoadXml(scope.row)" v-hasPermi="['flowable:definition:edit']">
+              <el-dropdown-item icon="el-icon-edit-outline" @click.native="handleLoadXml(scope.row)"
+                v-hasPermi="['flowable:definition:edit']">
                 编辑
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-connection" @click.native="handleAddForm(scope.row)" v-hasPermi="['flowable:definition:configureform']">
+              <el-dropdown-item icon="el-icon-connection" @click.native="handleAddForm(scope.row)"
+                v-hasPermi="['flowable:definition:configureform']">
                 挂载表单
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-video-pause" @click.native="handleUpdateSuspensionState(scope.row)" v-if="scope.row.suspensionState === 1" v-hasPermi="['flowable:definition:state']">
+              <el-dropdown-item icon="el-icon-video-pause" @click.native="handleUpdateSuspensionState(scope.row)"
+                v-if="scope.row.suspensionState === 1" v-hasPermi="['flowable:definition:state']">
                 挂起
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-video-play" @click.native="handleUpdateSuspensionState(scope.row)" v-if="scope.row.suspensionState === 2" v-hasPermi="['flowable:definition:state']">
+              <el-dropdown-item icon="el-icon-video-play" @click.native="handleUpdateSuspensionState(scope.row)"
+                v-if="scope.row.suspensionState === 2" v-hasPermi="['flowable:definition:state']">
                 激活
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:definition:del']">
+              <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(scope.row)"
+                v-hasPermi="['flowable:definition:del']">
                 删除
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -110,35 +93,21 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+      @pagination="getList" />
     <!-- bpmn20.xml导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-      <el-upload
-        ref="upload"
-        :limit="1"
-        accept=".xml"
-        :headers="upload.headers"
-        :action="upload.url + '?name=' + upload.name+'&category='+ upload.category"
-        :disabled="upload.isUploading"
-        :on-progress="handleFileUploadProgress"
-        :on-success="handleFileSuccess"
-        :auto-upload="false"
-        drag
-      >
+      <el-upload ref="upload" :limit="1" accept=".xml" :headers="upload.headers"
+        :action="upload.url + '?name=' + upload.name + '&category=' + upload.category" :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess" :auto-upload="false" drag>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">
           将文件拖到此处，或
           <em>点击上传</em>
         </div>
         <div class="el-upload__tip" slot="tip">
-          流程名称：<el-input v-model="upload.name"/>
-          流程分类：<el-input v-model="upload.category"/>
+          流程名称：<el-input v-model="upload.name" />
+          流程分类：<el-input v-model="upload.category" />
         </div>
         <div class="el-upload__tip" style="color:red" slot="tip">提示：仅允许导入“bpmn20.xml”格式文件！</div>
       </el-upload>
@@ -150,13 +119,14 @@
 
     <!-- 流程图 -->
     <el-dialog :title="readImage.title" :visible.sync="readImage.open" width="70%" append-to-body>
-       <flow :xmlData="xmlData"/>
+      <flow :xmlData="xmlData" />
     </el-dialog>
 
     <!--表单配置详情-->
     <el-dialog :title="formTitle" :visible.sync="formConfOpen" width="50%" append-to-body>
       <div class="key-form">
-        <!-- <parser :key="new Date().getTime()"  :form-conf="formConf" /> -->
+        <ng-form-build ref="currentFormBuild" :preview="true" :formTemplate="formConf" :config="formBuildConfig"
+          :custom-components="customComponents" />
       </div>
     </el-dialog>
 
@@ -164,12 +134,7 @@
     <el-dialog :title="formDeployTitle" :visible.sync="formDeployOpen" width="60%" append-to-body>
       <el-row :gutter="24">
         <el-col>
-          <el-table
-            ref="singleTable"
-            :data="formList"
-            border
-            highlight-current-row
-            style="width: 100%">
+          <el-table ref="singleTable" :data="formList" border highlight-current-row style="width: 100%">
             <el-table-column label="表单编号" align="center" prop="formId" />
             <el-table-column label="表单名称" align="center" prop="formName" />
             <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
@@ -180,19 +145,13 @@
             </el-table-column>
           </el-table>
 
-          <pagination
-            small
-            layout="prev, pager, next"
-            v-show="formTotal>0"
-            :total="formTotal"
-            :page.sync="formQueryParams.pageNum"
-            :limit.sync="formQueryParams.pageSize"
-            @pagination="ListFormDeploy"
-          />
+          <pagination small layout="prev, pager, next" v-show="formTotal > 0" :total="formTotal"
+            :page.sync="formQueryParams.pageNum" :limit.sync="formQueryParams.pageSize" @pagination="ListFormDeploy" />
         </el-col>
         <el-col>
           <div v-if="showCurrent">
-            <!-- <parser :key="new Date().getTime()" :form-conf="currentRow" /> -->
+            <ng-form-build ref="currentFormBuild" :preview="true" :formTemplate="currentRow" :config="formBuildConfig"
+              :custom-components="customComponents" />
           </div>
         </el-col>
       </el-row>
@@ -201,17 +160,18 @@
 </template>
 
 <script>
-import { listDefinition, updateState, delDeployment,definitionStart, readXml} from "@/api/flowable/definition";
-import { getToken } from "@/utils/auth";
-import { getForm, addDeployForm ,listForm } from "@/api/flowable/form";
-// import Parser from '@/components/parser/Parser'
+import { listDefinition, updateState, delDeployment, definitionStart, readXml } from "@/api/flowable/definition";
+import { getToken } from '@/utils/auth'
+//自定义
+import BackgroundImageComponent from '../../ngform/customComponents/backgroundImage/index.vue'
+import BackgroundImagePropertie from '../../ngform/customComponents/backgroundImage/properties.vue'
+import { getForm, addDeployForm, listForm } from "@/api/flowable/form";
 import flow from '@/views/flowable/task/record/flow'
 
 export default {
   name: "Definition",
   components: {
-    // Parser,
-    flow
+    flow, BackgroundImageComponent, BackgroundImagePropertie
   },
   data() {
     return {
@@ -234,9 +194,9 @@ export default {
       formDeployOpen: false,
       formDeployTitle: "",
       formList: [],
-      formTotal:0,
+      formTotal: 0,
       formConf: {}, // 默认表单数据
-      readImage:{
+      readImage: {
         open: false,
         src: "",
       },
@@ -261,19 +221,48 @@ export default {
         pageSize: 10,
         name: null
       },
-      formQueryParams:{
+      formQueryParams: {
         pageNum: 1,
         pageSize: 10,
       },
       // 挂载表单到流程实例
-      formDeployParam:{
+      formDeployParam: {
         formId: null,
         deployId: null
       },
+
       currentRow: null,
-      showCurrent:false,
+      showCurrent: false,
+      formBuildConfig: {
+        httpConfig: (config) => {
+          config.headers['Authorization'] = 'Bearer ' + getToken()
+          return config
+        }
+      },
+      customComponents: [
+        /**
+         {
+            type: '类型', // 唯一，不能和已有组件冲突
+            label: '组件名称', // 唯一，不能和已有组件冲突
+            component: 组件实际的渲染文件 ,// .vue
+            properties: 组件的属性配置面板 , // .vue
+            icon: 组件显示的图标 // base64
+            ..... // 其他配置项
+        } */
+        {
+          type: 'ngImage',
+          label: '自定义组件',
+          component: BackgroundImageComponent,
+          properties: BackgroundImagePropertie,
+          options: {
+            style: null,
+            imgurl: null
+          },
+          icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNS44IiB5PSIxMC44IiB3aWR0aD0iMzYuNCIgaGVpZ2h0PSIyNi40IiByeD0iMy4yIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM3NTc1NzUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTMuNSIgY3k9IjE4LjUiIHI9IjMuNSIgZmlsbD0iI0VFQ0E4NiIvPjxwYXRoIGQ9Ik0yNy45MjMgMTguMzY2YTEgMSAwIDAgMSAxLjY5Ni0uMDE4bDguMzk1IDEzLjExM0ExIDEgMCAwIDEgMzcuMTcyIDMzSDIwLjc4MWExIDEgMCAwIDEtLjg1NC0xLjUybDcuOTk2LTEzLjExNFoiIGZpbGw9IiM4MkJGOTkiLz48cGF0aCBkPSJNMTYuNjc2IDI2LjE5OWExIDEgMCAwIDEgMS42NDggMGwzLjU5OSA1LjIzNEExIDEgMCAwIDEgMjEuMDk5IDMzSDEzLjlhMSAxIDAgMCAxLS44MjQtMS41NjdsMy41OTktNS4yMzRaIiBmaWxsPSIjODJCRjk5Ii8+PC9zdmc+Cg==',
+        }
+      ],
       // xml
-      xmlData:""
+      xmlData: ""
     };
   },
   created() {
@@ -302,25 +291,25 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.deploymentId)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 跳转到流程设计页面 */
-    handleLoadXml(row){
-      this.$router.push({ path: '/flowable/definition/model',query: { deployId: row.deploymentId }})
+    handleLoadXml(row) {
+      this.$router.push({ path: '/flowable/definition/model', query: { deployId: row.deploymentId } })
     },
     /** 流程图查看 */
-    handleReadImage(deploymentId){
+    handleReadImage(deploymentId) {
       this.readImage.title = "流程图";
       this.readImage.open = true;
-       // 发送请求，获取xml
-      readXml(deploymentId).then(res =>{
+      // 发送请求，获取xml
+      readXml(deploymentId).then(res => {
         this.xmlData = res.data
       })
     },
     /** 表单查看 */
-    handleForm(formId){
-      getForm(formId).then(res =>{
+    handleForm(formId) {
+      getForm(formId).then(res => {
         this.formTitle = "表单详情";
         this.formConfOpen = true;
         this.formConf = JSON.parse(res.data.formContent)
@@ -328,61 +317,60 @@ export default {
       })
     },
     /** 启动流程 */
-    handleDefinitionStart(row){
-      definitionStart(row.id).then(res =>{
+    handleDefinitionStart(row) {
+      definitionStart(row.id).then(res => {
         this.$modal.msgSuccess(res.msg);
       })
     },
     /** 配置挂载表单弹框 */
-    handleAddForm(row){
+    handleAddForm(row) {
       this.formDeployParam.deployId = row.deploymentId
       this.ListFormDeploy()
     },
     /** 挂载表单列表 */
-    ListFormDeploy(){
-      listForm(this.formQueryParams).then(res =>{
+    ListFormDeploy() {
+      listForm(this.formQueryParams).then(res => {
         this.formList = res.rows;
         this.formTotal = res.total;
-        this.currentRow =null;
-        this.showCurrent=false;
+        this.currentRow = null;
+        this.showCurrent = false;
         this.formDeployOpen = true;
         this.formDeployTitle = "配置挂载表单";
       })
     },
     /** 提交挂载表单 */
-    submitFormDeploy(row){
+    submitFormDeploy(row) {
       this.formDeployParam.formId = row.formId;
-      addDeployForm(this.formDeployParam).then(res =>{
+      addDeployForm(this.formDeployParam).then(res => {
         this.$modal.msgSuccess(res.msg);
         this.formDeployOpen = false;
         this.getList();
       })
     },
     handleCurrentChange(data) {
-      if(this.showCurrent){
-        this.showCurrent=false;
-      }else{
-        this.showCurrent=true;
+      if (this.showCurrent) {
+        this.showCurrent = false;
+      } else {
+        this.showCurrent = true;
         this.currentRow = JSON.parse(data.formContent);
-        this.currentRow.disabled = true;
       }
 
     },
     /** 挂起/激活流程 */
-    handleUpdateSuspensionState(row){
+    handleUpdateSuspensionState(row) {
       let state = 1;
       if (row.suspensionState === 1) {
-          state = 2
+        state = 2
       }
       const params = {
         deployId: row.deploymentId,
         state: state
       }
       updateState(params).then(res => {
-        if(res.code == 200){
+        if (res.code == 200) {
           this.$modal.msgSuccess(res.msg);
-          row.suspensionState=state;
-        }else{
+          row.suspensionState = state;
+        } else {
           this.$modal.msgError(res.msg);
         }
       });
@@ -394,7 +382,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(function() {
+      }).then(function () {
         return delDeployment(ids);
       }).then(() => {
         this.getList();
@@ -402,7 +390,7 @@ export default {
       })
     },
     /** 导入bpmn.xml文件 */
-    handleImport(){
+    handleImport() {
       this.upload.title = "bpmn20.xml文件导入";
       this.upload.open = true;
     },

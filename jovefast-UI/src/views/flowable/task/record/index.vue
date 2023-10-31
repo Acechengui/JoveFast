@@ -11,7 +11,8 @@
       <!--流程处理表单模块-->
       <el-col :span="24" v-if="variableOpen">
         <div>
-          <!-- <parser :key="timer" :form-conf="variablesData" @submit="submitVariable" ref="variableParser" /> -->
+          <ng-form-build ref="variableParserFormBuild" :formTemplate="variablesData" :config="formBuildConfig"
+              :custom-components="customComponents" />
         </div>
         <div style="margin-left:2%;margin-bottom: 20px" v-if="fileDisplay">
           <!--对上传文件进行显示处理 -->
@@ -37,8 +38,11 @@
       <!--初始化流程加载表单信息-->
       <el-col :span="24" v-if="formConfOpen">
         <div class="key-form">
-          <!-- <parser :key="new Date().getTime()" :form-conf="formConf" @submit="initSubmitForm" ref="parser"
-                  @getData="getData" /> -->
+              <ng-form-build ref="parserFormBuild" :formTemplate="formConf" :config="formBuildConfig"
+              :custom-components="customComponents" />
+              <div style="text-align: center;"> 
+      		      <el-button type="primary" size="mini" @click="initSubmitForm()">提交</el-button>
+              </div>
         </div>
       </el-col>
 
@@ -292,21 +296,24 @@
 <script>
 import GoTop from "@/components/GoTop/index";
 import { flowRecord } from "@/api/flowable/finished";
-// import Parser from '@/components/parser/Parser'
 import { definitionStart, getProcessVariables, readXml, getFlowViewer } from "@/api/flowable/definition";
 import { complete, rejectTask, returnList, returnTask, transferTask,getNextFlowNode, delegate,verInItiator } from "@/api/flowable/todo";
 import flow from '@/views/flowable/task/record/flow'
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Treeselect from "@riophae/vue-treeselect";
 import { listUser,deptTreeSelect } from "@/api/system/user";
+import { getToken } from '@/utils/auth'
+//自定义
+import BackgroundImageComponent from '../../../ngform/customComponents/backgroundImage/index.vue'
+import BackgroundImagePropertie from '../../../ngform/customComponents/backgroundImage/properties.vue'
 
 export default {
   name: "Record",
   components: {
-    // Parser,
     flow,
     Treeselect,
-    GoTop
+    GoTop,
+    BackgroundImageComponent, BackgroundImagePropertie
   },
   data() {
     return {
@@ -408,7 +415,37 @@ export default {
       transferOpen: false,
       transferTitle: null,
       userData: [],
-      checkSendUser: false // 是否展示选择人员模块
+      checkSendUser: false, // 是否展示选择人员模块
+      //表单配置
+      formBuildConfig: {
+        httpConfig: (config) => {
+          config.headers['Authorization'] = 'Bearer ' + getToken()
+          return config
+        }
+      },
+      customComponents: [
+        /**
+         {
+            type: '类型', // 唯一，不能和已有组件冲突
+            label: '组件名称', // 唯一，不能和已有组件冲突
+            component: 组件实际的渲染文件 ,// .vue
+            properties: 组件的属性配置面板 , // .vue
+            icon: 组件显示的图标 // base64
+            ..... // 其他配置项
+        } */
+        {
+          type: 'ngImage',
+          label: '自定义组件',
+          component: BackgroundImageComponent,
+          properties: BackgroundImagePropertie,
+          options: {
+            style: null,
+            imgurl: null
+          },
+          icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNS44IiB5PSIxMC44IiB3aWR0aD0iMzYuNCIgaGVpZ2h0PSIyNi40IiByeD0iMy4yIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM3NTc1NzUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTMuNSIgY3k9IjE4LjUiIHI9IjMuNSIgZmlsbD0iI0VFQ0E4NiIvPjxwYXRoIGQ9Ik0yNy45MjMgMTguMzY2YTEgMSAwIDAgMSAxLjY5Ni0uMDE4bDguMzk1IDEzLjExM0ExIDEgMCAwIDEgMzcuMTcyIDMzSDIwLjc4MWExIDEgMCAwIDEtLjg1NC0xLjUybDcuOTk2LTEzLjExNFoiIGZpbGw9IiM4MkJGOTkiLz48cGF0aCBkPSJNMTYuNjc2IDI2LjE5OWExIDEgMCAwIDEgMS42NDggMGwzLjU5OSA1LjIzNEExIDEgMCAwIDEgMjEuMDk5IDMzSDEzLjlhMSAxIDAgMCAxLS44MjQtMS41NjdsMy41OTktNS4yMzRaIiBmaWxsPSIjODJCRjk5Ii8+PC9zdmc+Cg==',
+        }
+      ],
+
     };
   },
   watch: {
@@ -472,29 +509,6 @@ export default {
     },
     //重新编辑
     reEdit(){
-      // const params = { instanceId: this.taskForm.procInsId}
-      // verInItiator(params).then(res => {
-      //   if(res.code == 200){
-      //     this.checkSendUser=false;
-      //     this.variablesData.disabled = false;
-      //     //对表格做是否读写处理
-      //     this.variablesData.fields.forEach(item => {
-      //             //判断是否子表单
-      //             if(item.__config__.layout==='tsSubform'){
-      //               item.canEdit=true;
-      //               item.addButton=true;
-      //               item.deleteButton=true;
-      //             }
-      //         })
-      //       this.timer = new Date().getTime()+1;
-      //   }else{
-      //     this.$modal.msgError(res.msg);
-      //   }
-
-      // }).catch(err => {
-      //   console.error(err)
-      // })
-
       this.checkSendUser=false;
       this.variablesData.disabled = false;
       //对表格做是否读写处理
@@ -638,6 +652,7 @@ export default {
       if (taskId) {
         // 提交流程申请时填写的表单存入了流程变量中后续任务处理时需要展示
         getProcessVariables(taskId).then(res => {
+          console.info(JSON.stringify(res.data))
           this.variablesData = res.data.variables;
           // 回填数据,这里主要是处理文件显示
           this.fillFormData(this.variablesData.fields, this.variablesData,res.data.whetherWritable)
@@ -701,8 +716,6 @@ export default {
     },
     /** 审批任务选择 */
     handleComplete() {
-      //触发表单提交
-      this.$refs.variableParser.submitForm();
       this.completeOpen = true;
       this.completeTitle = "审批流程";
       if(this.checkSendUser == true){
@@ -711,15 +724,12 @@ export default {
     },
     /** 审批任务 */
     taskComplete() {
-      // if (!this.taskForm.values && this.checkSendUser) {
-      //   this.$modal.msgError("请选择流程接收人员");
-      //   return;
-      // }
       if (!this.taskForm.comment) {
         this.$modal.msgError("请输入审批意见");
         return;
       }
       this.$modal.loading('请稍等处理中...');
+      this.taskForm.variables=this.$refs.variableParserFormBuild.getData();
       complete(this.taskForm).then(res => {
         if(res.code == 200){
           this.$modal.closeLoading();
@@ -732,13 +742,6 @@ export default {
       }).catch(e=>{
         this.$modal.closeLoading();
       })
-    },
-    /** 审批过程中流程表单数据提交 */
-    submitVariable(data) {
-      if (data) {
-        this.taskForm.variables = data.valData;
-        this.taskForm.variables.variables = data.formData;
-      }
     },
     /** 委派任务 */
     handleDelegate() {
@@ -801,8 +804,7 @@ export default {
       }
     },
     /** 申请流程表单数据提交 */
-    initSubmitForm(data) {
-      if (data) {
+    initSubmitForm() {
         this.$prompt('请输入流程标题', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
@@ -812,23 +814,18 @@ export default {
             type: 'success',
             message: '设置的流程标题为:' + this.processTitle
           });
-          this.applicationHandle(data);
+          this.applicationHandle();
         }).catch(() => {});
-      }
     },
     /** 申请提交 */
-    applicationHandle(appData){
-      const variables = appData.valData;
-      const formData = appData.formData;
-      if (this.taskForm.procDefId) {
-        variables.variables = formData;
+    applicationHandle(){
+      const models = this.$refs.parserFormBuild.getData()  
+      if (this.taskForm.procDefId !=null) {
         //设置一个流程标题
-        variables.processTitle=this.processTitle;
+        models.variables.processTitle=this.processTitle;
         // 启动流程并将表单数据加入流程变量
-        definitionStart(this.taskForm.procDefId,JSON.stringify(variables)).then(res => {
+        definitionStart(this.taskForm.procDefId,JSON.stringify(models)).then(res => {
           this.$modal.msgSuccess(res.msg);
-          formData.disabled = true;
-          formData.formBtns = false;
           this.goBack();
         })
       }
