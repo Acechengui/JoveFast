@@ -116,9 +116,6 @@ httpCustom.interceptors.response.use(response => {
  * @returns {Promise<any>}
  */
 export function get (url, params = {}, customHandlerException = false) {
-  if (!url.startsWith('http')) {
-    url = window.BS_CONFIG?.httpConfigs?.baseURL + url
-  }
   // 如果是ie浏览器要添加个时间戳，解决浏览器缓存问题
   if (!!window.ActiveXObject || 'ActiveXObject' in window) {
     params._t = new Date().getTime()
@@ -149,9 +146,6 @@ export function get (url, params = {}, customHandlerException = false) {
  * @returns {Promise<any>}
  */
 export function post (url, data = {}, customHandlerException = false) {
-  if (!url.startsWith('http')) {
-    url = window.BS_CONFIG?.httpConfigs?.baseURL + url
-  }
   const axiosInstance = customHandlerException ? httpCustom : http
   data = JSON.stringify(data)
   return new Promise((resolve, reject) => {

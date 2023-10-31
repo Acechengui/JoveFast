@@ -165,20 +165,6 @@ export const dynamicRoutes = [
     ]
   },
   {
-    path: '/tool',
-    component: Layout,
-    hidden: true,
-    permissions: ['tool:build:list'],
-    children: [
-      {
-        path: 'build/index',
-        component: () => import('@/views/tool/build/index'),
-        name: 'FormBuild',
-        meta: { title: 'formBuild'}
-      }
-    ]
-  },
-  {
     path: '/monitor/job-log',
     component: Layout,
     hidden: true,

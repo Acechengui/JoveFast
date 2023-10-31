@@ -6,7 +6,7 @@ import i18n from './lang' //国际化
 
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
-
+import { getToken } from '@/utils/auth'
 import axios from 'axios'
 
 import '@/assets/styles/index.scss' // global css
@@ -51,16 +51,12 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
-//自定义组件-子表单
-import TsSubFrom from '@/components/TsSubForm/'
-//自定义组件-万能选择
-import TsUniversalSelect from '@/components/TsSubForm/ts-universal-select.vue'
-//自定义组件-待查询能力的数据表格index.vue
-import CustomTable from '@/components/CustomTable/index.vue'
 //自定义组件-el-table横向滚动条固定在窗口底部
 import horizontalScroll from 'el-table-horizontal-scroll'
 //大屏设计组件
 import { registerConfig as registerConfigDataRoom, $dataRoomAxios } from '@gcpaas/data-room-ui'
+//仪表盘设计组件
+import { registerConfig as registerConfigDashboard,$dashboardAxios} from '@gcpaas/dash-board-ui'
 
 //引入ng-form-element表单设计器
 import NgForm  from 'ng-form-element'
@@ -80,8 +76,6 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.$axios = axios
-// 将大屏的aixos实例挂载到Vue上
-Vue.prototype.$dataRoomAxios = $dataroomhttpaxios
 
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
@@ -92,9 +86,6 @@ Vue.component('WangEditor', WangEditor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
-Vue.component('tsSubForm', TsSubFrom)
-Vue.component('tsUniversalSelect', TsUniversalSelect)
-Vue.component('CustomTable', CustomTable)
 Vue.use(horizontalScroll)
 // 注册ng-form-element组件库
 Vue.use(NgForm) 
@@ -108,33 +99,32 @@ Vue.use(Element, {
   i18n: (key, value) => i18n.t(key, value)
 })
 DictData.install()
+
 // 使用大屏提供的方法，进行后端服务地址注册
 registerConfigDataRoom({
   routers: {
     // 大屏列表页面
-    pageListUrl: '/big-screen-list',
+    pageListUrl: '/bs/bigScreenManagement',
     // 大屏设计页面
-    designUrl: '/big-screen/design',
+    designUrl: '/bs/bigScreenDesign',
     // 大屏预览页面
-    previewUrl: '/big-screen/preview',
-    // 数据源管理页面
-    dataSourceUrl: '/big-screen-dataSource',
-    // 数据集管理页面
-    dataSetUrl: '/big-screen-dataSet',
-    // 资源库页面
-    sourceUrl: '/big-screen-source',
-    // 组件库页面
-  	componentUrl: '/big-screen-components',
+    previewUrl: '/bs/bigScreenRun',
     //指定回退的路由
-    pageManagementUrl:'/big-screen-list'
+    pageManagementUrl:'/index',
+    // 业务组件路由
+    bizComponentPreviewUrl: '/big-screen-biz-component-preview',
+    bizComponentDesignUrl: '/big-screen-biz-component-design'
   },
   httpConfigs: {
-    // 这里是大屏设计器对应的后端服务地址，可以为具体值，也可以在其他地方进行配置
-		// 比如环境变量文件中，假设在 .env.development中配置了地址为：VUE_BIGSCREEN_BASE_URL='http://192.168.xx.xx:xxxx/xxx'
     baseURL: process.env.VUE_APP_BASE_API + '/dataroom',
     // 这里是大屏文件的访问前缀，一般和后端配置的gc.starter.file.urlPrefix保持一致即可
-    //fileUrlPrefix: 'http://192.168.20.98:9000/server/static'
+    fileUrlPrefix: 'http://192.168.20.98:9000', 
+    headers: {
+      Authorization: 'Bearer ' + getToken()
+    }
   },
+  // 资源库允许上传的文件类型
+  sourceExtends:['jpg','gif','bmp','svg','png','ico'],
   // 自定义title和logo等属性 
   starter: {
     title: '大屏设计器',
@@ -142,6 +132,42 @@ registerConfigDataRoom({
   }
 // 此处第二个参数为自己项目中的路由实例对象
 }, router)
+
+// 将大屏的aixos实例挂载到Vue上
+Vue.prototype.$dataRoomAxios = $dataroomhttpaxios
+
+// 使用仪表盘提供的方法，进行后端服务地址注册
+registerConfigDashboard({
+  routers: {
+    // 仪表盘列表页面
+    pageListUrl: '/db/dashboard-list',
+    // 仪表盘设计页面
+    designUrl: '/db/dashboard/design',
+    // 预览页面
+    previewUrl: '/db/dashboard/preview',
+    //指定回退的路由
+    pageManagementUrl:'/index' 
+  },
+  httpConfigs: {
+    baseURL: process.env.VUE_APP_BASE_API + '/dataroom',
+    // 这里是大屏文件的访问前缀，一般和后端配置的gc.starter.file.urlPrefix保持一致即可
+    fileUrlPrefix: 'http://192.168.20.98:9000', 
+    headers: {
+      Authorization: 'Bearer ' + getToken()
+    }
+  },
+  // 资源库允许上传的文件类型
+  sourceExtends:['jpg','gif','bmp','svg','png','ico'],
+  // 自定义title和logo等属性 
+  starter: {
+    title: '仪表盘设计器',
+    logo: 'https://jovepcb.oss-cn-shenzhen.aliyuncs.com/jove-cloud/static/logo.png'
+  }
+// 此处第二个参数为自己项目中的路由实例对象
+}, router)
+
+// 将仪表盘的aixos实例挂载到Vue上
+Vue.prototype.$dashboardAxios = $dataroomhttpaxios
 
 /**
  * If you don't want to use mock-server

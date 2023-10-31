@@ -11,7 +11,7 @@
       <!--流程处理表单模块-->
       <el-col :span="24" v-if="variableOpen">
         <div>
-          <parser :key="timer" :form-conf="variablesData" @submit="submitVariable" ref="variableParser" />
+          <!-- <parser :key="timer" :form-conf="variablesData" @submit="submitVariable" ref="variableParser" /> -->
         </div>
         <div style="margin-left:2%;margin-bottom: 20px" v-if="fileDisplay">
           <!--对上传文件进行显示处理 -->
@@ -37,8 +37,8 @@
       <!--初始化流程加载表单信息-->
       <el-col :span="24" v-if="formConfOpen">
         <div class="key-form">
-          <parser :key="new Date().getTime()" :form-conf="formConf" @submit="initSubmitForm" ref="parser"
-                  @getData="getData" />
+          <!-- <parser :key="new Date().getTime()" :form-conf="formConf" @submit="initSubmitForm" ref="parser"
+                  @getData="getData" /> -->
         </div>
       </el-col>
 
@@ -292,7 +292,7 @@
 <script>
 import GoTop from "@/components/GoTop/index";
 import { flowRecord } from "@/api/flowable/finished";
-import Parser from '@/components/parser/Parser'
+// import Parser from '@/components/parser/Parser'
 import { definitionStart, getProcessVariables, readXml, getFlowViewer } from "@/api/flowable/definition";
 import { complete, rejectTask, returnList, returnTask, transferTask,getNextFlowNode, delegate,verInItiator } from "@/api/flowable/todo";
 import flow from '@/views/flowable/task/record/flow'
@@ -303,7 +303,7 @@ import { listUser,deptTreeSelect } from "@/api/system/user";
 export default {
   name: "Record",
   components: {
-    Parser,
+    // Parser,
     flow,
     Treeselect,
     GoTop

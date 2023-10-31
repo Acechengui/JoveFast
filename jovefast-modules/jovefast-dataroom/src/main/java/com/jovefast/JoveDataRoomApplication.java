@@ -3,6 +3,7 @@ package com.jovefast;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.gccloud.common.constant.CommonConst;
+import com.gccloud.dashboard.core.constant.DashboardConst;
 import com.gccloud.dataroom.core.constant.DataRoomConst;
 import com.gccloud.dataset.constant.DatasetConstant;
 import com.jovefast.common.security.annotation.EnableCustomConfig;
@@ -13,14 +14,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 /**
- * @author hongyang
+ * @author acechengui
  * @version 1.0
  * @date 2023/3/13 10:55
  */
 @EnableCustomConfig
 @EnableFastFeignClients
-@SpringBootApplication(scanBasePackages = {DataRoomConst.ScanPackage.COMPONENT, DatasetConstant.ScanPackage.COMPONENT, CommonConst.ScanPackage.COMPONENT})
-@MapperScan(value = {DataRoomConst.ScanPackage.DAO, DatasetConstant.ScanPackage.DAO})
+@SpringBootApplication(scanBasePackages = {DataRoomConst.ScanPackage.COMPONENT, DashboardConst.ScanPackage.COMPONENT,
+        DatasetConstant.ScanPackage.COMPONENT, CommonConst.ScanPackage.COMPONENT,"com.jovefast"})
+@MapperScan(value = {DataRoomConst.ScanPackage.DAO,DashboardConst.ScanPackage.DAO,DatasetConstant.ScanPackage.DAO})
 public class JoveDataRoomApplication {
 
     public static void main(String[] args) {

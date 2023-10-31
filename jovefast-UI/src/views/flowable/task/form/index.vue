@@ -124,7 +124,7 @@
     <!--表单配置详情-->
     <el-dialog :title="formTitle" :visible.sync="formConfOpen" width="60%" append-to-body>
       <div class="key-form">
-        <parser :key="new Date().getTime()"  :form-conf="formConf" />
+        <!-- <parser :key="new Date().getTime()"  :form-conf="formConf" /> -->
       </div>
     </el-dialog>
   </div>
@@ -133,12 +133,12 @@
 <script>
 import { listForm, delForm, addForm, updateForm } from "@/api/flowable/form";
 import Editor from '@/components/Editor';
-import Parser from '@/components/parser/Parser'
+// import Parser from '@/components/parser/Parser'
 export default {
   name: "Form",
   components: {
     Editor,
-    Parser
+    // Parser
   },
   data() {
     return {
@@ -234,11 +234,11 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/tool/build/index', query: {formId: null }})
+      this.$router.push({ path: '/ngform/ngformDesign', query: {formId: null }})
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$router.push({ path: '/tool/build/index', query: {formId: row.formId }})
+      this.$router.push({ path: '/ngform/ngformDesign', query: {formId: row.formId }})
     },
     /** 提交按钮 */
     submitForm() {

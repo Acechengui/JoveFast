@@ -156,7 +156,7 @@
     <!--表单配置详情-->
     <el-dialog :title="formTitle" :visible.sync="formConfOpen" width="50%" append-to-body>
       <div class="key-form">
-        <parser :key="new Date().getTime()"  :form-conf="formConf" />
+        <!-- <parser :key="new Date().getTime()"  :form-conf="formConf" /> -->
       </div>
     </el-dialog>
 
@@ -192,7 +192,7 @@
         </el-col>
         <el-col>
           <div v-if="showCurrent">
-            <parser :key="new Date().getTime()" :form-conf="currentRow" />
+            <!-- <parser :key="new Date().getTime()" :form-conf="currentRow" /> -->
           </div>
         </el-col>
       </el-row>
@@ -204,13 +204,13 @@
 import { listDefinition, updateState, delDeployment,definitionStart, readXml} from "@/api/flowable/definition";
 import { getToken } from "@/utils/auth";
 import { getForm, addDeployForm ,listForm } from "@/api/flowable/form";
-import Parser from '@/components/parser/Parser'
+// import Parser from '@/components/parser/Parser'
 import flow from '@/views/flowable/task/record/flow'
 
 export default {
   name: "Definition",
   components: {
-    Parser,
+    // Parser,
     flow
   },
   data() {

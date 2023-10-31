@@ -11,6 +11,7 @@ import com.jovefast.system.api.domain.SysFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.jovefast.flowable.service.ISysFormService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -78,6 +79,7 @@ public class SysFormServiceImpl implements ISysFormService
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int insertSysForm(SysForm sysForm)
     {
         sysForm.setCreateTime(DateUtils.getNowDate());

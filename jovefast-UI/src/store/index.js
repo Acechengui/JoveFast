@@ -8,6 +8,7 @@ import permission from './modules/permission'
 import settings from './modules/settings'
 import getters from './getters'
 import { $dataRoomStore } from '@gcpaas/data-room-ui'
+import { $dashboardStore } from '@gcpaas/dash-board-ui'
 
 Vue.use(Vuex)
 
@@ -20,7 +21,9 @@ const store = new Vuex.Store({
     permission,
     settings,
     // 注册大屏设计器的store
-    bigScreen: $dataRoomStore
+    bigScreen: $dataRoomStore,
+    // 注册仪表盘设计器的store
+    dashboard: $dashboardStore
   },
   getters
 })

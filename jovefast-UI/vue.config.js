@@ -44,10 +44,8 @@ module.exports = {
       }
     },
     disableHostCheck: true,
-    //热模块替换功能开启
-    client: {
-      overlay: false
-    }
+    //热模块替换功能
+    hot: true
   },
   css: {
     loaderOptions: {
@@ -61,7 +59,8 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve('src'),
-        'data-room-ui': resolve('node_modules/@gcpaas/data-room-ui/packages')
+        'data-room-ui': resolve('node_modules/@gcpaas/data-room-ui/packages'),
+        'dashPackages': resolve('node_modules/@gcpaas/dash-board-ui/packages')
       }
     },
     plugins: [
@@ -84,6 +83,7 @@ module.exports = {
     config.plugins.delete('preload') // TODO: need test
     config.plugins.delete('prefetch') // TODO: need test
 
+    //大屏设计器
     config.module
           .rule('svg')
           .exclude.add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/dataSourceIcon/svg'))
@@ -100,6 +100,34 @@ module.exports = {
           .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/bigScreenIcon/svg'))
           .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/Svgs/svg'))
           .add(resolve('./node_modules/@gcpaas/data-room-ui/packages/assets/images/alignIcon/svg'))
+          .end()
+          .use('svg-sprite-loader')
+          .loader('svg-sprite-loader')
+          .options({
+            symbolId: 'icon-[name]'
+          })
+          .end()
+
+      // 仪表盘设计器
+      config.module
+          .rule('svg')
+          .exclude
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/assets/images/dataSourceIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/assets/images/pageIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/assets/images/appPrependIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/assets/images/bigScreenIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/Svgs/svg'))
+          .end()
+
+      config.module
+          .rule('icons')
+          .test(/\.svg$/)
+          .include
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/assets/images/dataSourceIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/assets/images/pageIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/assets/images/appPrependIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/assets/images/bigScreenIcon/svg'))
+          .add(resolve('./node_modules/@gcpaas/dash-board-ui/packages/Svgs/svg'))
           .end()
           .use('svg-sprite-loader')
           .loader('svg-sprite-loader')
@@ -168,8 +196,8 @@ module.exports = {
   },
   // 加排除node_modules中对需要进行语法转义的依赖
   transpileDependencies: [
-    '@gcpaas/data-room-ui'
+    '@gcpaas/data-room-ui',
+    '@gcpaas/dash-board-ui'
   ]
 }
 
- 
