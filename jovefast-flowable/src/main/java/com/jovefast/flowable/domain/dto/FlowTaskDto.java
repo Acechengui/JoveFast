@@ -96,6 +96,9 @@ public class FlowTaskDto extends BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",locale = "zh_CN",timezone = "GMT+8")
     private Date finishTime;
 
+    @ApiModelProperty("表单ID")
+    private Long formId;
+
     public String getTenantId() {
         return tenantId;
     }
@@ -302,5 +305,13 @@ public class FlowTaskDto extends BaseEntity {
 
     public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
+    }
+
+    public Long getFormId() {
+        return formId;
+    }
+
+    public void setFormId(Long formId) {
+        this.formId = formId;
     }
 }

@@ -120,7 +120,11 @@ export default {
             // 关闭当前标签页并返回上个页面
             this.$store.dispatch("tagsView/delView", this.$route);
             this.$router.go(-1)
-        }
+        },
+        // 取消按钮
+        cancel() {
+            this.formOpen = false;
+        },
     }
     
 }

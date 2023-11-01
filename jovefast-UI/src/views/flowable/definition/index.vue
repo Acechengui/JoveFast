@@ -144,12 +144,12 @@
               </template>
             </el-table-column>
           </el-table>
-
           <pagination small layout="prev, pager, next" v-show="formTotal > 0" :total="formTotal"
             :page.sync="formQueryParams.pageNum" :limit.sync="formQueryParams.pageSize" @pagination="ListFormDeploy" />
         </el-col>
         <el-col>
           <div v-if="showCurrent">
+            <span>表单展示</span>
             <ng-form-build ref="currentFormBuild" :preview="true" :formTemplate="currentRow" :config="formBuildConfig"
               :custom-components="customComponents" />
           </div>

@@ -3,7 +3,6 @@
     <div slot="header" class="clearfix" style="padding-bottom: 10px;">
       <span class="el-icon-document">基础信息</span>
       <el-button style="float: right;" icon="el-icon-arrow-left" type="primary"  size="mini" @click="goBack">返回</el-button>
-      <el-button style="float: right; margin-right: 10px;" icon="el-icon-edit" type="success" size="mini" v-if="finished === 'true'" @click="reEdit">重新编辑</el-button>
       <el-button style="float: right; margin-right: 10px;" icon="el-icon-video-camera" type="warning"  size="mini" v-print="printOption">全页打印</el-button>
       <el-button style="float: right; margin-right: 10px;" icon="el-icon-picture-outline" type="danger" size="mini" @click="flowChart">流程图</el-button>
     </div>
@@ -11,25 +10,12 @@
       <!--流程处理表单模块-->
       <el-col :span="24" v-if="variableOpen">
         <div>
-          <ng-form-build ref="variableParserFormBuild" :formTemplate="variablesData" :config="formBuildConfig"
+          <ng-form-build ref="variableParserFormBuild" :models ="models" :formTemplate="formTemplate" :config="formBuildConfig"
               :custom-components="customComponents" />
-        </div>
-        <div style="margin-left:2%;margin-bottom: 20px" v-if="fileDisplay">
-          <!--对上传文件进行显示处理 -->
-          <el-tag type="success" effect="plain" v-if="fileList">附件列表:</el-tag>
-
-          <el-card class="t-box-card">
-            <div v-for="o in fileList" :key="o" class="text item">
-              {{ o.name }}
-              <el-button type="text" class="button t-download" @click="handleFilePreview(o)">下载</el-button>
-            </div>
-          </el-card>
         </div>
         <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
           <el-button icon="el-icon-edit-outline" type="success" size="mini" @click="handleComplete">审批</el-button>
-          <!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleDelegate">委派</el-button>-->
           <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleAssign">转办</el-button>
-          <!--                <el-button  icon="el-icon-edit-outline" type="primary" size="mini" @click="handleDelegate">签收</el-button>-->
           <el-button icon="el-icon-refresh-left" type="warning" size="mini" @click="handleReturn">驳回到任意上一步</el-button>
           <el-button icon="el-icon-circle-close" type="danger" size="mini" @click="handleReject">退回上一步</el-button>
         </div>
@@ -38,10 +24,11 @@
       <!--初始化流程加载表单信息-->
       <el-col :span="24" v-if="formConfOpen">
         <div class="key-form">
-              <ng-form-build ref="parserFormBuild" :formTemplate="formConf" :config="formBuildConfig"
+              <ng-form-build ref="parserFormBuild" :disabled="false" :formTemplate="formConf" :config="formBuildConfig"
               :custom-components="customComponents" />
               <div style="text-align: center;"> 
-      		      <el-button type="primary" size="mini" @click="initSubmitForm()">提交</el-button>
+      		      <el-button type="primary" size="medium" icon="el-icon-success" @click="initSubmitForm()">提交</el-button>
+                <el-button type="warning" size="medium" icon="el-icon-remove" @click="resetSubmitForm()">重置</el-button>
               </div>
         </div>
       </el-col>
@@ -303,6 +290,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Treeselect from "@riophae/vue-treeselect";
 import { listUser,deptTreeSelect } from "@/api/system/user";
 import { getToken } from '@/utils/auth'
+import { getForm} from "@/api/flowable/form";
 //自定义
 import BackgroundImageComponent from '../../../ngform/customComponents/backgroundImage/index.vue'
 import BackgroundImagePropertie from '../../../ngform/customComponents/backgroundImage/properties.vue'
@@ -341,7 +329,6 @@ export default {
           //console.log("触发点击打印回调");
         }
       },
-      timer: new Date().getTime(),
       // 模型xml数据
       xmlData: "",
       taskList: [],
@@ -370,39 +357,27 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
-      // 遮罩层
-      loading: true,
       //是否显示流程图
       flowChartOpen: false,
       flowRecordList: [], // 流程流转数据
-      formConfCopy: {},
-      src: null,
-      rules: {}, // 表单校验
-      variablesForm: {}, // 流程变量数据
       taskForm: {
         returnTaskShow: false, // 是否展示回退表单
         delegateTaskShow: false, // 是否展示回退表单
         defaultTaskShow: true, // 默认处理
         sendUserShow: false, // 审批用户
         multiple: false,
-        comment: "", // 意见内容
-        procInsId: "", // 流程实例编号
-        instanceId: "", // 流程实例编号
-        deployId: "",  // 流程定义编号
-        taskId: "",// 流程任务编号
-        procDefId: "",  // 流程编号
-        vars: "",
-        targetKey: "",
-        variables:undefined
+        comment: undefined, // 意见内容
+        procInsId: undefined, // 流程实例编号
+        instanceId: undefined, // 流程实例编号
+        deployId: undefined,  // 流程定义编号
+        taskId: undefined,// 流程任务编号
+        procDefId: undefined,  // 流程编号
       },
       userDataList: [], // 流程候选人
       assignee: null,
       formConf: {}, // 默认表单数据
       formConfOpen: false, // 是否加载默认表单数据
-      variables: [], // 流程变量数据
-      variablesData: {}, // 流程变量数据
       variableOpen: false, // 是否加载流程变量数据
-      fileDisplay: false, // 是否显示上传的文件控件
       fileList: [], //表单设计器上传的文件列表
       returnTaskList: [],  // 回退列表数据
       finished: 'false',
@@ -417,6 +392,9 @@ export default {
       userData: [],
       checkSendUser: false, // 是否展示选择人员模块
       //表单配置
+      formId: null,
+      formTemplate:null,
+      models:[],
       formBuildConfig: {
         httpConfig: (config) => {
           config.headers['Authorization'] = 'Bearer ' + getToken()
@@ -463,10 +441,16 @@ export default {
     this.taskForm.instanceId = this.$route.query && this.$route.query.procInsId;
     // 初始化表单
     this.taskForm.procDefId = this.$route.query && this.$route.query.procDefId;
+    // 获取传递的表单ID
+    this.formId = this.$route.query && this.$route.query.formId;
+    if(this.formId){
+      // 获取表单模板数据
+      this.getFormTemplate()
+    }
     // 流程任务重获取变量表单
     if (this.taskForm.taskId) {
       this.processVariables(this.taskForm.taskId)
-      this.getNextFlowNode(this.taskForm.taskId)
+      this.getNextFlowNodeHandel(this.taskForm.taskId)
       this.taskForm.deployId = null
     }
     this.getFlowRecordList(this.taskForm.procInsId, this.taskForm.deployId);
@@ -506,25 +490,6 @@ export default {
     handleNodeClick(data) {
       this.queryParams.deptId = data.id;
       this.getList();
-    },
-    //重新编辑
-    reEdit(){
-      this.checkSendUser=false;
-      this.variablesData.disabled = false;
-      //对表格做是否读写处理
-      if(this.variablesData.fields){
-          this.variablesData.fields.forEach(item => {
-          //判断是否子表单
-          if(item.__config__.layout==='tsSubform'){
-            item.canEdit=true;
-            item.addButton=true;
-            item.deleteButton=true;
-          }
-        })
-      }
-      
-      this.timer = new Date().getTime()+1;
-      this.$modal.msgSuccess('重新编辑激活成功,可以编辑内容了~');
     },
     // 回显流程记录
     flowChart(){
@@ -607,86 +572,26 @@ export default {
         this.goBack();
       })
     },
-    //点击文件列表中已上传文件进行下载
-    handleFilePreview(file) {
-      // 根据地址保存文件
-      this.$download.saveAs(file.url, file.name);
-    },
-    fillFormData(fields, formConfs,whetherWritable) {
-      fields.forEach((item, i) => {
-        //回显时控制是否允许还能上传文件
-        if(item['name'] === 'files' && !whetherWritable){
-          item.disabled=true;
-        }
-        const val = item.__config__.defaultValue
-        // 特殊处理el-upload，包括 回显图片
-        if (item.__config__.tag === 'el-upload') {
-          // 回显
-          if (item['list-type'] != 'text') {
-            this.fileList = [];    //隐藏加的el-upload文件列表
-            if(val){
-              this.fileDisplay = true
-              item['file-list'] = JSON.parse(val)
-            }
-          }else {  //图片
-            item['file-list'] = [] //隐藏加的表单设计器的文件列表
-            if(val){
-              this.fileDisplay = true
-              this.fileList = JSON.parse(val)
-            }
-
-          }
-
-        }
-        // 设置各表单项的默认值（回填表单），包括el-upload的默认值
-        if (val) {
-          item.__config__.defaultValue = val
-        }
-        if (Array.isArray(item.__config__.children)) {
-          this.fillFormData(item.__config__.children, formConfs)
-        }
+    /** 获取表单模板 */
+    getFormTemplate(){
+      getForm(this.formId).then(resp =>{
+        this.variableOpen=true;
+        this.$nextTick(()=> {
+          this.formTemplate=JSON.parse(resp.data.formContent)
+        })
       })
     },
-    /** 获取流程变量内容 */
+    /** 获取表单数据 */
     processVariables(taskId) {
       if (taskId) {
         // 提交流程申请时填写的表单存入了流程变量中后续任务处理时需要展示
         getProcessVariables(taskId).then(res => {
-          console.info(JSON.stringify(res.data))
-          this.variablesData = res.data.variables;
-          // 回填数据,这里主要是处理文件显示
-          this.fillFormData(this.variablesData.fields, this.variablesData,res.data.whetherWritable)
-          //判断是否允许编辑数据
-          if(res.data.whetherWritable){
-            this.variablesData.disabled = false;
-            //对表格做是否读写处理
-            this.variablesData.fields.forEach(item => {
-              //判断是否子表单
-              if(item.__config__.layout==='tsSubform'){
-                item.canEdit=true;
-                item.addButton=true;
-                item.deleteButton=true;
-              }
-            })
-          }else{
-            this.variablesData.disabled = true;
-            //对表格做是否读写处理
-            this.variablesData.fields.forEach(item => {
-              //判断是否子表单
-              if(item.__config__.layout==='tsSubform'){
-                item.canEdit=false;
-                item.addButton=false;
-                item.deleteButton=false;
-              }
-            })
-          }
-          this.variablesData.formBtns = false;
-          this.variableOpen = true
+          this.models = res.data;
         });
       }
     },
     /** 根据当前任务获取流程设计配置的下一步节点 */
-    getNextFlowNode(taskId) {
+    getNextFlowNodeHandel(taskId) {
       // 根据当前任务获取流程设计配置的下一步节点 todo 暂时未涉及到考虑网关、表达式和多节点情况
       const params = { taskId: taskId }
       getNextFlowNode(params).then(res => {
@@ -750,8 +655,6 @@ export default {
     },
     /** 转办任务弹窗 */
     handleAssign() {
-      //触发表单提交
-      this.$refs.variableParser.submitForm();
       this.transferOpen = true;
       this.transferTitle = "转办流程";
       this.getTreeselect();
@@ -763,6 +666,7 @@ export default {
         return;
       }
       this.$modal.loading('请稍等处理中...');
+      this.taskForm.variables=this.$refs.variableParserFormBuild.getData();
       transferTask(this.taskForm).then(res => {
         this.$modal.closeLoading();
         if(res.code == 200){
@@ -781,27 +685,9 @@ export default {
       this.$store.dispatch("tagsView/delView", this.$route);
       this.$router.go(-1)
     },
-    /** 接收子组件传的值 */
-    getData(data) {
-      if (data) {
-        const variables = [];
-        data.fields.forEach(item => {
-          let variableData = {};
-          variableData.label = item.__config__.label
-          // 表单值为多个选项时
-          if (item.__config__.defaultValue instanceof Array) {
-            const array = [];
-            item.__config__.defaultValue.forEach(val => {
-              array.push(val)
-            })
-            variableData.val = array;
-          } else {
-            variableData.val = item.__config__.defaultValue
-          }
-          variables.push(variableData)
-        })
-        this.variables = variables;
-      }
+    /** 申请流程表单重置 */
+    resetSubmitForm(){
+      this.$refs.parserFormBuild.reset();
     },
     /** 申请流程表单数据提交 */
     initSubmitForm() {
@@ -819,10 +705,10 @@ export default {
     },
     /** 申请提交 */
     applicationHandle(){
-      const models = this.$refs.parserFormBuild.getData()  
+      const models = this.$refs.parserFormBuild.getData()
       if (this.taskForm.procDefId !=null) {
         //设置一个流程标题
-        models.variables.processTitle=this.processTitle;
+        models.processTitle=this.processTitle;
         // 启动流程并将表单数据加入流程变量
         definitionStart(this.taskForm.procDefId,JSON.stringify(models)).then(res => {
           this.$modal.msgSuccess(res.msg);

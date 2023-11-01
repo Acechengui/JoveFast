@@ -15,7 +15,7 @@ public interface SysTaskFormMapper
      * @param id 流程任务关联单ID
      * @return 流程任务关联单
      */
-    public SysTaskForm selectSysTaskFormById(Long id);
+    SysTaskForm selectSysTaskFormById(Long id);
 
     /**
      * 查询流程任务关联单列表
@@ -23,7 +23,7 @@ public interface SysTaskFormMapper
      * @param sysTaskForm 流程任务关联单
      * @return 流程任务关联单集合
      */
-    public List<SysTaskForm> selectSysTaskFormList(SysTaskForm sysTaskForm);
+    List<SysTaskForm> selectSysTaskFormList(SysTaskForm sysTaskForm);
 
     /**
      * 新增流程任务关联单
@@ -31,7 +31,7 @@ public interface SysTaskFormMapper
      * @param sysTaskForm 流程任务关联单
      * @return 结果
      */
-    public int insertSysTaskForm(SysTaskForm sysTaskForm);
+    int insertSysTaskForm(SysTaskForm sysTaskForm);
 
     /**
      * 修改流程任务关联单
@@ -39,7 +39,7 @@ public interface SysTaskFormMapper
      * @param sysTaskForm 流程任务关联单
      * @return 结果
      */
-    public int updateSysTaskForm(SysTaskForm sysTaskForm);
+    int updateSysTaskForm(SysTaskForm sysTaskForm);
 
     /**
      * 删除流程任务关联单
@@ -47,7 +47,7 @@ public interface SysTaskFormMapper
      * @param id 流程任务关联单ID
      * @return 结果
      */
-    public int deleteSysTaskFormById(Long id);
+    int deleteSysTaskFormById(Long id);
 
     /**
      * 批量删除流程任务关联单
@@ -55,5 +55,6 @@ public interface SysTaskFormMapper
      * @param ids 需要删除的数据ID
      * @return 结果
      */
-    public int deleteSysTaskFormByIds(Long[] ids);
+    int deleteSysTaskFormByIds(Long[] ids);
+
 }

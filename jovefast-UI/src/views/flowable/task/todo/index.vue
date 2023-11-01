@@ -197,6 +197,7 @@ export default {
           executionId: row.executionId,
           deployId: row.deployId,
           taskId: row.taskId,
+          formId: row.formId,
           finished: true
         }})
     },

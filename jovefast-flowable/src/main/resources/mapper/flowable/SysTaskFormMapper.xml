@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectSysTaskFormVo"/>
         where id = #{id}
     </select>
-        
+
     <insert id="insertSysTaskForm" parameterType="SysTaskForm" useGeneratedKeys="true" keyProperty="id">
         insert into sys_task_form
         <trim prefix="(" suffix=")" suffixOverrides=",">

@@ -66,7 +66,6 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     @Resource
     private RemoteUserService remoteuserservice;
 
-
     @Resource
     private ISysDeployFormService sysInstanceFormService;
 
@@ -452,6 +451,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setFinishTime(hisIns.getEndTime());
             flowTask.setProcInsId(hisIns.getProcInsId());
             flowTask.setProcessTitle(hisIns.getProcessTitle());
+            flowTask.setFormId(hisIns.getFormId());
             // 计算耗时
             long time;
             if (Objects.nonNull(hisIns.getEndTime())) {
@@ -612,13 +612,12 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 flowTask.setProcessTitle(pt.getProcessTitle());
             }
             // 流程定义信息
-            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionId(task.getProcessDefinitionId())
-                    .singleResult();
+            FlowProcDefDto pd = flowDeployMapper.selectActReProcDef(task.getProcessDefinitionId());
             flowTask.setDeployId(pd.getDeploymentId());
             flowTask.setProcDefName(pd.getName());
             flowTask.setProcDefVersion(pd.getVersion());
             flowTask.setProcInsId(task.getProcessInstanceId());
+            flowTask.setFormId(pd.getFormId());
             // 流程发起人信息
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                     .processInstanceId(task.getProcessInstanceId())
@@ -667,15 +666,15 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTasks.get().setStartDeptName(inst.getStartDeptName());
             flowTasks.get().setStartUserId(inst.getStartUserId());
             flowTasks.get().setStartUserName(inst.getStartUserName());
+
             // 流程定义信息
-            ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionId(inst.getProcDefId())
-                    .singleResult();
+            FlowProcDefDto pd = flowDeployMapper.selectActReProcDef(inst.getProcDefId());
             flowTasks.get().setDeployId(pd.getDeploymentId());
             flowTasks.get().setProcDefName(pd.getName());
             flowTasks.get().setProcDefVersion(pd.getVersion());
             flowTasks.get().setProcInsId(inst.getProcInstId());
             flowTasks.get().setHisProcInsId(inst.getProcInstId());
+            flowTasks.get().setFormId(pd.getFormId());
             hisTaskList.add(flowTasks.get());
         }
         Map<String, Object> re=new HashMap<>(2);
@@ -766,17 +765,6 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             }
             map.put("formData", JSONObject.parseObject(sysForm.getFormContent()));
         }
-        //如果是流程已在进行中，可以根据流程节点中formKey切换不同表单
-        /* if(StringUtils.isNotBlank(procInsId)){
-            // Step 1. 根据流程实例ID获取当前任务
-            Task task = this.processEngine.getTaskService().createTaskQuery().processInstanceId(procInsId).active().singleResult();
-            SysForm sysForm;
-            if(task != null){
-                // Step 2. 拿到formKey获取表单
-                sysForm = sysInstanceFormService.selectSysFormByFormId(task.getFormKey());
-                map.put("businessFormData", JSONObject.parseObject(sysForm.getFormContent()));
-            }
-        }*/
         return map;
     }
 

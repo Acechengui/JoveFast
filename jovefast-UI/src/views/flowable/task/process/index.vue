@@ -84,22 +84,15 @@
       </el-table-column>
       <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              更多操作<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)" v-hasPermi="['flowable:deployment:list']">
+              <el-button type="text" icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)" v-hasPermi="['flowable:deployment:list']">
                 详情
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null">
+              </el-button>
+              <el-button type="text" icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null">
                 取消申请
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:instance:del']">
+              </el-button>
+              <el-button type="text" icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:instance:del']">
                 删除
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+              </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -351,6 +344,7 @@ export default {
         query: {
           deployId: row.deploymentId,
           procDefId: row.id,
+          formId: row.formid,
           finished: true
           }
       })
@@ -372,6 +366,7 @@ export default {
           procInsId: row.procInsId,
           deployId: row.deployId,
           taskId: row.taskId,
+          formId: row.formId,
           finished: false
       }})
     },

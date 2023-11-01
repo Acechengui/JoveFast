@@ -29,6 +29,18 @@
         order by rd.deploy_time_ desc
     </select>
 
+    <select id="selectActReProcDef" parameterType="string" resultType="FlowProcDefDto">
+        SELECT
+            RES.DEPLOYMENT_ID_ AS deploymentId,RES.NAME_ AS name,RES.VERSION_ AS version,SDF.form_id AS formId
+        FROM
+            ACT_RE_PROCDEF RES
+                LEFT JOIN sys_deploy_form SDF ON RES.DEPLOYMENT_ID_=SDF.deploy_id
+        WHERE
+            RES.ID_ = #{processDefinitionId}
+        ORDER BY
+            RES.ID_ ASC
+    </select>
+
     <select id="selectDeployListLast" resultType="FlowProcDefDto">
         SELECT *
         FROM (

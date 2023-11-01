@@ -15,14 +15,18 @@ public interface FlowDeployMapper {
 
     /**
      * 流程定义列表
-     * @return
      */
     List<FlowProcDefDto> selectDeployList(String name);
+
+
+    /**
+     * 流程定义信息
+     */
+    FlowProcDefDto selectActReProcDef(@Param("processDefinitionId") String processDefinitionId);
 
     /**
      * 各个流程定义最新版本列表
      * @param name 流程名称
-     * @param tenantId 租户标识
      */
     List<FlowProcDefDto> selectDeployListLast(@Param("name") String name);
 

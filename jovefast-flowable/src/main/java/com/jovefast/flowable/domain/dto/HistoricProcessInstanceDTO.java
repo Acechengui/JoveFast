@@ -30,6 +30,8 @@ public class HistoricProcessInstanceDTO implements Serializable {
 
     private String porcDefName;
 
+    private Long formId;
+
     public Long getStartUserId() {
         return startUserId;
     }
@@ -100,5 +102,13 @@ public class HistoricProcessInstanceDTO implements Serializable {
 
     public void setPorcDefName(String porcDefName) {
         this.porcDefName = porcDefName;
+    }
+
+    public Long getFormId() {
+        return formId;
+    }
+
+    public void setFormId(Long formId) {
+        this.formId = formId;
     }
 }

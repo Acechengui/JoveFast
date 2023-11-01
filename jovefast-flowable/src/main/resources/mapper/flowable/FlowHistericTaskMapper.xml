@@ -129,11 +129,13 @@
         RES.END_TIME_ AS endTime,
         RES.PROC_INST_ID_ AS procInsId,
         DEF.KEY_ AS procDefKey,
-        DEF.NAME_ AS porcDefName
+        DEF.NAME_ AS porcDefName,
+        SDF.form_id AS formId
         FROM
         ACT_HI_PROCINST RES
         LEFT OUTER JOIN ACT_RE_PROCDEF DEF ON RES.PROC_DEF_ID_ = DEF.ID_
         LEFT OUTER JOIN sys_process_title SP ON SP.proc_ins_id = RES.ID_
+        LEFT OUTER JOIN sys_deploy_form SDF ON SDF.deploy_id = DEF.DEPLOYMENT_ID_
         <where>
             <if test="params.assignee != null and params.assignee != ''">
                 AND RES.START_USER_ID_ = #{params.assignee}

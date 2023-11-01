@@ -163,7 +163,6 @@ export default {
     handleDetail(row) {
       this.formConfOpen = true;
       this.formTitle = "流程表单详细";
-      console.info(row.formContent)
       this.formConf = JSON.parse(row.formContent)
     },
     /** 新增按钮操作 */

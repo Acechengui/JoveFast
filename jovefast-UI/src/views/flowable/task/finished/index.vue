@@ -92,7 +92,6 @@
 
 <script>
 import { finishedList } from "@/api/flowable/finished";
-
 export default {
   name: "Finished",
   components: {
@@ -223,6 +222,7 @@ export default {
           procInsId: row.procInsId,
           deployId: row.deployId,
           taskId: row.taskId,
+          formId: row.formId,
           finished: false
       }})
     }
