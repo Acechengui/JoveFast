@@ -20,8 +20,9 @@ public class FindNextNodeUtil {
     /**
      * 获取下一步骤的用户任务
      *
-     * @param repositoryService 服务参数
-     * @param map 流程变量
+     * @param repositoryService
+     * @param map
+     * @return
      */
     public static List<UserTask> getNextUserTasks(RepositoryService repositoryService, org.flowable.task.api.Task task, Map<String, Object> map) {
         List<UserTask> data = new ArrayList<>();
@@ -35,6 +36,41 @@ public class FindNextNodeUtil {
         return data;
     }
 
+    /**
+     * 启动流程时获取下一步骤的用户任务
+     *
+     * @param repositoryService
+     * @param map
+     * @return
+     */
+    public static List<UserTask> getNextUserTasksByStart(RepositoryService repositoryService, ProcessDefinition processDefinition, Map<String, Object> map) {
+        List<UserTask> data = new ArrayList<>();
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinition.getId());
+        Process mainProcess = bpmnModel.getMainProcess();
+        Collection<FlowElement> flowElements = mainProcess.getFlowElements();
+        String key = null;
+        // 找到开始节点 并获取唯一key
+        for (FlowElement flowElement : flowElements) {
+            if (flowElement instanceof StartEvent) {
+                key = flowElement.getId();
+                break;
+            }
+        }
+        FlowElement flowElement = bpmnModel.getFlowElement(key);
+        next(flowElements, flowElement, map, data);
+        return data;
+    }
+
+
+
+    /**
+     * 查找下一节点
+     *
+     * @param flowElements
+     * @param flowElement
+     * @param map
+     * @param nextUser
+     */
     public static void next(Collection<FlowElement> flowElements, FlowElement flowElement, Map<String, Object> map, List<UserTask> nextUser) {
         //如果是结束节点
         if (flowElement instanceof EndEvent) {
@@ -122,9 +158,9 @@ public class FindNextNodeUtil {
     /**
      * 判断是否是多实例子流程并且需要设置集合类型变量
      */
-    public static boolean checkSubProcess(String id, Collection<FlowElement> flowElements, List<UserTask> nextUser) {
+    public static boolean checkSubProcess(String Id, Collection<FlowElement> flowElements, List<UserTask> nextUser) {
         for (FlowElement flowElement1 : flowElements) {
-            if (flowElement1 instanceof SubProcess && flowElement1.getId().equals(id)) {
+            if (flowElement1 instanceof SubProcess && flowElement1.getId().equals(Id)) {
 
                 SubProcess sp = (SubProcess) flowElement1;
                 if (sp.getLoopCharacteristics() != null) {
@@ -148,6 +184,7 @@ public class FindNextNodeUtil {
      *
      * @param flowElements 全流程的节点集合
      * @param flowElement  当前节点
+     * @return
      */
     public static FlowElement getSubProcess(Collection<FlowElement> flowElements, FlowElement flowElement) {
         for (FlowElement flowElement1 : flowElements) {
@@ -168,6 +205,7 @@ public class FindNextNodeUtil {
      *
      * @param Id           节点ID
      * @param flowElements 流程节点集合
+     * @return
      */
     public static FlowElement getFlowElementById(String Id, Collection<FlowElement> flowElements) {
         for (FlowElement flowElement : flowElements) {
@@ -206,8 +244,9 @@ public class FindNextNodeUtil {
     /**
      * 校验el表达式
      *
-     * @param map 参数
-     * @param expression 表达式
+     * @param map
+     * @param expression
+     * @return
      */
     public static boolean expressionResult(Map<String, Object> map, String expression) {
         Expression exp = AviatorEvaluator.compile(expression);

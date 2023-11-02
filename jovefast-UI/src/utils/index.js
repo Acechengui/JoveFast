@@ -250,26 +250,42 @@ export function debounce(func, wait, immediate) {
   }
 }
 
-/**
- * This is just a simple version of deep copy
- * Has a lot of edge cases bug
- * If you want to use a perfect deep copy, use lodash's _.cloneDeep
- * @param {Object} source
- * @returns {Object}
- */
-export function deepClone(source) {
-  if (!source && typeof source !== 'object') {
-    throw new Error('error arguments', 'deepClone')
+// 深拷贝对象
+export function deepClone(obj) {
+  const _toString = Object.prototype.toString
+
+  // null, undefined, non-object, function
+  if (!obj || typeof obj !== 'object') {
+    return obj
   }
-  const targetObj = source.constructor === Array ? [] : {}
-  Object.keys(source).forEach(keys => {
-    if (source[keys] && typeof source[keys] === 'object') {
-      targetObj[keys] = deepClone(source[keys])
-    } else {
-      targetObj[keys] = source[keys]
-    }
-  })
-  return targetObj
+
+  // DOM Node
+  if (obj.nodeType && 'cloneNode' in obj) {
+    return obj.cloneNode(true)
+  }
+
+  // Date
+  if (_toString.call(obj) === '[object Date]') {
+    return new Date(obj.getTime())
+  }
+
+  // RegExp
+  if (_toString.call(obj) === '[object RegExp]') {
+    const flags = []
+    if (obj.global) { flags.push('g') }
+    if (obj.multiline) { flags.push('m') }
+    if (obj.ignoreCase) { flags.push('i') }
+
+    return new RegExp(obj.source, flags.join(''))
+  }
+
+  const result = Array.isArray(obj) ? [] : obj.constructor ? new obj.constructor() : {}
+
+  for (const key in obj) {
+    result[key] = deepClone(obj[key])
+  }
+
+  return result
 }
 
 /**

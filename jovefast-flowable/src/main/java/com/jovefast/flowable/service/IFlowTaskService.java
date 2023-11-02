@@ -5,7 +5,6 @@ import com.jovefast.flowable.domain.dto.FlowNextDto;
 import com.jovefast.flowable.domain.dto.FlowTaskDto;
 import com.jovefast.flowable.domain.dto.FlowViewerDto;
 import com.jovefast.flowable.domain.vo.FlowTaskVo;
-import org.flowable.task.api.Task;
 
 import java.io.InputStream;
 import java.util.List;
@@ -15,6 +14,36 @@ import java.util.Map;
  * @author Acecehgnui
  */
 public interface IFlowTaskService {
+
+    /**
+     * 任务归还
+     *
+     * @param flowTaskVo 请求实体参数
+     */
+    void resolveTask(FlowTaskVo flowTaskVo);
+
+
+    /**
+     * 多实例加签
+     */
+    void addMultiInstanceExecution(FlowTaskVo flowTaskVo);
+
+    /**
+     * 多实例减签
+     */
+    void deleteMultiInstanceExecution(FlowTaskVo flowTaskVo);
+
+
+    /**
+     * 流程节点信息
+     */
+    AjaxResult flowXmlAndNode(String procInsId,String deployId);
+
+    /**
+     * 流程节点表单
+     * @param taskId 流程任务编号
+     */
+    AjaxResult flowTaskForm(String taskId) throws Exception;
 
     /**
      * 单个审批任务
@@ -32,7 +61,6 @@ public interface IFlowTaskService {
     /**
      * 驳回任务
      *
-     * @param flowTaskVo
      */
     void taskReject(FlowTaskVo flowTaskVo);
 
@@ -48,7 +76,6 @@ public interface IFlowTaskService {
      * 获取所有可回退的节点
      *
      * @param flowTaskVo
-     * @return
      */
     AjaxResult findReturnTaskList(FlowTaskVo flowTaskVo);
 
@@ -131,12 +158,6 @@ public interface IFlowTaskService {
      */
     Map<String, Object> flowRecord(String procInsId, String deployId);
 
-    /**
-     * 根据任务ID查询挂载的表单信息
-     *
-     * @param taskId 任务Id
-     */
-    Task getTaskForm(String taskId);
 
     /**
      * 获取流程过程图
@@ -145,7 +166,7 @@ public interface IFlowTaskService {
     InputStream diagram(String processId);
 
     /**
-     * 获取流程执行过程
+     * 获取流程执行节点
      * @param procInsId 流程实例ID
      */
     List<FlowViewerDto> getFlowViewer(String procInsId, String executionId);
@@ -160,7 +181,9 @@ public interface IFlowTaskService {
      * 获取下一节点
      * @param flowTaskVo 任务
      */
-    FlowNextDto getNextFlowNode(FlowTaskVo flowTaskVo);
+    AjaxResult getNextFlowNode(FlowTaskVo flowTaskVo);
+
+    AjaxResult getNextFlowNodeByStart(FlowTaskVo flowTaskVo);
 
     /**
      * 验证当然节点处理人是否为发起人

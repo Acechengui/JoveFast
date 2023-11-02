@@ -41,7 +41,50 @@ public class FlowTaskVo {
     @ApiModelProperty("审批组")
     private List<String> candidateGroups;
 
+    private String deploymentId;
+    @ApiModelProperty("流程环节定义ID")
+    private String defId;
+
+    @ApiModelProperty("子执行流ID")
+    private String currentChildExecutionId;
+
+    @ApiModelProperty("子执行流是否已执行")
+    private Boolean flag;
+
+    @ApiModelProperty("流程变量信息")
     private Map<String, Object> variables;
+
+    public String getDeploymentId() {
+        return deploymentId;
+    }
+
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
+
+    public String getDefId() {
+        return defId;
+    }
+
+    public void setDefId(String defId) {
+        this.defId = defId;
+    }
+
+    public String getCurrentChildExecutionId() {
+        return currentChildExecutionId;
+    }
+
+    public void setCurrentChildExecutionId(String currentChildExecutionId) {
+        this.currentChildExecutionId = currentChildExecutionId;
+    }
+
+    public Boolean getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Boolean flag) {
+        this.flag = flag;
+    }
 
     public Map<String, Object> getVariables() {
         return variables;

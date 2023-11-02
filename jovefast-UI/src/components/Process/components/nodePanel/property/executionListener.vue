@@ -19,6 +19,11 @@
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" size="medium" @click="closeDialog">确 定</el-button>
       </span>
+      <listener-list
+        :visible="listenerDialogVisible"
+        @close="() => this.listenerDialogVisible = false"
+        @submit="addListener"
+      />
     </el-dialog>
     <listenerParam v-if="showParamDialog" :value="formData.executionListener[nowIndex].params" @close="finishConfigParam" />
   </div>
@@ -27,12 +32,15 @@
 <script>
 import mixinPanel from '../../../common/mixinPanel'
 import listenerParam from './listenerParam'
+import FlowListener from '@/components/flow/Listener'
+import ListenerList from '@/components/Process/components/nodePanel/property/listenerList'
 export default {
-  components: { listenerParam },
+  components: { ListenerList, listenerParam, FlowListener },
   mixins: [mixinPanel],
   data() {
     return {
       dialogVisible: true,
+      listenerDialogVisible: false,
       showParamDialog: false,
       nowIndex: null,
       formData: {
@@ -42,7 +50,7 @@ export default {
   },
   computed: {
     formConfig() {
-    //   const _this = this
+      //   const _this = this
       return {
         inline: false,
         item: [
@@ -76,13 +84,13 @@ export default {
                       { label: '表达式', value: 'expression' },
                       { label: '委托表达式', value: 'delegateExpression' }
                     ],
-                    tooltip: `类：示例 com.company.MyCustomListener，自定义类必须实现 org.flowable.engine.delegate.TaskListener 接口 <br />
+                    tooltip: `类：示例 com.company.MyCustomListener，自定义类必须实现 org.flowable.engine.delegate.ExecutionListener 接口 <br />
                               表达式：示例 \${myObject.callMethod(task, task.eventName)} <br />
-                              委托表达式：示例 \${myListenerSpringBean} ，该 springBean 需要实现 org.flowable.engine.delegate.TaskListener 接口
+                              委托表达式：示例 \${myListenerSpringBean} ，该 springBean 需要实现 org.flowable.engine.delegate.ExecutionListener 接口
                     `
                   },
                   {
-                    label: 'java 类名',
+                    label: '值',
                     name: 'className',
                     xType: 'input',
                     rules: [{ required: true, message: '请输入', trigger: ['blur', 'change'] }]
@@ -103,6 +111,7 @@ export default {
     }
   },
   mounted() {
+    this.$nextTick(() => this.addButton())
     this.formData.executionListener = this.element.businessObject.extensionElements?.values
       .filter(item => item.$type === 'flowable:ExecutionListener')
       .map(item => {
@@ -128,6 +137,16 @@ export default {
       }) ?? []
   },
   methods: {
+    addButton() {
+      const button = document.createElement('button')
+      button.innerText = '内置监听器'
+      button.setAttribute('type', 'button')
+      button.setAttribute('class', 'el-button el-button--primary el-button--mini')
+      button.addEventListener('click', () => this.listenerDialogVisible = true)
+      const div = document.getElementById('pane-executionListener')
+      const table = div.getElementsByClassName('el-table')[0]
+      div.insertBefore(button, table)
+    },
     configParam(index) {
       this.nowIndex = index
       const nowObj = this.formData.executionListener[index]
@@ -178,10 +197,14 @@ export default {
       }
     },
     closeDialog() {
+      console.log(this.formData)
       this.$refs.xForm.validate().then(() => {
         this.updateElement()
         this.dialogVisible = false
       }).catch(e => console.error(e))
+    },
+    addListener(data) {
+      this.formData.executionListener = this.formData.executionListener.concat(data)
     }
   }
 }
@@ -189,6 +212,6 @@ export default {
 
 <style>
 .flow-containers  .el-badge__content.is-fixed {
-    top: 18px;
+  top: 18px;
 }
 </style>

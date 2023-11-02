@@ -53,6 +53,33 @@ export function updateState(params) {
   })
 }
 
+// 指定流程办理人员列表
+export function userList(query) {
+  return request({
+    url: '/flowable/definition/userList',
+    method: 'get',
+    params: query
+  })
+}
+
+// 指定流程办理组列表
+export function roleList(query) {
+  return request({
+    url: '/flowable/definition/roleList',
+    method: 'get',
+    params: query
+  })
+}
+
+// 指定流程表达式
+export function expList(query) {
+  return request({
+    url: '/flowable/definition/expList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 读取xml文件
 export function readXml(deployId) {
   return request({
@@ -69,13 +96,23 @@ export function readImage(deployId) {
   })
 }
 
-// 读取image文件
+// 获取流程执行节点
 export function getFlowViewer(procInsId, executionId) {
   return request({
     url: '/flowable/task/flowViewer/' + procInsId + '/' + executionId,
     method: 'get'
   })
 }
+
+// 流程节点数据
+export function flowXmlAndNode(query) {
+  return request({
+    url: '/flowable/task/flowXmlAndNode',
+    method: 'get',
+    params: query
+  })
+}
+
 
 // 读取xml文件
 export function saveXml(data) {

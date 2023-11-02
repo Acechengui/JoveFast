@@ -1,7 +1,7 @@
 <template>
   <div v-loading="isView" class="flow-containers" :class="{ 'view-mode': isView }">
     <el-container style="height: 100%">
-      <el-header style="border-bottom: 1px solid rgb(218 218 218);height: auto;">
+      <el-header style="border-bottom: 1px solid rgb(218 218 218);height: auto;padding-left:0px">
         <div style="display: flex; padding: 10px 0px; justify-content: space-between;">
           <div>
             <el-upload action="" :before-upload="openBpmn" style="margin-right: 10px; display:inline-block;">
@@ -9,7 +9,7 @@
                 <el-button size="mini" icon="el-icon-folder-opened" />
               </el-tooltip>
             </el-upload>
-            <el-tooltip effect="dark" content="新建" placement="bottom" v-hasPermi="['flowable:definition:edit']">
+            <el-tooltip effect="dark" content="新建" placement="bottom">
               <el-button size="mini" icon="el-icon-circle-plus" @click="newDiagram" />
             </el-tooltip>
             <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
@@ -29,10 +29,11 @@
             </el-tooltip>
           </div>
           <div>
-            <el-button size="mini" icon="el-icon-view" @click="showXML" v-hasPermi="['flowable:definition:edit']">查看xml</el-button>
-            <el-button size="mini" icon="el-icon-download" @click="saveXML(true)" v-hasPermi="['flowable:definition:edit']">下载xml</el-button>
-            <el-button size="mini" icon="el-icon-picture" @click="saveImg('svg', true)" v-hasPermi="['flowable:definition:edit']">下载svg</el-button>
-            <el-button size="mini" type="primary" @click="save" v-hasPermi="['flowable:definition:edit']">保存模型</el-button>
+<!--            <el-button size="mini" icon="el-icon-s-check" @click="verifyXML">校验xml</el-button>-->
+            <el-button size="mini" icon="el-icon-view" @click="showXML">查看xml</el-button>
+            <el-button size="mini" icon="el-icon-download" @click="saveXML(true)">下载xml</el-button>
+            <el-button size="mini" icon="el-icon-picture" @click="saveImg('svg', true)">下载svg</el-button>
+            <el-button size="mini" type="primary" @click="save">保存模型</el-button>
           </div>
         </div>
       </el-header>
@@ -40,8 +41,8 @@
         <el-main style="padding: 0;">
           <div ref="canvas" class="canvas" />
         </el-main>
-        <el-aside style="width: 30%; background-color: #f0f2f5">
-          <panel v-if="modeler" :modeler="modeler" :users="users" :forms="forms" :groups="groups" :categorys="categorys" @dataType="dataType" />
+        <el-aside style="width: 400px; min-height: 650px; background-color: #f0f2f5">
+          <panel v-if="modeler" :modeler="modeler" :users="users" :groups="groups" :exps="exps" :categorys="categorys" />
         </el-aside>
       </el-container>
     </el-container>
@@ -51,12 +52,15 @@
 <script>
 // 汉化
 import customTranslate from './common/customTranslate'
+import lintModule from 'bpmn-js-bpmnlint';
 import Modeler from 'bpmn-js/lib/Modeler'
+// import bpmnlintConfig from './.bpmnlintrc';
 import panel from './PropertyPanel'
-import BpmData from './BpmData'
 import getInitStr from './flowable/init'
 // 引入flowable的节点文件
-import flowableModdle from './flowable/flowable.json'
+import FlowableModule from './flowable/flowable.json'
+import customControlsModule from './customPanel'
+
 export default {
   name: 'WorkflowBpmnModeler',
   components: {
@@ -71,10 +75,6 @@ export default {
       type: Array,
       default: () => []
     },
-    forms: {
-      type: Array,
-      default: () => []
-    },
     groups: {
       type: Array,
       default: () => []
@@ -83,14 +83,14 @@ export default {
       type: Array,
       default: () => []
     },
+    exps: {
+      type: Array,
+      default: () => []
+    },
     isView: {
       type: Boolean,
       default: false
     },
-    taskList: {
-      type: Array,
-      default: () => []
-    }
   },
   data() {
     return {
@@ -110,12 +110,18 @@ export default {
     this.modeler = new Modeler({
       container: this.$refs.canvas,
       additionalModules: [
-        {
+        lintModule,
+        customControlsModule,
+        { //汉化
           translate: ['value', customTranslate]
-        }
+        },
       ],
+      // 去除流程校验器,有需求可自行添加,需要在package.json 加入 "bpmnlint-plugin-local": "file:bpmnlint-plugin-local"
+      // linting: {
+      //   bpmnlint: bpmnlintConfig
+      // },
       moddleExtensions: {
-        flowable: flowableModdle
+        flowable: FlowableModule
       }
     })
     // 新增流程定义
@@ -154,152 +160,17 @@ export default {
     },
     async createNewDiagram(data) {
       // 将字符串转换成图显示出来
+      // data = data.replace(/<!\[CDATA\[(.+?)]]>/g, '&lt;![CDATA[$1]]&gt;')
       data = data.replace(/<!\[CDATA\[(.+?)]]>/g, function(match, str) {
         return str.replace(/</g, '&lt;')
       })
       try {
         await this.modeler.importXML(data)
-        this.adjustPalette()
+        // this.adjustPalette()
         this.fitViewport()
-        if (this.taskList !==undefined && this.taskList.length > 0 ) {
-          this.fillColor()
-        }
       } catch (err) {
         console.error(err.message, err.warnings)
       }
-    },
-    // 调整左侧工具栏排版
-    adjustPalette() {
-      try {
-        // 获取 bpmn 设计器实例
-        const canvas = this.$refs.canvas
-        const djsPalette = canvas.children[0].children[1].children[4]
-        const djsPalStyle = {
-          width: '130px',
-          padding: '5px',
-          background: 'white',
-          left: '20px',
-          borderRadius: 0
-        }
-        for (var key in djsPalStyle) {
-          djsPalette.style[key] = djsPalStyle[key]
-        }
-        const palette = djsPalette.children[0]
-        const allGroups = palette.children
-        allGroups[0].style['display'] = 'none'
-        // 修改控件样式
-        for (var gKey in allGroups) {
-          const group = allGroups[gKey]
-          for (var cKey in group.children) {
-            const control = group.children[cKey]
-            const controlStyle = {
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              width: '100%',
-              padding: '5px'
-            }
-            if (
-              control.className &&
-              control.dataset &&
-              control.className.indexOf('entry') !== -1
-            ) {
-              const controlProps = new BpmData().getControl(
-                control.dataset.action
-              )
-              control.innerHTML = `<div style='font-size: 14px;font-weight:500;margin-left:15px;'>${
-                controlProps['title']
-              }</div>`
-              for (var csKey in controlStyle) {
-                control.style[csKey] = controlStyle[csKey]
-              }
-            }
-          }
-        }
-      } catch (e) {
-        console.error(e)
-      }
-    },
-    fillColor() {
-      const canvas = this.modeler.get('canvas')
-      this.modeler._definitions.rootElements[0].flowElements.forEach(n => {
-        const completeTask = this.taskList.find(m => m.key === n.id)
-        const todoTask = this.taskList.find(m => !m.completed)
-        const endTask = this.taskList[this.taskList.length - 1]
-        if (n.$type === 'bpmn:UserTask') {
-          if (completeTask) {
-            canvas.addMarker(n.id, completeTask.completed ? 'highlight' : 'highlight-todo')
-            if(n.outgoing){
-              n.outgoing?.forEach(nn => {
-              const targetTask = this.taskList.find(m => m.key === nn.targetRef.id)
-              if (targetTask) {
-                if (todoTask && completeTask.key === todoTask.key && !todoTask.completed){
-                  canvas.addMarker(nn.id, todoTask.completed ? 'highlight' : 'highlight-todo')
-                  canvas.addMarker(nn.targetRef.id, todoTask.completed ? 'highlight' : 'highlight-todo')
-                }else {
-                  canvas.addMarker(nn.id, targetTask.completed ? 'highlight' : 'highlight-todo')
-                  canvas.addMarker(nn.targetRef.id, targetTask.completed ? 'highlight' : 'highlight-todo')
-                }
-              }
-            })
-            }
-           
-          }
-        }
-        // 排他网关
-        else if (n.$type === 'bpmn:ExclusiveGateway') {
-          if (completeTask) {
-            canvas.addMarker(n.id, completeTask.completed ? 'highlight' : 'highlight-todo')
-            if(n.outgoing){
-              n.outgoing?.forEach(nn => {
-              const targetTask = this.taskList.find(m => m.key === nn.targetRef.id)
-              if (targetTask) {
-
-                canvas.addMarker(nn.id, targetTask.completed ? 'highlight' : 'highlight-todo')
-                canvas.addMarker(nn.targetRef.id, targetTask.completed ? 'highlight' : 'highlight-todo')
-              }
-
-            })
-            }
-            
-          }
-
-        }
-        // 并行网关
-        else if (n.$type === 'bpmn:ParallelGateway') {
-          if (completeTask) {
-            canvas.addMarker(n.id, completeTask.completed ? 'highlight' : 'highlight-todo')
-            if(n.outgoing){
-              n.outgoing?.forEach(nn => {
-              const targetTask = this.taskList.find(m => m.key === nn.targetRef.id)
-              if (targetTask) {
-                canvas.addMarker(nn.id, targetTask.completed ? 'highlight' : 'highlight-todo')
-                canvas.addMarker(nn.targetRef.id, targetTask.completed ? 'highlight' : 'highlight-todo')
-              }
-            })
-            }
-          }
-        }
-        else if (n.$type === 'bpmn:StartEvent') {
-          if(n.outgoing){
-            n.outgoing.forEach(nn => {
-            const completeTask = this.taskList.find(m => m.key === nn.targetRef.id)
-            if (completeTask) {
-              canvas.addMarker(nn.id, 'highlight')
-              canvas.addMarker(n.id, 'highlight')
-              return
-            }
-          })
-          }
-          
-        }
-        else if (n.$type === 'bpmn:EndEvent') {
-          if (endTask.key === n.id && endTask.completed) {
-            canvas.addMarker(n.id, 'highlight')
-            return
-          }
-        }
-      })
     },
     // 对外 api
     getProcess() {
@@ -316,6 +187,10 @@ export default {
         if (rootElements[i].$type === 'bpmn:Process') return rootElements[i]
       }
     },
+    async verifyXML(){
+      const linting = this.modeler.get('linting')
+      linting.toggle();
+    },
     async saveXML(download = false) {
       try {
         const { xml } = await this.modeler.saveXML({ format: true })
@@ -329,7 +204,7 @@ export default {
     },
     async showXML() {
       try {
-        const { xml } = await this.modeler.saveXML({ format: true })
+        const xml = await this.saveXML()
         this.$emit('showXML',xml)
       } catch (err) {
         console.log(err)
@@ -363,17 +238,13 @@ export default {
       return false
     },
     downloadFile(filename, data, type) {
-      var a = document.createElement('a')
-      var url = window.URL.createObjectURL(new Blob([data], { type: type }))
+      const a = document.createElement('a');
+      const url = window.URL.createObjectURL(new Blob([data], {type: type}));
       a.href = url
       a.download = filename
       a.click()
       window.URL.revokeObjectURL(url)
     },
-    /** 获取数据类型 */
-    dataType(data){
-      this.$emit('dataType', data)
-    }
   }
 }
 </script>
@@ -384,6 +255,7 @@ export default {
 @import "~bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
 @import "~bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css";
 @import "~bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
+//@import "~bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css";
 .view-mode {
   .el-header, .el-aside, .djs-palette, .bjs-powered-by {
     display: none;
@@ -396,7 +268,6 @@ export default {
   }
 }
 .flow-containers {
-  // background-color: #ffffff;
   width: 100%;
   height: 100%;
   .canvas {
@@ -422,10 +293,6 @@ export default {
     border-top: none;
   }
 
-  .djs-container svg {
-    min-height: 650px;
-  }
-
    .highlight.djs-shape .djs-visual > :nth-child(1) {
      fill: green !important;
      stroke: green !important;
@@ -442,6 +309,7 @@ export default {
    .highlight.djs-connection > .djs-visual > path {
      stroke: green !important;
    }
+
    .highlight-todo.djs-connection > .djs-visual > path {
      stroke: orange !important;
      stroke-dasharray: 4px !important;

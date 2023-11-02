@@ -187,16 +187,13 @@ public class FlowTaskController extends BaseController {
     @ApiOperation(value = "获取下一节点")
     @PostMapping(value = "/nextFlowNode")
     public AjaxResult getNextFlowNode(@RequestBody FlowTaskVo flowTaskVo) {
-        return AjaxResult.success(flowTaskService.getNextFlowNode(flowTaskVo));
+        return flowTaskService.getNextFlowNode(flowTaskVo);
     }
 
-    @ApiOperation(value = "验证当前节点处理人")
-    @PostMapping(value = "/verification/originator")
-    public AjaxResult verifyTheCurrentNodeHandler(@RequestBody FlowTaskVo flowTaskVo) {
-        if(flowTaskService.verifyTheCurrentNodeHandler(flowTaskVo.getInstanceId())){
-            return AjaxResult.success();
-        }
-        return AjaxResult.error("非流程发起人不允许重新编辑");
+    @ApiOperation(value = "流程发起时获取下一节点")
+    @PostMapping(value = "/nextFlowNodeByStart")
+    public AjaxResult getNextFlowNodeByStart(@RequestBody FlowTaskVo flowTaskVo) {
+        return flowTaskService.getNextFlowNodeByStart(flowTaskVo);
     }
 
     /**
@@ -232,7 +229,7 @@ public class FlowTaskController extends BaseController {
     }
 
     /**
-     * 生成流程图
+     * 获取流程执行节点
      *
      * @param procInsId 流程实例编号
      * @param executionId 任务执行编号
@@ -242,5 +239,25 @@ public class FlowTaskController extends BaseController {
                                     @PathVariable("executionId") String executionId) {
         List<FlowViewerDto> viewer = flowTaskService.getFlowViewer(procInsId, executionId);
         return AjaxResult.success(viewer);
+    }
+
+    /**
+     * 流程节点信息
+     * @param procInsId     流程实例id
+     */
+    @GetMapping("/flowXmlAndNode")
+    public AjaxResult flowXmlAndNode(@RequestParam(value = "procInsId",required = false) String procInsId,
+                                     @RequestParam(value = "deployId",required = false) String deployId){
+        return flowTaskService.flowXmlAndNode(procInsId,deployId);
+    }
+
+    /**
+     * 流程节点表单
+     * @param taskId  流程任务编号
+     * @return
+     */
+    @GetMapping("/flowTaskForm")
+    public AjaxResult flowTaskForm(@RequestParam(value = "taskId",required = false) String taskId) throws Exception {
+        return flowTaskService.flowTaskForm(taskId);
     }
 }

@@ -57,8 +57,14 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             public R<List<SysRole>> selectRoleList(SysRole sysRole, String source) {
                 return R.fail("获取角色列表失败:" + throwable.getMessage());
             }
+
             @Override
-            public R<List<SysRole>> selectRoleAll(String source) {
+            public R<List<SysUser>> selectSysUserAll(SysUser sysUser,String source) {
+                return R.fail("获取用户信息失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<SysRole>> selectRoleAll(SysRole sysRole,String source) {
                 return R.fail("获取全部角色信息失败:" + throwable.getMessage());
             }
         };

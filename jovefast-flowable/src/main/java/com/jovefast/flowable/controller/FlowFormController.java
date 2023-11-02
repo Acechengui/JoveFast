@@ -73,8 +73,8 @@ public class FlowFormController extends BaseController {
      * 查询全部表单
      */
     @RequiresPermissions("flowable:form:list")
-    @GetMapping("/list/all")
-    public AjaxResult listAll(SysForm sysForm) {
+    @GetMapping("/formList")
+    public AjaxResult formList(SysForm sysForm) {
         List<SysForm> list = sysFormService.selectSysFormList(sysForm);
         return AjaxResult.success(list);
     }

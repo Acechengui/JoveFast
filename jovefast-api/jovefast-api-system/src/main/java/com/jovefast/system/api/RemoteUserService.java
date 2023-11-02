@@ -60,6 +60,8 @@ public interface RemoteUserService
     @PostMapping("/role/list")
     public R<List<SysRole>> selectRoleList(@RequestBody SysRole sysRole, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
-    @GetMapping("/getInfo/role/all")
-    public R<List<SysRole>> selectRoleAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping("/user/all")
+    public R<List<SysUser>> selectSysUserAll(@RequestBody SysUser sysUser, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping("/role/all")
+    public R<List<SysRole>> selectRoleAll(@RequestBody SysRole sysRole, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

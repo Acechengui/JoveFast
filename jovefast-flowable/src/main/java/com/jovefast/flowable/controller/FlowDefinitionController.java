@@ -8,9 +8,11 @@ import com.jovefast.common.core.web.page.TableDataInfo;
 import com.jovefast.common.log.annotation.Log;
 import com.jovefast.common.log.enums.BusinessType;
 import com.jovefast.common.security.annotation.RequiresPermissions;
+import com.jovefast.flowable.domain.SysExpression;
 import com.jovefast.flowable.domain.dto.FlowProcDefDto;
 import com.jovefast.flowable.domain.dto.FlowSaveXmlVo;
 import com.jovefast.flowable.service.IFlowDefinitionService;
+import com.jovefast.flowable.service.ISysExpressionService;
 import com.jovefast.system.api.RemoteUserService;
 import com.jovefast.system.api.domain.SysRole;
 import com.jovefast.system.api.domain.SysUser;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
@@ -47,6 +50,9 @@ public class FlowDefinitionController extends BaseController {
 
     @Autowired
     private RemoteUserService remoteuserservice;
+
+    @Resource
+    private ISysExpressionService sysExpressionService;
 
 
     @GetMapping(value = "/list")
@@ -173,15 +179,22 @@ public class FlowDefinitionController extends BaseController {
     @ApiOperation(value = "指定流程办理人员列表")
     @GetMapping("/userList")
     public AjaxResult userList(SysUser user) {
-        R<List<SysUser>> listR = remoteuserservice.selectUserList(user, SecurityConstants.INNER);
+        R<List<SysUser>> listR = remoteuserservice.selectSysUserAll(user, SecurityConstants.INNER);
         return AjaxResult.success(listR.getData());
     }
 
     @ApiOperation(value = "指定流程办理组列表")
     @GetMapping("/roleList")
     public AjaxResult roleList(SysRole role) {
-        R<List<SysRole>> sysRoleR = remoteuserservice.selectRoleList(role, SecurityConstants.INNER);
+        R<List<SysRole>> sysRoleR = remoteuserservice.selectRoleAll(role, SecurityConstants.INNER);
         return AjaxResult.success(sysRoleR.getData());
+    }
+
+    @ApiOperation(value = "指定流程达式列表")
+    @GetMapping("/expList")
+    public AjaxResult expList(SysExpression sysExpression) {
+        List<SysExpression> list = sysExpressionService.selectSysExpressionList(sysExpression);
+        return AjaxResult.success(list);
     }
 
 }

@@ -69,7 +69,7 @@ public class SysUserController extends BaseController
      * 获取用户列表
      */
     @RequiresPermissions("system:user:list")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public TableDataInfo list(SysUser user)
     {
         startPage();
@@ -81,11 +81,12 @@ public class SysUserController extends BaseController
      * 获取全部用户列表用于工作流
      */
     @RequiresPermissions("system:user:list")
-    @GetMapping("/alllist")
-    public TableDataInfo alllist(SysUser user)
+    @PostMapping("/all")
+    @InnerAuth
+    public R<List<SysUser>> allList(SysUser user)
     {
         List<SysUser> list = userService.selectUserList(user);
-        return getDataTable(list);
+        return R.ok(list);
     }
 
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)

@@ -8,9 +8,8 @@
       :modeler="modeler"
       :users="users"
       :groups="groups"
-      :forms="forms"
+      :exps="exps"
       :categorys="categorys"
-      @dataType="dataType"
     />
   </div>
 </template>
@@ -35,13 +34,13 @@ export default {
       type: Array,
       required: true
     },
-    forms: {
-      type: Array,
-      required: true
-    },
     categorys: {
       type: Array,
       required: true
+    },
+    exps: {
+      type: Array,
+      default: () => []
     },
     modeler: {
       type: Object,
@@ -56,11 +55,6 @@ export default {
         name: '',
         color: null
       },
-      roles: [
-        { value: 'manager', label: '经理' },
-        { value: 'personnel', label: '人事' },
-        { value: 'charge', label: '主管' }
-      ]
     }
   },
   computed: {
@@ -125,7 +119,9 @@ export default {
       })
       this.modeler.on('element.click', e => {
         const { element } = e
-        if (element.type === 'bpmn:Process') {
+        if (element.type === 'bpmn:Process'
+          || element.type === 'bpmn:SequenceFlow'
+          || element.type === 'bpmn:EndEvent' ) {
           this.element = element
         }
       })
@@ -140,10 +136,6 @@ export default {
         }
       })
     },
-    /** 获取数据类型 */
-    dataType(data){
-      this.$emit('dataType', data)
-    }
   }
 }
 </script>
@@ -155,6 +147,7 @@ export default {
   .el-form--label-top .el-form-item__label {
     padding: 0;
   }
+  // 设置设计器右侧表单高度
   .el-form-item {
     margin-bottom: 6px;
   }

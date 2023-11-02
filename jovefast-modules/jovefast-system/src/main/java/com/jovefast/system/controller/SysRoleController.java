@@ -59,11 +59,12 @@ public class SysRoleController extends BaseController
         return getDataTable(list);
     }
     @RequiresPermissions("system:role:list")
-    @GetMapping("/alllist")
-    public TableDataInfo alllist(SysRole role)
+    @PostMapping("/all")
+    @InnerAuth
+    public R<List<SysRole>> allList(SysRole role)
     {
         List<SysRole> list = roleService.selectRoleList(role);
-        return getDataTable(list);
+        return R.ok(list);
     }
 
     @Log(title = "角色管理", businessType = BusinessType.EXPORT)
