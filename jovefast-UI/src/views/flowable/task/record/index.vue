@@ -10,8 +10,8 @@
       <!--流程处理表单模块-->
       <el-col :span="24" v-if="variableOpen">
         <div>
-          <ng-form-build ref="variableParserFormBuild" :models ="models" :preview="formPreview" :formTemplate="formTemplate" :config="formBuildConfig"
-              :custom-components="customComponents" />
+          <ng-form-build ref="variableParserFormBuild" :models ="models" :preview="false" :disabled="formPreview" :formTemplate="formTemplate" :config="formBuildConfig"
+                         :custom-components="customComponents" />
         </div>
         <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
           <el-button icon="el-icon-edit-outline" type="success" size="mini" @click="handleComplete">审批</el-button>
@@ -24,12 +24,12 @@
       <!--初始化流程加载表单信息-->
       <el-col :span="24" v-if="formConfOpen">
         <div class="key-form">
-              <ng-form-build ref="parserFormBuild" :disabled="false" :formTemplate="formConf" :config="formBuildConfig"
-              :custom-components="customComponents" />
-              <div style="text-align: center;"> 
-      		      <el-button type="primary" size="medium" icon="el-icon-success" @click="initSubmitForm()">提交</el-button>
-                <el-button type="warning" size="medium" icon="el-icon-remove" @click="resetSubmitForm()">重置</el-button>
-              </div>
+          <ng-form-build ref="parserFormBuild" :disabled="false" :formTemplate="formConf" :config="formBuildConfig"
+                         :custom-components="customComponents" />
+          <div style="text-align: center;">
+            <el-button type="primary" size="medium" icon="el-icon-success" @click="initSubmitForm()">提交</el-button>
+            <el-button type="warning" size="medium" icon="el-icon-remove" @click="resetSubmitForm()">重置</el-button>
+          </div>
         </div>
       </el-col>
 
@@ -668,17 +668,17 @@ export default {
     },
     /** 申请流程表单数据提交 */
     initSubmitForm() {
-        this.$prompt('请输入流程标题', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
-        }).then(({ value }) => {
-          this.processTitle=value;
-          this.$message({
-            type: 'success',
-            message: '设置的流程标题为:' + this.processTitle
-          });
-          this.applicationHandle();
-        }).catch(() => {});
+      this.$prompt('请输入流程标题', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        this.processTitle=value;
+        this.$message({
+          type: 'success',
+          message: '设置的流程标题为:' + this.processTitle
+        });
+        this.applicationHandle();
+      }).catch(() => {});
     },
     /** 申请提交 */
     applicationHandle(){
