@@ -9,7 +9,11 @@ import com.jovefast.common.security.annotation.RequiresPermissions;
 import com.jovefast.flowable.domain.dto.FlowEnclosureDTO;
 import com.jovefast.flowable.service.IFlowAttachmentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Description 附件接口层

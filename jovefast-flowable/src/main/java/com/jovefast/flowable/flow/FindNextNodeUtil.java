@@ -2,8 +2,21 @@ package com.jovefast.flowable.flow;
 
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.Expression;
+import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.CallActivity;
+import org.flowable.bpmn.model.EndEvent;
+import org.flowable.bpmn.model.ExclusiveGateway;
+import org.flowable.bpmn.model.FlowElement;
+import org.flowable.bpmn.model.ParallelGateway;
+import org.flowable.bpmn.model.ReceiveTask;
+import org.flowable.bpmn.model.ServiceTask;
+import org.flowable.bpmn.model.Task;
+import org.flowable.bpmn.model.Gateway;
 import org.flowable.bpmn.model.Process;
-import org.flowable.bpmn.model.*;
+import org.flowable.bpmn.model.SequenceFlow;
+import org.flowable.bpmn.model.StartEvent;
+import org.flowable.bpmn.model.SubProcess;
+import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.repository.ProcessDefinition;
 
@@ -20,9 +33,6 @@ public class FindNextNodeUtil {
     /**
      * 获取下一步骤的用户任务
      *
-     * @param repositoryService
-     * @param map
-     * @return
      */
     public static List<UserTask> getNextUserTasks(RepositoryService repositoryService, org.flowable.task.api.Task task, Map<String, Object> map) {
         List<UserTask> data = new ArrayList<>();
@@ -39,9 +49,6 @@ public class FindNextNodeUtil {
     /**
      * 启动流程时获取下一步骤的用户任务
      *
-     * @param repositoryService
-     * @param map
-     * @return
      */
     public static List<UserTask> getNextUserTasksByStart(RepositoryService repositoryService, ProcessDefinition processDefinition, Map<String, Object> map) {
         List<UserTask> data = new ArrayList<>();
@@ -66,10 +73,6 @@ public class FindNextNodeUtil {
     /**
      * 查找下一节点
      *
-     * @param flowElements
-     * @param flowElement
-     * @param map
-     * @param nextUser
      */
     public static void next(Collection<FlowElement> flowElements, FlowElement flowElement, Map<String, Object> map, List<UserTask> nextUser) {
         //如果是结束节点
@@ -164,7 +167,6 @@ public class FindNextNodeUtil {
 
                 SubProcess sp = (SubProcess) flowElement1;
                 if (sp.getLoopCharacteristics() != null) {
-                    String inputDataItem = sp.getLoopCharacteristics().getInputDataItem();
                     UserTask userTask = new UserTask();
                     userTask.setId(sp.getId());
                     userTask.setLoopCharacteristics(sp.getLoopCharacteristics());
@@ -184,7 +186,6 @@ public class FindNextNodeUtil {
      *
      * @param flowElements 全流程的节点集合
      * @param flowElement  当前节点
-     * @return
      */
     public static FlowElement getSubProcess(Collection<FlowElement> flowElements, FlowElement flowElement) {
         for (FlowElement flowElement1 : flowElements) {
@@ -205,7 +206,6 @@ public class FindNextNodeUtil {
      *
      * @param Id           节点ID
      * @param flowElements 流程节点集合
-     * @return
      */
     public static FlowElement getFlowElementById(String Id, Collection<FlowElement> flowElements) {
         for (FlowElement flowElement : flowElements) {
@@ -230,7 +230,6 @@ public class FindNextNodeUtil {
      * 返回流程的开始节点
      *
      * @param flowElements 节点集合
-     * @description:
      */
     public static FlowElement getStartFlowElement(Collection<FlowElement> flowElements) {
         for (FlowElement flowElement : flowElements) {
@@ -244,9 +243,6 @@ public class FindNextNodeUtil {
     /**
      * 校验el表达式
      *
-     * @param map
-     * @param expression
-     * @return
      */
     public static boolean expressionResult(Map<String, Object> map, String expression) {
         Expression exp = AviatorEvaluator.compile(expression);
