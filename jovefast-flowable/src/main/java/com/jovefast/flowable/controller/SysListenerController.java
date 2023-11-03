@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 流程监听Controller
- * 
+ *
  * @author Acecehgnui
  */
 @RestController
@@ -37,7 +37,7 @@ public class SysListenerController extends BaseController
     /**
      * 查询流程监听列表
      */
-    @RequiresPermissions("system:listener:list")
+    @RequiresPermissions("flowable:listener:list")
     @GetMapping("/list")
     public TableDataInfo list(SysListener sysListener)
     {
@@ -49,7 +49,7 @@ public class SysListenerController extends BaseController
     /**
      * 导出流程监听列表
      */
-    @RequiresPermissions("system:listener:export")
+    @RequiresPermissions("flowable:listener:export")
     @Log(title = "流程监听", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysListener sysListener)
@@ -62,7 +62,7 @@ public class SysListenerController extends BaseController
     /**
      * 获取流程监听详细信息
      */
-    @RequiresPermissions("system:listener:query")
+    @RequiresPermissions("flowable:listener:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -72,7 +72,7 @@ public class SysListenerController extends BaseController
     /**
      * 新增流程监听
      */
-    @RequiresPermissions("system:listener:add")
+    @RequiresPermissions("flowable:listener:add")
     @Log(title = "流程监听", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysListener sysListener)
@@ -83,7 +83,7 @@ public class SysListenerController extends BaseController
     /**
      * 修改流程监听
      */
-    @RequiresPermissions("system:listener:edit")
+    @RequiresPermissions("flowable:listener:edit")
     @Log(title = "流程监听", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysListener sysListener)
@@ -94,9 +94,9 @@ public class SysListenerController extends BaseController
     /**
      * 删除流程监听
      */
-    @RequiresPermissions("system:listener:remove")
+    @RequiresPermissions("flowable:listener:remove")
     @Log(title = "流程监听", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
+    @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(sysListenerService.deleteSysListenerByIds(ids));

@@ -59,6 +59,8 @@ export default {
     systeminterface: 'Interface',
     Operationlog: 'Operation Log',
     LoginLog: 'login Log',
+    ProcessMonitoring: 'Process Monitoring',
+    ProcessExpression: 'Process Expression',
     ReportDesign: 'Report Design',
     organizationalStructure: 'organizational structure',
     workflowCenter: 'Workflow Center',

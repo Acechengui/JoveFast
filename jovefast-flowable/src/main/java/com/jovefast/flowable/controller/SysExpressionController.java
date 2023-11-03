@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 流程达式Controller
- * 
+ *
  * @author Acecehgnui
  */
 @RestController
@@ -37,7 +37,7 @@ public class SysExpressionController extends BaseController
     /**
      * 查询流程达式列表
      */
-    @RequiresPermissions("system:expression:list")
+    @RequiresPermissions("flowable:expression:list")
     @GetMapping("/list")
     public TableDataInfo list(SysExpression sysExpression)
     {
@@ -49,20 +49,20 @@ public class SysExpressionController extends BaseController
     /**
      * 导出流程达式列表
      */
-    @RequiresPermissions("system:expression:export")
-    @Log(title = "流程达式", businessType = BusinessType.EXPORT)
+    @RequiresPermissions("flowable:expression:export")
+    @Log(title = "流程表达式", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysExpression sysExpression)
     {
         List<SysExpression> list = sysExpressionService.selectSysExpressionList(sysExpression);
         ExcelUtil<SysExpression> util = new ExcelUtil<SysExpression>(SysExpression.class);
-        util.exportExcel(response, list, "流程达式数据",false,false);
+        util.exportExcel(response, list, "流程表达式数据",false,false);
     }
 
     /**
      * 获取流程达式详细信息
      */
-    @RequiresPermissions("system:expression:query")
+    @RequiresPermissions("flowable:expression:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -72,8 +72,8 @@ public class SysExpressionController extends BaseController
     /**
      * 新增流程达式
      */
-    @RequiresPermissions("system:expression:add")
-    @Log(title = "流程达式", businessType = BusinessType.INSERT)
+    @RequiresPermissions("flowable:expression:add")
+    @Log(title = "流程表达式", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody SysExpression sysExpression)
     {
@@ -83,8 +83,8 @@ public class SysExpressionController extends BaseController
     /**
      * 修改流程达式
      */
-    @RequiresPermissions("system:expression:edit")
-    @Log(title = "流程达式", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("flowable:expression:edit")
+    @Log(title = "流程表达式", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SysExpression sysExpression)
     {
@@ -95,8 +95,8 @@ public class SysExpressionController extends BaseController
      * 删除流程达式
      */
     @RequiresPermissions("system:expression:remove")
-    @Log(title = "流程达式", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
+    @Log(title = "流程表达式", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(sysExpressionService.deleteSysExpressionByIds(ids));

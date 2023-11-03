@@ -60,6 +60,8 @@ export default {
     systeminterface: 'อินเตอร์เฟซระบบ',
     Operationlog: 'บันทึกการทำงาน',
     LoginLog: 'เข้าสู่ระบบ',
+    ProcessMonitoring: 'การฟังกระบวนการ',
+    ProcessExpression: 'การแสดงออกของกระบวนการ',
     ReportDesign: 'การออกแบบรายงาน',
     organizationalStructure: 'สถาปัตยกรรมองค์กร',
     workflowCenter: 'เวิร์กโฟลว์เซ็นเตอร์',

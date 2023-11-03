@@ -54,6 +54,8 @@ export default {
     NacosConsole: 'Nacos控制台',
     AdminConsole: 'Admin控制台',
     FormConstruction: '表单构建',
+    ProcessMonitoring: '流程监听',
+    ProcessExpression: '流程表达式',
     codegeneration: '代码生成',
     systeminterface: '系统接口',
     Operationlog: '操作日志',
