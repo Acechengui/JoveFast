@@ -84,13 +84,13 @@
       </el-table-column>
       <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-              <el-button type="text" icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)" v-hasPermi="['flowable:deployment:list']">
+              <el-button size="medium" type="text" icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)" v-hasPermi="['flowable:deployment:list']">
                 详情
               </el-button>
-              <el-button type="text" icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null || scope.row.finishTime === undefined">
+              <el-button size="medium" type="text" icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null || scope.row.finishTime === undefined">
                 取消申请
               </el-button>
-              <el-button type="text" icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:instance:del']">
+              <el-button size="medium" type="text" icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:instance:del']">
                 删除
               </el-button>
         </template>
@@ -367,7 +367,8 @@ export default {
           deployId: row.deployId,
           taskId: row.taskId,
           formId: row.formId,
-          finished: false
+          finished: false,
+          preview:true
       }})
     },
     /** 修改按钮操作 */

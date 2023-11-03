@@ -223,7 +223,8 @@ export default {
           deployId: row.deployId,
           taskId: row.taskId,
           formId: row.formId,
-          finished: false
+          finished: false,
+          preview:true
       }})
     }
   }

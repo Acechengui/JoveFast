@@ -104,7 +104,7 @@
           <el-button @click="handleAddForm(scope.row)" icon="el-icon-edit-el-icon-s-promotion" type="text" v-hasPermi="['flowable:definition:configureform']" size="small">挂载表单</el-button>
           <el-button @click="handleUpdateSuspensionState(scope.row)" icon="el-icon-video-pause" type="text" v-hasPermi="['flowable:definition:state']" size="small" v-if="scope.row.suspensionState === 1">挂起</el-button>
           <el-button @click="handleUpdateSuspensionState(scope.row)" icon="el-icon-video-play" type="text" v-hasPermi="['flowable:definition:state']" size="small" v-if="scope.row.suspensionState === 2">激活</el-button>
-          <el-button @click="handleDelete(scope.row)" icon="el-icon-delete" type="text" size="small" v-hasPermi="['flowable:definition:del']">删除</el-button>
+          <el-button @click="handleDelete(scope.row)" icon="el-icon-delete" type="text" size="small" v-hasPermi="['flowable:definition:del']">{{ $t('common.del') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

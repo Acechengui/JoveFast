@@ -11,7 +11,7 @@ export function listUser(query) {
 }
 export function listUserAll(query) {
   return request({
-    url: '/system/user/alllist',
+    url: '/system/user/all',
     method: 'get',
     params: query
   })

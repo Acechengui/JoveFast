@@ -108,8 +108,8 @@ export default {
       saveXml(params).then(res => {
         this.$modal.msgSuccess(res.msg)
         // 关闭当前标签页并返回上个页面
-        const obj = { path: "/flowable/definition", query: { t: Date.now()} };
-        this.$tab.closeOpenPage(obj);
+        this.$store.dispatch("tagsView/delView", this.$route);
+        this.$router.go(-1)
       })
     },
     /** 指定流程办理人员列表 */
@@ -119,8 +119,6 @@ export default {
           val.userId = val.userId.toString();
         })
         this.users = res.data;
-        // let arr = {nickName: "流程发起人", userId: "${INITIATOR}"}
-        // this.users.push(arr)
       });
       roleList().then(res =>{
         res.data.forEach(val =>{

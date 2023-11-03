@@ -3,12 +3,12 @@
     <x-form ref="xForm" v-model="formData" :config="formConfig">
       <template #executionListener>
         <el-badge :value="executionListenerLength">
-          <el-button size="small" @click="dialogName = 'executionListenerDialog'">编辑</el-button>
+          <el-button size="small" @click="dialogName = 'executionListenerDialog'">{{ $t('common.edit') }}</el-button>
         </el-badge>
       </template>
       <template #signal>
         <el-badge :value="signalLength">
-          <el-button size="small" @click="dialogName = 'signalDialog'">编辑</el-button>
+          <el-button size="small" @click="dialogName = 'signalDialog'">{{ $t('common.edit') }}</el-button>
         </el-badge>
       </template>
     </x-form>

@@ -1011,20 +1011,47 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     MultiInstanceLoopCharacteristics multiInstance = userTask.getLoopCharacteristics();
                     // 会签节点
                     if (Objects.nonNull(multiInstance)) {
-                        flowNextDto.setVars(multiInstance.getInputDataItem());
+                        List<SysUser> list = remoteuserservice.selectUserList(new SysUser(), SecurityConstants.INNER).getData();
+
+                        flowNextDto.setVars(ProcessConstants.PROCESS_MULTI_INSTANCE_USER);
                         flowNextDto.setType(ProcessConstants.PROCESS_MULTI_INSTANCE);
-                        flowNextDto.setDataType(ProcessConstants.DATA_TYPE);
+                        flowNextDto.setUserList(list);
                     } else {
+
                         // 读取自定义节点属性 判断是否是否需要动态指定任务接收人员、组
                         String dataType = userTask.getAttributeValue(ProcessConstants.NAMASPASE, ProcessConstants.PROCESS_CUSTOM_DATA_TYPE);
                         String userType = userTask.getAttributeValue(ProcessConstants.NAMASPASE, ProcessConstants.PROCESS_CUSTOM_USER_TYPE);
-                        flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
-                        flowNextDto.setType(userType);
-                        flowNextDto.setDataType(dataType);
+
+                        // 处理加载动态指定下一节点接收人员信息
+                        if (ProcessConstants.DATA_TYPE.equals(dataType)) {
+                            // 指定单个人员
+                            if (ProcessConstants.USER_TYPE_ASSIGNEE.equals(userType)) {
+                                List<SysUser> list = remoteuserservice.selectUserList(new SysUser(), SecurityConstants.INNER).getData();
+                                flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
+                                flowNextDto.setType(ProcessConstants.USER_TYPE_ASSIGNEE);
+                                flowNextDto.setUserList(list);
+                            }
+                            // 候选人员(多个)
+                            if (ProcessConstants.USER_TYPE_USERS.equals(userType)) {
+                                List<SysUser> list = remoteuserservice.selectUserList(new SysUser(), SecurityConstants.INNER).getData();
+
+                                flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
+                                flowNextDto.setType(ProcessConstants.USER_TYPE_USERS);
+                                flowNextDto.setUserList(list);
+                            }
+                            // 候选组
+                            if (ProcessConstants.USER_TYPE_ROUPS.equals(userType)) {
+                                List<SysRole> sysRoles = remoteuserservice.selectRoleAll(new SysRole(), SecurityConstants.INNER).getData();
+
+                                flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
+                                flowNextDto.setType(ProcessConstants.USER_TYPE_ROUPS);
+                                flowNextDto.setRoleList(sysRoles);
+                            }
+                        } else {
+                            flowNextDto.setType(ProcessConstants.FIXED);
+                        }
                     }
                 }
-            } else {
-                throw new CheckedException("流程已完结");
             }
         }
         return flowNextDto;

@@ -10,7 +10,7 @@
       <!--流程处理表单模块-->
       <el-col :span="24" v-if="variableOpen">
         <div>
-          <ng-form-build ref="variableParserFormBuild" :models ="models" :formTemplate="formTemplate" :config="formBuildConfig"
+          <ng-form-build ref="variableParserFormBuild" :models ="models" :preview="formPreview" :formTemplate="formTemplate" :config="formBuildConfig"
               :custom-components="customComponents" />
         </div>
         <div style="margin-left:10%;margin-bottom: 20px;font-size: 14px;" v-if="finished === 'true'">
@@ -390,6 +390,8 @@ export default {
       //表单配置
       formId: null,
       formTemplate:null,
+      //是否只能预览
+      formPreview:false,
       models:[],
       formBuildConfig: {
         httpConfig: (config) => {
@@ -413,6 +415,7 @@ export default {
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
     this.taskForm.executionId = this.$route.query && this.$route.query.executionId;
     this.taskForm.instanceId = this.$route.query && this.$route.query.procInsId;
+    this.formPreview = this.$route.query && this.$route.query.preview;
     // 初始化表单
     this.taskForm.procDefId = this.$route.query && this.$route.query.procDefId;
     // 获取传递的表单ID

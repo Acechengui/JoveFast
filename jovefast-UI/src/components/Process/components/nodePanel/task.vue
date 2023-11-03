@@ -3,17 +3,17 @@
     <x-form ref="xForm" v-model="formData" :config="formConfig">
       <template #executionListener>
         <el-badge :value="executionListenerLength">
-          <el-button size="small" @click="dialogName = 'executionListenerDialog'">编辑</el-button>
+          <el-button size="small" @click="dialogName = 'executionListenerDialog'">{{ $t('common.edit') }}</el-button>
         </el-badge>
       </template>
       <template #taskListener>
         <el-badge :value="taskListenerLength">
-          <el-button size="small" @click="dialogName = 'taskListenerDialog'">编辑</el-button>
+          <el-button size="small" @click="dialogName = 'taskListenerDialog'">{{ $t('common.edit') }}</el-button>
         </el-badge>
       </template>
       <template #multiInstance>
         <el-badge :is-dot="hasMultiInstance">
-          <el-button size="small" @click="dialogName = 'multiInstanceDialog'">编辑</el-button>
+          <el-button size="small" @click="dialogName = 'multiInstanceDialog'">{{ $t('common.edit') }}</el-button>
         </el-badge>
       </template>
       <template #checkSingleUser>

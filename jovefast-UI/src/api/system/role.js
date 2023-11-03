@@ -10,7 +10,7 @@ export function listRole(query) {
 }
 export function listRoleAll(query) {
   return request({
-    url: '/system/role/alllist',
+    url: '/system/role/all',
     method: 'get',
     params: query
   })

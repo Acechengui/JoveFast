@@ -69,7 +69,7 @@ public class SysUserController extends BaseController
      * 获取用户列表
      */
     @RequiresPermissions("system:user:list")
-    @PostMapping("/list")
+    @GetMapping("/list")
     public TableDataInfo list(SysUser user)
     {
         startPage();
