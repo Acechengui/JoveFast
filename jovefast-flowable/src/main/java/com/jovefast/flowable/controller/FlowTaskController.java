@@ -13,6 +13,7 @@ import com.jovefast.flowable.service.IFlowTaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.flowable.bpmn.model.UserTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -143,7 +144,7 @@ public class FlowTaskController extends BaseController {
     @ApiOperation(value = "获取所有可回退的节点")
     @PostMapping(value = "/returnList")
     public AjaxResult findReturnTaskList(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.findReturnTaskList(flowTaskVo);
+        return AjaxResult.success(flowTaskService.findReturnTaskList(flowTaskVo));
     }
 
     @ApiOperation(value = "删除任务")
@@ -194,13 +195,13 @@ public class FlowTaskController extends BaseController {
     @ApiOperation(value = "获取下一节点")
     @PostMapping(value = "/nextFlowNode")
     public AjaxResult getNextFlowNode(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.getNextFlowNode(flowTaskVo);
+        return AjaxResult.success(flowTaskService.getNextFlowNode(flowTaskVo));
     }
 
     @ApiOperation(value = "流程发起时获取下一节点")
     @PostMapping(value = "/nextFlowNodeByStart")
     public AjaxResult getNextFlowNodeByStart(@RequestBody FlowTaskVo flowTaskVo) {
-        return flowTaskService.getNextFlowNodeByStart(flowTaskVo);
+        return AjaxResult.success(flowTaskService.getNextFlowNodeByStart(flowTaskVo));
     }
 
     /**
@@ -255,15 +256,11 @@ public class FlowTaskController extends BaseController {
     @GetMapping("/flowXmlAndNode")
     public AjaxResult flowXmlAndNode(@RequestParam(value = "procInsId",required = false) String procInsId,
                                      @RequestParam(value = "deployId",required = false) String deployId){
-        return flowTaskService.flowXmlAndNode(procInsId,deployId);
-    }
-
-    /**
-     * 流程节点表单
-     * @param taskId  流程任务编号
-     */
-    @GetMapping("/flowTaskForm")
-    public AjaxResult flowTaskForm(@RequestParam(value = "taskId",required = false) String taskId) throws Exception {
-        return flowTaskService.flowTaskForm(taskId);
+        try {
+            return AjaxResult.success(flowTaskService.flowXmlAndNode(procInsId,deployId));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return AjaxResult.error("高亮历史任务失败");
+        }
     }
 }

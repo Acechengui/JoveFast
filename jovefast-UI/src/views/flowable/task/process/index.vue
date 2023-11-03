@@ -87,7 +87,7 @@
               <el-button type="text" icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)" v-hasPermi="['flowable:deployment:list']">
                 详情
               </el-button>
-              <el-button type="text" icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null">
+              <el-button type="text" icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null || scope.row.finishTime === undefined">
                 取消申请
               </el-button>
               <el-button type="text" icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:instance:del']">

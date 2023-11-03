@@ -62,6 +62,9 @@ import { registerConfig as registerConfigDashboard,$dashboardAxios} from '@gcpaa
 import NgForm  from 'ng-form-element'
 import 'ng-form-element/lib/ng-form-element.css'
 
+//引入自定义组件
+import NgComponents from '@/views/dynamicForms/customComponents/index.js' 
+
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -87,9 +90,7 @@ Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
 Vue.use(horizontalScroll)
-// 注册ng-form-element组件库
-Vue.use(NgForm) 
-
+Vue.use(NgForm, {components: NgComponents}) 
 Vue.use(Print)
 Vue.use(directive)
 Vue.use(plugins)

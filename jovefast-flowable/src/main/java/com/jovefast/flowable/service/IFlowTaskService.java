@@ -1,11 +1,12 @@
 package com.jovefast.flowable.service;
 
-import com.jovefast.common.core.web.domain.AjaxResult;
 import com.jovefast.flowable.domain.dto.FlowNextDto;
 import com.jovefast.flowable.domain.dto.FlowTaskDto;
 import com.jovefast.flowable.domain.dto.FlowViewerDto;
 import com.jovefast.flowable.domain.vo.FlowTaskVo;
+import org.flowable.bpmn.model.UserTask;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +38,7 @@ public interface IFlowTaskService {
     /**
      * 流程节点信息
      */
-    AjaxResult flowXmlAndNode(String procInsId,String deployId);
-
-    /**
-     * 流程节点表单
-     * @param taskId 流程任务编号
-     */
-    AjaxResult flowTaskForm(String taskId) throws Exception;
+    Map<String, Object> flowXmlAndNode(String procInsId,String deployId) throws IOException;
 
     /**
      * 单个审批任务
@@ -75,9 +70,8 @@ public interface IFlowTaskService {
     /**
      * 获取所有可回退的节点
      *
-     * @param flowTaskVo
      */
-    AjaxResult findReturnTaskList(FlowTaskVo flowTaskVo);
+    List<UserTask> findReturnTaskList(FlowTaskVo flowTaskVo);
 
     /**
      * 删除任务
@@ -181,13 +175,7 @@ public interface IFlowTaskService {
      * 获取下一节点
      * @param flowTaskVo 任务
      */
-    AjaxResult getNextFlowNode(FlowTaskVo flowTaskVo);
+    FlowNextDto getNextFlowNode(FlowTaskVo flowTaskVo);
 
-    AjaxResult getNextFlowNodeByStart(FlowTaskVo flowTaskVo);
-
-    /**
-     * 验证当然节点处理人是否为发起人
-     * @param procInsId 流程ID
-     */
-    Boolean verifyTheCurrentNodeHandler(String procInsId);
+    FlowNextDto getNextFlowNodeByStart(FlowTaskVo flowTaskVo);
 }

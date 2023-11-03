@@ -51,8 +51,7 @@
     <!--表单配置详情-->
     <el-dialog :title="formTitle" :visible.sync="formConfOpen">
       <div>
-        <ng-form-build ref="formBuild" :preview="true" :formTemplate="formConf" :config="formBuildConfig"
-          :custom-components="customComponents" />
+        <ng-form-build ref="formBuild" :preview="true" :formTemplate="formConf"  :config="formBuildConfig" />
       </div>
     </el-dialog>
   </div>
@@ -61,14 +60,8 @@
 <script>
 import { listForm, delForm } from "@/api/flowable/form";
 import { getToken } from '@/utils/auth'
-//自定义
-import BackgroundImageComponent from '../../../ngform/customComponents/backgroundImage/index.vue'
-import BackgroundImagePropertie from '../../../ngform/customComponents/backgroundImage/properties.vue'
 export default {
   name: "Form",
-  components: {
-    BackgroundImageComponent, BackgroundImagePropertie
-  },
   data() {
     return {
       // 遮罩层
@@ -94,28 +87,6 @@ export default {
           return config
         }
       },
-      customComponents: [
-        /**
-         {
-            type: '类型', // 唯一，不能和已有组件冲突
-            label: '组件名称', // 唯一，不能和已有组件冲突
-            component: 组件实际的渲染文件 ,// .vue
-            properties: 组件的属性配置面板 , // .vue
-            icon: 组件显示的图标 // base64
-            ..... // 其他配置项
-        } */
-        {
-          type: 'ngImage',
-          label: '自定义组件',
-          component: BackgroundImageComponent,
-          properties: BackgroundImagePropertie,
-          options: {
-            style: null,
-            imgurl: null
-          },
-          icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNS44IiB5PSIxMC44IiB3aWR0aD0iMzYuNCIgaGVpZ2h0PSIyNi40IiByeD0iMy4yIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM3NTc1NzUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTMuNSIgY3k9IjE4LjUiIHI9IjMuNSIgZmlsbD0iI0VFQ0E4NiIvPjxwYXRoIGQ9Ik0yNy45MjMgMTguMzY2YTEgMSAwIDAgMSAxLjY5Ni0uMDE4bDguMzk1IDEzLjExM0ExIDEgMCAwIDEgMzcuMTcyIDMzSDIwLjc4MWExIDEgMCAwIDEtLjg1NC0xLjUybDcuOTk2LTEzLjExNFoiIGZpbGw9IiM4MkJGOTkiLz48cGF0aCBkPSJNMTYuNjc2IDI2LjE5OWExIDEgMCAwIDEgMS42NDggMGwzLjU5OSA1LjIzNEExIDEgMCAwIDEgMjEuMDk5IDMzSDEzLjlhMSAxIDAgMCAxLS44MjQtMS41NjdsMy41OTktNS4yMzRaIiBmaWxsPSIjODJCRjk5Ii8+PC9zdmc+Cg==',
-        }
-      ],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -167,11 +138,11 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/ngform/ngformDesign', query: { formId: null } })
+      this.$router.push({ path: '/tool/dynamicFormDesign', query: { formId: null } })
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$router.push({ path: '/ngform/ngformDesign', query: { formId: row.formId } })
+      this.$router.push({ path: '/tool/dynamicFormDesign', query: { formId: row.formId } })
     },
     /** 删除按钮操作 */
     handleDelete(row) {

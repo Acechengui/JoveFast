@@ -1,9 +1,7 @@
 package com.jovefast.flowable.service.impl;
 
 
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.TypeReference;
 import com.google.common.collect.Lists;
 import com.jovefast.common.core.constant.HttpStatus;
 import com.jovefast.common.core.constant.SecurityConstants;
@@ -26,7 +24,6 @@ import com.jovefast.flowable.mapper.FlowDeployMapper;
 import com.jovefast.flowable.mapper.FlowHistericTaskMapper;
 import com.jovefast.flowable.service.IFlowTaskService;
 import com.jovefast.flowable.service.ISysDeployFormService;
-import com.jovefast.flowable.service.ISysFormService;
 import com.jovefast.system.api.RemoteUserService;
 import com.jovefast.system.api.domain.SysRole;
 import com.jovefast.system.api.domain.SysUser;
@@ -34,8 +31,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.EndEvent;
+import org.flowable.bpmn.model.FlowElement;
+import org.flowable.bpmn.model.MultiInstanceLoopCharacteristics;
 import org.flowable.bpmn.model.Process;
-import org.flowable.bpmn.model.*;
+import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.api.FlowableException;
 import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.common.engine.impl.identity.Authentication;
@@ -58,10 +59,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -76,14 +82,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     @Resource
     private ISysDeployFormService sysInstanceFormService;
 
-    @Autowired
+    @Resource
     private FlowDeployMapper flowDeployMapper;
 
-    @Autowired
-    private FlowHistericTaskMapper flowHistericTaskMapper;
-
     @Resource
-    private ISysFormService sysFormService;
+    private FlowHistericTaskMapper flowHistericTaskMapper;
 
 
     /**
@@ -116,115 +119,45 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     }
 
     @Override
-    public AjaxResult flowXmlAndNode(String procInsId, String deployId) {
-        try {
-            List<FlowViewerDto> flowViewerList = new ArrayList<>();
-            // 获取已经完成的节点
-            List<HistoricActivityInstance> listFinished = historyService.createHistoricActivityInstanceQuery()
-                    .processInstanceId(procInsId)
-                    .finished()
-                    .list();
+    public Map<String, Object> flowXmlAndNode(String procInsId, String deployId) throws IOException {
+        List<FlowViewerDto> flowViewerList = new ArrayList<>();
+        // 获取已经完成的节点
+        List<HistoricActivityInstance> listFinished = historyService.createHistoricActivityInstanceQuery()
+                .processInstanceId(procInsId)
+                .finished()
+                .list();
 
-            // 保存已经完成的流程节点编号
-            listFinished.forEach(s -> {
-                FlowViewerDto flowViewerDto = new FlowViewerDto();
-                flowViewerDto.setKey(s.getActivityId());
-                flowViewerDto.setCompleted(true);
-                flowViewerList.add(flowViewerDto);
-            });
+        // 保存已经完成的流程节点编号
+        listFinished.forEach(s -> {
+            FlowViewerDto flowViewerDto = new FlowViewerDto();
+            flowViewerDto.setKey(s.getActivityId());
+            flowViewerDto.setCompleted(true);
+            flowViewerList.add(flowViewerDto);
+        });
 
-            // 获取代办节点
-            List<HistoricActivityInstance> listUnFinished = historyService.createHistoricActivityInstanceQuery()
-                    .processInstanceId(procInsId)
-                    .unfinished()
-                    .list();
+        // 获取代办节点
+        List<HistoricActivityInstance> listUnFinished = historyService.createHistoricActivityInstanceQuery()
+                .processInstanceId(procInsId)
+                .unfinished()
+                .list();
 
-            // 保存需要代办的节点编号
-            listUnFinished.forEach(s -> {
-                FlowViewerDto flowViewerDto = new FlowViewerDto();
-                flowViewerDto.setKey(s.getActivityId());
-                flowViewerDto.setCompleted(false);
-                flowViewerList.add(flowViewerDto);
-            });
-            Map<String, Object> result = new HashMap();
-            // xmlData 数据
-            ProcessDefinition definition = repositoryService.createProcessDefinitionQuery().deploymentId(deployId).singleResult();
-            InputStream inputStream = repositoryService.getResourceAsStream(definition.getDeploymentId(), definition.getResourceName());
-            String xmlData = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            result.put("nodeData", flowViewerList);
-            result.put("xmlData", xmlData);
-            return AjaxResult.success(result);
-        } catch (Exception e) {
-            return AjaxResult.error("高亮历史任务失败");
-        }
+        // 保存需要代办的节点编号
+        listUnFinished.forEach(s -> {
+            FlowViewerDto flowViewerDto = new FlowViewerDto();
+            flowViewerDto.setKey(s.getActivityId());
+            flowViewerDto.setCompleted(false);
+            flowViewerList.add(flowViewerDto);
+        });
+        Map<String, Object> result = new HashMap<>();
+        // xmlData 数据
+        ProcessDefinition definition = repositoryService.createProcessDefinitionQuery().deploymentId(deployId).singleResult();
+        InputStream inputStream = repositoryService.getResourceAsStream(definition.getDeploymentId(), definition.getResourceName());
+        String xmlData = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        result.put("nodeData", flowViewerList);
+        result.put("xmlData", xmlData);
+        return result;
     }
 
-    /**
-     * 流程节点表单
-     *
-     * @param taskId 流程任务编号
-     */
-    @Override
-    public AjaxResult flowTaskForm(String taskId) throws Exception {
-        JSONObject result = new JSONObject();
-        result.put("formKeyExist", false);
-        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(task.getProcessDefinitionId());
-        FlowElement flowElement = bpmnModel.getFlowElement(task.getTaskDefinitionKey());
-        // 流程变量
-        Map<String, Object> parameters = new HashMap<>();
-        HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().includeProcessVariables().finished().taskId(taskId).singleResult();
-        if (Objects.nonNull(historicTaskInstance)) {
-            parameters = historicTaskInstance.getProcessVariables();
-        } else {
-            parameters = taskService.getVariables(taskId);
-        }
-        // TODO 暂时只处理用户任务上的表单
-        if (flowElement instanceof UserTask) {
-            String formKey = ((UserTask) flowElement).getFormKey();
-            if (StringUtils.isNotBlank(formKey)) {
-                SysForm sysForm = sysFormService.selectSysFormById(Long.parseLong(formKey));
-
-                JSONObject oldVariables = JSONObject.parseObject(JSON.toJSONString(parameters.get("variables")));
-                List<JSONObject> oldFields = JSON.parseObject(JSON.toJSONString(oldVariables.get("fields")), new TypeReference<List<JSONObject>>() {
-                });
-                oldFields.forEach(obj -> obj.put("disabled", true));
-
-                JSONObject data = JSONObject.parseObject(sysForm.getFormContent());
-                List<JSONObject> newFields = JSON.parseObject(JSON.toJSONString(data.get("fields")), new TypeReference<List<JSONObject>>() {
-                });
-
-                oldFields.addAll(newFields);
-                oldVariables.put("fields", oldFields);
-                oldVariables.put("disabled", false);
-                oldVariables.put("formBtns", true);
-                result.put("formData", oldVariables);
-                result.put("formKeyExist", true);
-                return AjaxResult.success("", result);
-            } else {
-                result.put("formData", parameters.get("variables"));
-                return AjaxResult.success("", result);
-            }
-        } else {
-            result.put("formData", parameters.get("variables"));
-            return AjaxResult.success("", result);
-        }
-    }
-
-    /**
-     * 将Object类型的数据转化成Map<String,Object>
-     *
-     * @param obj
-     */
-    public Map<String, Object> obj2Map(Object obj) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            map.put(field.getName(), field.get(obj));
-        }
-        return map;
-    }
 
     /**
      * 单个完成任务
@@ -477,7 +410,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @param flowTaskVo 参数
      */
     @Override
-    public AjaxResult findReturnTaskList(FlowTaskVo flowTaskVo) {
+    public List<UserTask> findReturnTaskList(FlowTaskVo flowTaskVo) {
         // 当前任务 task
         Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
         // 获取流程定义信息
@@ -508,7 +441,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 userTaskList.retainAll(road);
             }
         }
-        return AjaxResult.success(userTaskList);
+        return userTaskList;
     }
 
     /**
@@ -1032,7 +965,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @return
      */
     @Override
-    public AjaxResult getNextFlowNodeByStart(FlowTaskVo flowTaskVo) {
+    public FlowNextDto getNextFlowNodeByStart(FlowTaskVo flowTaskVo) {
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().deploymentId(flowTaskVo.getDeploymentId()).singleResult();
         // Step 1. 获取当前节点并找到下一步节点
         FlowNextDto flowNextDto = new FlowNextDto();
@@ -1056,7 +989,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 }
             }
         }
-        return AjaxResult.success(flowNextDto);
+        return flowNextDto;
     }
 
     /**
@@ -1065,7 +998,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @param flowTaskVo 任务
      */
     @Override
-    public AjaxResult getNextFlowNode(FlowTaskVo flowTaskVo) {
+    public FlowNextDto getNextFlowNode(FlowTaskVo flowTaskVo) {
         // Step 1. 获取当前节点并找到下一步节点
         Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
         FlowNextDto flowNextDto = new FlowNextDto();
@@ -1091,25 +1024,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     }
                 }
             } else {
-                return AjaxResult.success("流程已完结", null);
+                throw new CheckedException("流程已完结");
             }
         }
-        return AjaxResult.success(flowNextDto);
+        return flowNextDto;
     }
 
-    /**
-     * 验证当然节点处理人是否为发起人
-     *
-     * @param procInsId 流程ID
-     */
-    @Override
-    public Boolean verifyTheCurrentNodeHandler(String procInsId) {
-        //获取流程发起人（需要在启动流程前设置流程发起人）
-        HistoricProcessInstance hi = historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(procInsId)
-                .singleResult();
-        Long userid = SecurityUtils.getLoginUser().getUserid();
-        Long startUserId =  Long.parseLong(hi.getStartUserId());
-        return userid.equals(startUserId);
-    }
 }
