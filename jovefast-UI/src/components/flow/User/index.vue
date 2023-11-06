@@ -2,7 +2,7 @@
     <div>
       <el-row :gutter="20">
         <!--部门数据-->
-        <el-col :span="6" :xs="24">
+        <el-col :span="4" :xs="24">
           <div class="head-container">
             <el-input
               v-model="deptName"
@@ -21,30 +21,28 @@
               :filter-node-method="filterNode"
               ref="tree"
               node-key="id"
-              default-expand-all
+              :default-expand-all="false"
               highlight-current
               @node-click="handleNodeClick"
             />
           </div>
         </el-col>
         <!--用户数据-->
-        <el-col :span="18" :xs="24">
+        <el-col :span="16" :xs="24">
           <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-            <el-form-item label="用户名称" prop="userName">
+            <el-form-item label="用户账号" prop="userName">
               <el-input
                 v-model="queryParams.userName"
-                placeholder="请输入用户名称"
+                placeholder="请输入用户账号"
                 clearable
-                style="width: 150px"
                 @keyup.enter.native="handleQuery"
               />
             </el-form-item>
-            <el-form-item label="手机号码" prop="phonenumber">
+            <el-form-item label="用户姓名" prop="nickName">
               <el-input
-                v-model="queryParams.phonenumber"
-                placeholder="请输入手机号码"
+                v-model="queryParams.nickName"
+                placeholder="请输入用户姓名"
                 clearable
-                style="width: 150px"
                 @keyup.enter.native="handleQuery"
               />
             </el-form-item>
@@ -53,13 +51,15 @@
               <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{ $t('common.reset') }}</el-button>
             </el-form-item>
           </el-form>
-          <el-table v-show="checkType === 'multiple'" ref="dataTable" v-loading="loading" :row-key="getRowKey" :data="userList" @selection-change="handleMultipleUserSelect">
+          <el-table v-show="checkType === 'multiple'" ref="dataTable" v-loading="loading" :data="userList" 
+          @selection-change="handleMultipleUserSelect"
+          :row-key="row => row.userId"
+          >
             <el-table-column type="selection" :reserve-selection="true" width="50" align="center" />
             <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible" />
             <el-table-column label="登录账号" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
             <el-table-column label="用户姓名" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
             <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-            <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
           </el-table>
           <el-table v-show="checkType === 'single'" v-loading="loading" :data="userList" @current-change="handleSingleUserSelect">
             <el-table-column  width="55" align="center" >
@@ -71,16 +71,21 @@
             <el-table-column label="登录账号" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
             <el-table-column label="用户姓名" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
             <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-            <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
           </el-table>
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page-sizes="[5,10]"
-            :page.sync="queryParams.pageNum"
-            :limit.sync="queryParams.pageSize"
-            @pagination="getList"
-          />
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="queryParams.pageNum"
+              :limit.sync="queryParams.pageSize"
+              @pagination="getList"
+            />
+        </el-col>
+        <el-col :span="4" :xs="24" v-show="checkType === 'multiple'">
+            <h6>已选人员</h6>
+            <el-divider></el-divider>
+            <el-tag v-for="(user,index) in userData" :key="index" closable @close="handleClose(user)">
+              {{user.nickName}}
+            </el-tag>
         </el-col>
       </el-row>
     </div>
@@ -127,6 +132,8 @@
         total: 0,
         // 用户表格数据
         userList: [],
+        // 已选用户数据
+        userData: [],
         // 弹出层标题
         title: "",
         // 部门树选项
@@ -146,7 +153,7 @@
           pageNum: 1,
           pageSize: 5,
           userName: undefined,
-          phonenumber: undefined,
+          nickName: undefined,
           status: undefined,
           deptId: undefined
         },
@@ -181,24 +188,24 @@
         },
         immediate: true
       },
-      userList: {
-        handler(newVal) {
-          if (StrUtil.isNotBlank(newVal)  && this.selectUserList.length > 0) {
-            this.$nextTick(() => {
-              this.$refs.dataTable.clearSelection();
-              this.selectUserList?.split(',').forEach(key => {
-                this.$refs.dataTable.toggleRowSelection(newVal.find(
-                  item => key == item.userId
-                ), true)
-              });
-            });
-          }
-        },
-        immediate: true, // 立即生效
-        deep: true  //监听对象或数组的时候，要用到深度监听
-      }
+      // userList: {
+      //   handler(newVal) {
+      //     if (StrUtil.isNotBlank(newVal)  && this.selectUserList.length > 0) {
+      //       this.$nextTick(() => {
+      //         this.$refs.dataTable.clearSelection(); // 清除已选择的行
+      //         this.selectUserList?.split(',').forEach(key => {
+      //           this.$refs.dataTable.toggleRowSelection(newVal.find(
+      //             item => key == item.userId
+      //           ), true)
+      //         });
+      //       });
+      //     }
+      //   },
+      //   immediate: true, // 立即生效
+      //   deep: true  //监听对象或数组的时候，要用到深度监听
+      // }
     },
-    created() {
+    mounted() {
       this.getList();
       this.getDeptTree();
     },
@@ -219,9 +226,23 @@
           this.deptOptions = response.data;
         });
       },
-      // 保存选中的数据id,row-key就是要指定一个key标识这一行的数据
-      getRowKey (row) {
-        return row.id
+      // 多选框选中数据
+      handleMultipleUserSelect(selection) {
+        if (selection.length > 0) {
+          this.userData = selection;
+          this.$emit('handleUserSelect', selection);
+        }
+      },
+      // 单选框选中数据
+      handleSingleUserSelect(selection) {
+        //点击当前行时,radio同样有选中效果
+        this.radioSelected = selection.userId;
+        this.$emit('handleUserSelect', selection);
+      },
+      // 关闭标签
+      handleClose(tag) {
+        this.userData.splice(this.userData.indexOf(tag), 1);
+        this.$refs.dataTable.toggleRowSelection(tag, false)
       },
       // 筛选节点
       filterNode(value, data) {
@@ -232,15 +253,6 @@
       handleNodeClick(data) {
         this.queryParams.deptId = data.id;
         this.handleQuery();
-      },
-      // 多选框选中数据
-      handleMultipleUserSelect(selection) {
-        this.$emit('handleUserSelect', selection);
-      },
-      // 单选框选中数据
-      handleSingleUserSelect(selection) {
-        this.radioSelected = selection.userId;//点击当前行时,radio同样有选中效果
-        this.$emit('handleUserSelect', selection);
       },
       /** 搜索按钮操作 */
       handleQuery() {
@@ -259,9 +271,5 @@
   };
   </script>
   <style>
-  /*隐藏radio展示的label及本身自带的样式*/
-  /*.el-radio__label{*/
-  /*  display:none;*/
-  /*}*/
   </style>
   

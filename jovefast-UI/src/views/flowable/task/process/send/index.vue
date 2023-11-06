@@ -206,7 +206,6 @@
           } else {
             this.$set(variables, "approval", this.checkValues);
           }
-          console.log(variables,"流程发起提交表单数据")
           // 启动流程并将表单数据加入流程变量
           definitionStart(this.procDefId, JSON.stringify(variables)).then(res => {
             this.$modal.msgSuccess(res.msg);

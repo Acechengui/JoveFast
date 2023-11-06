@@ -583,10 +583,12 @@ export default {
         that.deleteFlowAttar();
         that.updateProperties({'flowable:dataType': 'fixed'})
         if (selection instanceof Array) {
-          const userIds = selection.map(item => item.userId);
-          const nickName = selection.map(item => item.nickName);
-          that.updateProperties({'flowable:candidateUsers': userIds.join(',')})
-          that.checkValues = nickName.join(',');
+          if(selection.length > 0){
+            const userIds = selection.map(item => item.userId);
+            const nickName = selection.map(item => item.nickName);
+            that.updateProperties({'flowable:candidateUsers': userIds.join(',')})
+            that.checkValues = nickName.join(',');
+          }
         } else {
           that.updateProperties({'flowable:assignee': selection.userId})
           that.checkValues = selection.nickName;

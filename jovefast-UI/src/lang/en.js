@@ -75,6 +75,8 @@ export default {
     attachmentManagement: 'Attachment Management',
     myAttachment: 'My attachment',
     dataroom: 'Large Screen',
+    largeScreen: 'Large Screen Designer',
+    dashboard: 'Dashboard Designer',
   },
   login: {
     title: 'JOVE Cloud Platform',

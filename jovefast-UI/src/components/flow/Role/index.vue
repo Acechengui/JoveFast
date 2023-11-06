@@ -1,5 +1,7 @@
 <template>
     <div class="app-container">
+    <el-row>
+      <el-col :span="20" :xs="24">
       <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
         <el-form-item label="角色名称" prop="roleName">
           <el-input
@@ -16,7 +18,7 @@
         </el-form-item>
       </el-form>
   
-      <el-table v-show="checkType === 'multiple'" ref="dataTable"  v-loading="loading" :data="roleList" @selection-change="handleMultipleRoleSelect">
+      <el-table v-show="checkType === 'multiple'" ref="dataTable" v-loading="loading" :data="roleList" @selection-change="handleMultipleRoleSelect">
         <el-table-column type="selection" width="50" align="center" />
         <el-table-column label="角色编号" prop="roleId" width="120" />
         <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />
@@ -47,20 +49,28 @@
       </el-table>
   
       <pagination
-        v-show="total>0"
-        :total="total"
-        :page-sizes="[5,10]"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-      />
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />
+      
+    </el-col>
+      <el-col :span="4" :xs="24">
+            <h6>已选角色</h6>
+            <el-divider></el-divider>
+            <el-tag v-for="(role,index) in roleData" :key="index" closable @close="handleClose(role)">
+              {{role.roleName}}
+            </el-tag>
+        </el-col>
+      </el-row>
     </div>
   </template>
   
   <script>
-  import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
-  import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
-  import {StrUtil} from "@/utils/StrUtil";
+  import { listRole } from "@/api/system/role";
+  import { StrUtil } from "@/utils/StrUtil";
   
   export default {
     name: "FlowRole",
@@ -95,6 +105,8 @@
         total: 0,
         // 角色表格数据
         roleList: [],
+        // 暂存表格数据
+        roleData: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -126,24 +138,24 @@
         },
         immediate: true
       },
-      roleList: {
-        handler(newVal) {
-          if (StrUtil.isNotBlank(newVal) && this.selectRoleList.length > 0) {
-            this.$nextTick(() => {
-              this.$refs.dataTable.clearSelection();
-              this.selectRoleList?.split(',').forEach(key => {
-                this.$refs.dataTable.toggleRowSelection(newVal.find(
-                  item => key == item.roleId
-                ), true)
-              });
-            });
-          }
-        },
-        immediate: true, // 立即生效
-        deep: true  //监听对象或数组的时候，要用到深度监听
-      }
+      // roleList: {
+      //   handler(newVal) {
+      //     if (StrUtil.isNotBlank(newVal) && this.selectRoleList.length > 0) {
+      //       this.$nextTick(() => {
+      //         this.$refs.dataTable.clearSelection();
+      //         this.selectRoleList?.split(',').forEach(key => {
+      //           this.$refs.dataTable.toggleRowSelection(newVal.find(
+      //             item => key == item.roleId
+      //           ), true)
+      //         });
+      //       });
+      //     }
+      //   },
+      //   immediate: true, // 立即生效
+      //   deep: true  //监听对象或数组的时候，要用到深度监听
+      // }
     },
-    created() {
+    mounted() {
       this.getList();
     },
     methods: {
@@ -159,15 +171,23 @@
       },
       // 多选框选中数据
       handleMultipleRoleSelect(selection) {
-        const idList = selection.map(item => item.roleId);
-        const nameList = selection.map(item => item.roleName);
-        this.$emit('handleRoleSelect', idList.join(','), nameList.join(','));
+        if (selection.length > 0) {
+          this.roleData = selection;
+          const idList = selection.map(item => item.roleId);
+          const nameList = selection.map(item => item.roleName);
+          this.$emit('handleRoleSelect', idList.join(','), nameList.join(','));
+        }
       },
       // 单选框选中数据
       handleSingleRoleSelect(selection) {
         this.radioSelected = selection.roleId;
         const roleName = selection.roleName;
         this.$emit('handleRoleSelect', this.radioSelected.toString(), roleName);
+      },
+      // 关闭标签
+      handleClose(tag) {
+        this.roleData.splice(this.roleData.indexOf(tag), 1);
+        this.$refs.dataTable.toggleRowSelection(tag, false)
       },
       /** 搜索按钮操作 */
       handleQuery() {
@@ -182,9 +202,5 @@
   };
   </script>
   <style>
-  /*隐藏radio展示的label及本身自带的样式*/
-  /*.el-radio__label{*/
-  /*  display:none;*/
-  /*}*/
   </style>
   

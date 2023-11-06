@@ -76,6 +76,8 @@ export default {
     attachmentManagement: 'การจัดการอุปกรณ์เสริม',
     myAttachment: 'อุปกรณ์เสริมของฉัน',
     dataroom: 'บิ๊กปิง',
+    largeScreen: 'ออกแบบหน้าจอขนาดใหญ่',
+    dashboard: 'ออกแบบแดชบอร์ด',
   },
   login: {
     title: 'แพลตฟอร์มคลาวด์ JOVE',

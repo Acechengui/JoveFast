@@ -100,18 +100,17 @@ Vue.use(Element, {
   i18n: (key, value) => i18n.t(key, value)
 })
 DictData.install()
-
 // 使用大屏提供的方法，进行后端服务地址注册
 registerConfigDataRoom({
   routers: {
     // 大屏列表页面
-    pageListUrl: '/bs/bigScreenManagement',
+    pageListUrl: '/dataroom/bigScreenManagement',
     // 大屏设计页面
-    designUrl: '/bs/bigScreenDesign',
+    designUrl: '/dataroom/bigScreenDesign',
     // 大屏预览页面
-    previewUrl: '/bs/bigScreenRun',
+    previewUrl: '/dataroom/bigScreenRun',
     //指定回退的路由
-    pageManagementUrl:'/index',
+    pageManagementUrl:'/dataroom/bigScreenManagement',
     // 业务组件路由
     bizComponentPreviewUrl: '/big-screen-biz-component-preview',
     bizComponentDesignUrl: '/big-screen-biz-component-design'
@@ -141,13 +140,16 @@ Vue.prototype.$dataRoomAxios = $dataroomhttpaxios
 registerConfigDashboard({
   routers: {
     // 仪表盘列表页面
-    pageListUrl: '/db/dashboard-list',
+    pageListUrl: '/dataroom/dashboard-list',
     // 仪表盘设计页面
-    designUrl: '/db/dashboard/design',
+    designUrl: '/dataroom/dashboard/design',
     // 预览页面
-    previewUrl: '/db/dashboard/preview',
+    previewUrl: '/dataroom/dashboard/preview',
     //指定回退的路由
-    pageManagementUrl:'/index' 
+    pageManagementUrl:'/dataroom/dashboard-list',
+    // 业务组件路由
+    bizComponentPreviewUrl: '/dashboard-biz-component-preview',
+    bizComponentDesignUrl: '/dashboard-biz-component-design'
   },
   httpConfigs: {
     baseURL: process.env.VUE_APP_BASE_API + '/dataroom',
