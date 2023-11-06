@@ -123,6 +123,12 @@ public interface IFlowTaskService {
      */
     boolean stopProcess(FlowTaskVo flowTaskVo);
 
+    /**
+     * 撤回任务到上一步
+     * @param flowTaskVo 参数
+     */
+    boolean revokeProcess(FlowTaskVo flowTaskVo);
+
 
     /**
      * 代办任务列表

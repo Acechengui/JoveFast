@@ -76,6 +76,14 @@
             icon="el-icon-tickets"
             @click="handleFlowRecord(scope.row)"
           >流转记录</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-refresh-left"
+            v-hasPermi="['flowable:finished:revokeProcess']"
+            @click="handleRevoke(scope.row)"
+          >撤回
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -91,7 +99,7 @@
 </template>
 
 <script>
-import { finishedList } from "@/api/flowable/finished";
+import { finishedList, revokeProcess } from "@/api/flowable/finished";
 export default {
   name: "Finished",
   components: {
@@ -184,27 +192,6 @@ export default {
         this.loading = false;
       });
     },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    setIcon(val){
-      if (val){
-        return "el-icon-check";
-      }else {
-        return "el-icon-time";
-      }
-
-    },
-    setColor(val){
-      if (val){
-        return "#2bc418";
-      }else {
-        return "#b3bdbb";
-      }
-
-    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -226,7 +213,17 @@ export default {
           finished: false,
           preview:true
       }})
-    }
+    },
+     /** 撤回任务 */
+     handleRevoke(row){
+      const params = {
+        instanceId: row.procInsId
+      }
+      revokeProcess(params).then( res => {
+       this.$modal.msgSuccess(res.msg);
+        this.getList();
+      });
+    },
   }
 };
 </script>

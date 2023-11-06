@@ -636,6 +636,49 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         return true;
     }
 
+    /**
+     * 撤回任务到上一步
+     * @param flowTaskVo 参数
+     * @return 结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean revokeProcess(FlowTaskVo flowTaskVo) {
+        String processInstanceId = flowTaskVo.getInstanceId();
+        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .singleResult();
+
+        if (historicProcessInstance == null) {
+            throw new CheckedException("流程实例不存在");
+        }
+
+        List<HistoricTaskInstance> historicTasks = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .orderByHistoricTaskInstanceEndTime()
+                .desc()
+                .list();
+
+        if (historicTasks.size() < 2) {
+            throw new CheckedException("无法撤回到上一步");
+        }
+
+        HistoricTaskInstance previousTask = historicTasks.get(1);
+        String previousTaskDefinitionKey = previousTask.getTaskDefinitionKey();
+        String assignee = previousTask.getAssignee();
+
+        if (StringUtils.isEmpty(assignee) || !assignee.equals(SecurityUtils.getUsername())) {
+            throw new CheckedException("您无权撤回到上一步");
+        }
+
+        HistoricTaskInstance lastTask = historicTasks.get(0);
+        runtimeService.createChangeActivityStateBuilder()
+                .processInstanceId(processInstanceId)
+                .moveActivityIdTo(lastTask.getTaskDefinitionKey(), previousTaskDefinitionKey)
+                .changeState();
+        return true;
+    }
+
 
     /**
      * 待办任务列表
