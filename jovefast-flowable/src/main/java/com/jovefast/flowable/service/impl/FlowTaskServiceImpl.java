@@ -8,7 +8,6 @@ import com.jovefast.common.core.constant.SecurityConstants;
 import com.jovefast.common.core.domain.R;
 import com.jovefast.common.core.exception.CheckedException;
 import com.jovefast.common.core.utils.DateUtils;
-import com.jovefast.common.core.web.domain.AjaxResult;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.flowable.common.constant.ProcessConstants;
 import com.jovefast.flowable.common.enums.FlowComment;
@@ -48,13 +47,14 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.engine.task.Comment;
+import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.api.history.HistoricIdentityLink;
+import org.flowable.idm.api.Group;
 import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -644,39 +644,59 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean revokeProcess(FlowTaskVo flowTaskVo) {
-        String processInstanceId = flowTaskVo.getInstanceId();
-        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+        String processInstanceId=flowTaskVo.getInstanceId();
+        // 获取当前流程实例的任务列表
+        List<Task> tasks = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
-                .singleResult();
-
-        if (historicProcessInstance == null) {
-            throw new CheckedException("流程实例不存在");
-        }
-
-        List<HistoricTaskInstance> historicTasks = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .orderByHistoricTaskInstanceEndTime()
+                .orderByTaskCreateTime()
                 .desc()
                 .list();
 
-        if (historicTasks.size() < 2) {
+        if (tasks.size() < 2) {
             throw new CheckedException("无法撤回到上一步");
         }
 
-        HistoricTaskInstance previousTask = historicTasks.get(1);
+        // 获取上一步任务
+        Task previousTask = tasks.get(1);
         String previousTaskDefinitionKey = previousTask.getTaskDefinitionKey();
-        String assignee = previousTask.getAssignee();
 
-        if (StringUtils.isEmpty(assignee) || !assignee.equals(SecurityUtils.getUsername())) {
+        // 获取上一步任务的候选人员和候选组
+        List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(previousTask.getId());
+        List<String> candidateUsers = new ArrayList<>();
+        List<String> candidateGroups = new ArrayList<>();
+
+        for (IdentityLink identityLink : identityLinks) {
+            if (identityLink.getUserId() != null) {
+                candidateUsers.add(identityLink.getUserId());
+            }
+            if (identityLink.getGroupId() != null) {
+                candidateGroups.add(identityLink.getGroupId());
+            }
+        }
+
+        // 检查当前用户是否属于候选人员或候选组
+        String currentUser = SecurityUtils.getUsername();
+        if (!candidateUsers.contains(currentUser) && !isUserInAnyGroup(currentUser, candidateGroups)) {
             throw new CheckedException("您无权撤回到上一步");
         }
 
-        HistoricTaskInstance lastTask = historicTasks.get(0);
+        // 执行撤回操作
         runtimeService.createChangeActivityStateBuilder()
                 .processInstanceId(processInstanceId)
-                .moveActivityIdTo(lastTask.getTaskDefinitionKey(), previousTaskDefinitionKey)
+                .moveActivityIdTo(previousTask.getTaskDefinitionKey(), previousTaskDefinitionKey)
                 .changeState();
         return true;
+    }
+
+    // 检查用户是否属于任何候选组
+    private boolean isUserInAnyGroup(String user, List<String> candidateGroups) {
+        List<Group> groups = identityService.createGroupQuery().groupMember(user).list();
+        for (Group group : groups) {
+            if (candidateGroups.contains(group.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
