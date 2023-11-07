@@ -89,7 +89,9 @@ Jove-UI
 │      │     └── components                                // 局部组件
 │      │     └── dashboard                                // 视图主体[勿动] 
 │      │     └── error                                // 错误视图页
+│      │     └── dataroom                           // 可视化管理视图页
 │      │     └── jimureport                           // 积木报表视图页
+│      │     └── dynamicForms                           // 动态表单视图页
 │      │     └── monitor                                // 监控类视图
 │      │     └── system                                // 系统视图
 │      │     └── tool                                // 系统工具类视图

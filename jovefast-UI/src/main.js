@@ -104,12 +104,22 @@ DictData.install()
 registerConfigDataRoom({
   routers: {
     // 大屏列表页面
-    pageListUrl: '/dataroom/bigScreenManagement',
+    pageListUrl: '/dataroom/largeScreen/bigScreenManagement',
     // 大屏设计页面
-    designUrl: '/dataroom/bigScreenDesign',
+    designUrl: '/dataroom/largeScreen/bigScreenDesign',
     // 大屏预览页面
-    previewUrl: '/dataroom/bigScreenRun',
-    //指定回退的路由
+    previewUrl: '/dataroom/largeScreen/bigScreenRun',
+    // 数据源管理页面
+    dataSourceUrl: '/dataroom/largeScreen/dataSourceManagement',
+    // 组件库页面
+    componentUrl: '/dataroom/largeScreen/bigScreenComponents',
+    // 数据集管理页面
+    dataSetUrl: '/dataroom/largeScreen/dataSetManagement',
+    // 资源库页面 
+    //SourceUrl: '/dataroom/largeScreen/bigScreenSource',
+    // 地图管理页面
+    //mapData: '/dataroom/largeScreen/bigScreenMapManagement',
+    // 指定回退的路由
     pageManagementUrl:'/dataroom/bigScreenManagement',
     // 业务组件路由
     bizComponentPreviewUrl: '/big-screen-biz-component-preview',
@@ -128,43 +138,45 @@ registerConfigDataRoom({
   // 自定义title和logo等属性 
   starter: {
     title: '大屏设计器',
-    logo: 'https://jovepcb.oss-cn-shenzhen.aliyuncs.com/jove-cloud/static/logo.png'
+    logo: 'http://192.168.20.98:9000/dataroom/img/logo.png'
   }
 // 此处第二个参数为自己项目中的路由实例对象
 }, router)
 
-// 将大屏的aixos实例挂载到Vue上
+// 将仪表盘的aixos实例挂载到Vue上
 Vue.prototype.$dataRoomAxios = $dataroomhttpaxios
 
 // 使用仪表盘提供的方法，进行后端服务地址注册
 registerConfigDashboard({
   routers: {
     // 仪表盘列表页面
-    pageListUrl: '/dataroom/dashboard-list',
+    pageListUrl: '/dataroom/dashboard/dashboardManagement',
     // 仪表盘设计页面
-    designUrl: '/dataroom/dashboard/design',
-    // 预览页面
-    previewUrl: '/dataroom/dashboard/preview',
+    designUrl: '/dataroom/dashboard/dashboardDesign',
+    // 仪表盘预览页面
+    previewUrl: '/dataroom/dashboard/dashboardRun',
+    // 数据源管理页面
+    dataSourceUrl: '/dataroom/dashboard/dataSourceManagement',
+    // 组件库页面
+    componentUrl: '/dataroom/dashboard/dashboardComponents',
+    // 数据集管理页面
+    dataSetUrl: '/dataroom/dashboard/dataSetManagement',
+    // 资源库页面 
+    //SourceUrl: '/dataroom/dashboard/bigScreenSource',
+    // 地图管理页面
+    //mapData: '/dataroom/dashboard/bigScreenMapManagement',
     //指定回退的路由
-    pageManagementUrl:'/dataroom/dashboard-list',
-    // 业务组件路由
-    bizComponentPreviewUrl: '/dashboard-biz-component-preview',
-    bizComponentDesignUrl: '/dashboard-biz-component-design'
+    pageManagementUrl:'/dataroom/dashboard/dashboardManagement' 
   },
   httpConfigs: {
     baseURL: process.env.VUE_APP_BASE_API + '/dataroom',
-    // 这里是大屏文件的访问前缀，一般和后端配置的gc.starter.file.urlPrefix保持一致即可
-    fileUrlPrefix: 'http://192.168.20.98:9000', 
-    headers: {
-      Authorization: 'Bearer ' + getToken()
-    }
   },
   // 资源库允许上传的文件类型
   sourceExtends:['jpg','gif','bmp','svg','png','ico'],
   // 自定义title和logo等属性 
   starter: {
     title: '仪表盘设计器',
-    logo: 'https://jovepcb.oss-cn-shenzhen.aliyuncs.com/jove-cloud/static/logo.png'
+    logo: 'http://192.168.20.98:9000/dataroom/img/logo.png'
   }
 // 此处第二个参数为自己项目中的路由实例对象
 }, router)
