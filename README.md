@@ -278,6 +278,7 @@ com.jovefast
 │       └── jovefast-job                                 // 定时任务 
 │       └── jovefast-file                                // 文件服务 
 │       └── jovefast-report                                // 报表服务
+│       └── jovefast-dataroom                                // 可视化服务
 ├── jovefast-visual          // 图形化管理模块
 │       └── jovefast-visual-monitor                      // 监控中心 
 ├──pom.xml                // 公共依赖
