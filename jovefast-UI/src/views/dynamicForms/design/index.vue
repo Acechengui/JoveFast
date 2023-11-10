@@ -46,12 +46,10 @@ export default {
                 ],
             },
             formConfig: {
-                formConfig: {
-    				httpConfig: (config)=>{ 
-				        config.headers['Authorization'] = 'Bearer ' + getToken()
-				        return config 
-				    }
-    			}
+                httpConfig: (config)=>{ 
+                    config.headers['Authorization'] = 'Bearer ' + getToken()
+                    return config 
+                }
             }
 
         }
