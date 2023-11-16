@@ -26,7 +26,7 @@ import reactor.core.publisher.Flux;
 @Component
 public class ValidateCodeFilter extends AbstractGatewayFilterFactory<Object>
 {
-    private final static String[] VALIDATE_URL = new String[] { "/auth/login", "/auth/register" };
+    private final static String[] VALIDATE_URL = new String[] { "/sso/login","/auth/login", "/auth/register" };
 
     @Autowired
     private ValidateCodeService validateCodeService;
@@ -45,7 +45,7 @@ public class ValidateCodeFilter extends AbstractGatewayFilterFactory<Object>
             ServerHttpRequest request = exchange.getRequest();
 
             // 非登录/注册请求或验证码关闭，不处理
-            if (!StringUtils.containsAnyIgnoreCase(request.getURI().getPath(), VALIDATE_URL) || !captchaProperties.getEnabled())
+            if (!StringUtils.equalsAnyIgnoreCase(request.getURI().getPath(), VALIDATE_URL) || !captchaProperties.getEnabled())
             {
                 return chain.filter(exchange);
             }
