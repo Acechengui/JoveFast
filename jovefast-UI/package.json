@@ -57,7 +57,7 @@
     "diagram-js": "^11.4.1",
     "echarts": "4.9.0",
     "el-table-horizontal-scroll": "^1.2.5",
-    "element-ui": "2.15.13",
+    "element-ui": "2.15.14",
     "eslint-loader": "^2.2.1",
     "file-saver": "2.0.5",
     "fuse.js": "6.4.3",
