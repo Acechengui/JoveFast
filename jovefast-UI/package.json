@@ -70,7 +70,7 @@
     "jsencrypt": "3.0.0-rc.1",
     "jsqr": "^1.4.0",
     "moment": "^2.29.4",
-    "ng-form-element": "^2.1.9",
+    "ng-form-element": "^2.2.2",
     "node-abort-controller": "^3.1.1",
     "nprogress": "0.2.0",
     "postcss-loader": "^3.0.0",
