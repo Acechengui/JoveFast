@@ -15,8 +15,6 @@
  **常见问题：** 
 [https://gitee.com/wxjstudy/jove-fast/wikis/Home](https://gitee.com/wxjstudy/jove-fast/wikis/Home)
 
- **在线地址：** 
-[资源紧张前行且珍惜](http://120.24.189.196/index)
 
  **说明：** 
 
