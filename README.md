@@ -19,7 +19,7 @@
  **说明：** 
 
 * 登录账号密码admin/123456
-* naocs账号密码nacos/nacos
+* naocs账号密码nacos/123456
 * 采用前后端分离的模式
 * 后端采用Spring Boot、Spring Cloud & Alibaba。
 * 注册中心、配置中心选型Nacos，权限认证使用Redis。
