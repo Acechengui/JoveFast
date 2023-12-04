@@ -5,12 +5,12 @@
 
 
 ## 项目简介
-基于若依Cloud的Jove-Fast微服务项目，
+基于若依Cloud的Jove-Fast微服务项目，部分功能将不定时同步若依的更新
 主要集成了
 
 1. 积木报表,
 2. 工作流flowable
-3. 可视化设计器
+3. DataRoom可视化设计器
 
  **常见问题：** 
 [https://gitee.com/wxjstudy/jove-fast/wikis/Home](https://gitee.com/wxjstudy/jove-fast/wikis/Home)
