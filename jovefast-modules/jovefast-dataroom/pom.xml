@@ -15,9 +15,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <json.version>20220320</json.version>
         <mssql.jdbc.version>9.4.1.jre8</mssql.jdbc.version>
-        <dataroom.core.version>2.0.1.2023102701.Alpha</dataroom.core.version>
-        <dashboard.core.version>1.0.1.2023102601.Alpha</dashboard.core.version>
-        <h2database.version>1.4.200</h2database.version>
+        <dataroom.core.version>2.0.1.2023120401.Alpha</dataroom.core.version>
+        <dashboard.core.version>1.0.1.2023110201.Alpha</dashboard.core.version>
     </properties>
     <dependencies>
         <!-- SpringCloud Alibaba Nacos -->
@@ -80,6 +79,12 @@
             <groupId>com.gccloud</groupId>
             <artifactId>dataroom-core</artifactId>
             <version>${dataroom.core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>co.elastic.clients</groupId>
+                    <artifactId>elasticsearch-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- 仪表盘设计器 -->

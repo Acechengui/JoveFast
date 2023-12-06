@@ -38,8 +38,8 @@
   "dependencies": {
     "@antv/g6": "^4.7.8",
     "@braid/vue-formulate": "^2.5.3",
-    "@gcpaas/dash-board-ui": "^1.0.1-2023110701-Alpha",
-    "@gcpaas/data-room-ui": "^2.0.1-2023110703-Alpha",
+    "@gcpaas/dash-board-ui": "^1.0.1-2023111301-Alpha",
+    "@gcpaas/data-room-ui": "^2.0.1-2023120401-Alpha",
     "@riophae/vue-treeselect": "0.4.0",
     "@types/echarts": "^4.9.16",
     "@wangeditor/editor": "^5.1.21",
