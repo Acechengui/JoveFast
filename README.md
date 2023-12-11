@@ -15,6 +15,8 @@
  **常见问题：** 
 [https://gitee.com/wxjstudy/jove-fast/wikis/Home](https://gitee.com/wxjstudy/jove-fast/wikis/Home)
 
+ **electron前端：** 
+[https://gitee.com/wxjstudy/jove-fast-electron](https://gitee.com/wxjstudy/jove-fast-electron)
 
  **说明：** 
 
