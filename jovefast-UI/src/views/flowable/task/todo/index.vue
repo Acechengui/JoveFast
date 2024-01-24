@@ -183,9 +183,9 @@ export default {
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
-      todoList(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.todoList = response.rows;
-        this.total = response.total;
+      todoList(this.addDateRange(this.queryParams, this.dateRange)).then(resp => {
+        this.todoList = resp.data;
+        this.total = resp.total;
         this.loading = false;
       });
     },
