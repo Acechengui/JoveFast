@@ -77,9 +77,9 @@ public class FlowTaskController extends BaseController {
     @ApiOperation(value = "获取待办列表", response = FlowTaskDto.class)
     @GetMapping(value = "/todoList")
     @RequiresPermissions("flowable:task:todoList")
-    public TableDataInfo todoList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
+    public Map<String, Object> todoList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
                                   @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize, FlowTaskDto params) {
-        return getDataTable(flowTaskService.todoList(pageNum, pageSize,params));
+        return flowTaskService.todoList(pageNum, pageSize,params);
     }
 
     @ApiOperation(value = "获取已办任务", response = FlowTaskDto.class)
