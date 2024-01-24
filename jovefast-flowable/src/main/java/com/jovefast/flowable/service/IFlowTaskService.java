@@ -138,7 +138,7 @@ public interface IFlowTaskService {
      * @param flowtaskdto 参数
      * @return 代办任务列表
      */
-    List<FlowTaskDto> todoList(Integer pageNum, Integer pageSize,FlowTaskDto flowtaskdto);
+    Map<String, Object> todoList(Integer pageNum, Integer pageSize,FlowTaskDto flowtaskdto);
 
 
     /**
