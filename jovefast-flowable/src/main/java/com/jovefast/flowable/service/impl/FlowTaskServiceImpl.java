@@ -708,7 +708,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @param flowtaskdto 参数
      */
     @Override
-    public List<FlowTaskDto> todoList(Integer pageNum, Integer pageSize,FlowTaskDto flowtaskdto) {
+    public Map<String, Object> todoList(Integer pageNum, Integer pageSize,FlowTaskDto flowtaskdto) {
         SysUser sysUser = SecurityUtils.getLoginUser().getSysUser();
         List<String> roleList = new ArrayList<>();
         TaskQuery taskQuery = taskService.createTaskQuery();
@@ -736,7 +736,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             taskQuery.endOr();
         }
         List<Task> taskList = taskQuery.orderByTaskCreateTime().desc().listPage(pageSize * (pageNum - 1), pageSize);
-        return todoListIntegration(taskList);
+        Map<String, Object> re=new HashMap<>(2);
+        re.put("data",todoListIntegration(taskList));
+        re.put("total",(int) taskQuery.count());
+        return re;
     }
 
     /**
