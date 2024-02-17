@@ -19,6 +19,16 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="是否完成" prop="markCompleted">
+        <el-select v-model="queryParams.markCompleted" clearable placeholder="请选择">
+          <el-option
+            v-for="item in markCompletedOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="开始时间">
         <el-date-picker
           v-model="dateRange"
@@ -80,17 +90,18 @@
           <label v-if="scope.row.assigneeName">{{scope.row.assigneeName}} <el-tag type="info" size="mini" v-if="scope.row.deptName">{{scope.row.deptName}}</el-tag></label>
           <label v-if="scope.row.candidate">{{scope.row.candidate}}</label>
           <label v-if="scope.row.taskName && scope.row.assigneeName===null && scope.row.candidate===null">{{scope.row.taskName}}</label>
+          <label v-if="scope.row.taskName && scope.row.assigneeName===undefined && scope.row.candidate===undefined">{{scope.row.taskName}}</label>
         </template>
       </el-table-column>
       <el-table-column :label="$t('common.operation')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-              <el-button size="medium" type="text" icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)" v-hasPermi="['flowable:deployment:list']">
+              <el-button size="mini" type="text" icon="el-icon-tickets" @click.native="handleFlowRecord(scope.row)" v-hasPermi="['flowable:deployment:list']">
                 详情
               </el-button>
-              <el-button size="medium" type="text" icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null || scope.row.finishTime === undefined">
+              <el-button size="mini" type="text" icon="el-icon-circle-close" @click.native="handleStop(scope.row)" v-hasPermi="['flowable:task:stopProcess']" v-if="scope.row.finishTime === null || scope.row.finishTime === undefined">
                 取消申请
               </el-button>
-              <el-button size="medium" type="text" icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:instance:del']">
+              <el-button size="mini" type="text" icon="el-icon-delete" @click.native="handleDelete(scope.row)" v-hasPermi="['flowable:instance:del']">
                 删除
               </el-button>
         </template>
@@ -162,8 +173,6 @@ import { myProcessList,stopProcess } from "@/api/flowable/process";
 import {listDefinitionLast} from "@/api/flowable/definition";
 export default {
   name: "Process",
-  components: {
-  },
   data() {
     return {
       // 遮罩层
@@ -198,25 +207,22 @@ export default {
         processTitle: null,
         category: null,
         key: null,
-        tenantId: null,
-        derivedFrom: null,
-        derivedFromRoot: null,
-        parentDeploymentId: null,
-        engineVersion: null
+        markCompleted: null
       },
+      markCompletedOptions: [{
+          value: '1',
+          label: '是'
+        }, {
+          value: '0',
+          label: '否'
+        }],
       // 查询参数
       queryProcessParams: {
         pageNum: 1,
         pageSize: 10,
         name: null,
         category: null,
-        key: null,
-        tenantId: null,
-        deployTime: null,
-        derivedFrom: null,
-        derivedFromRoot: null,
-        parentDeploymentId: null,
-        engineVersion: null
+        key: null
       },
       // 列信息
       columns: [
@@ -231,12 +237,7 @@ export default {
         { key: 8, label: `发起人`, visible: true },
         { key: 9, label: `当前节点`, visible: true },
         { key: 10, label: `办理`, visible: true }
-      ],
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-      },
+      ]
     };
   },
   created() {
@@ -282,27 +283,6 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        name: null,
-        category: null,
-        key: null,
-        tenantId: null,
-        deployTime: null,
-        derivedFrom: null,
-        derivedFromRoot: null,
-        parentDeploymentId: null,
-        engineVersion: null
-      };
-      this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -367,8 +347,8 @@ export default {
           deployId: row.deployId,
           taskId: row.taskId,
           formId: row.formId,
-          finished: false,
-          preview:true
+          finished: true,
+          preview: true
       }})
     },
     /** 修改按钮操作 */
