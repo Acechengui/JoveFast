@@ -99,6 +99,17 @@ public class FlowTaskDto extends BaseEntity {
     @ApiModelProperty("表单ID")
     private Long formId;
 
+    @ApiModelProperty("是否完成")
+    private Integer markCompleted;
+
+    public Integer getMarkCompleted() {
+        return markCompleted;
+    }
+
+    public void setMarkCompleted(Integer markCompleted) {
+        this.markCompleted = markCompleted;
+    }
+
     public String getTenantId() {
         return tenantId;
     }
@@ -314,4 +325,5 @@ public class FlowTaskDto extends BaseEntity {
     public void setFormId(Long formId) {
         this.formId = formId;
     }
+
 }
