@@ -140,6 +140,9 @@
             <if test="params.assignee != null and params.assignee != ''">
                 AND RES.START_USER_ID_ = #{params.assignee}
             </if>
+            <if test="tenantId != null and tenantId != ''">
+                AND RES.TENANT_ID_ = #{tenantId}
+            </if>
             <if test="params.beginTime != null and params.beginTime != ''">
                 AND RES.START_TIME_ &gt;= #{params.beginTime}
             </if>
@@ -152,9 +155,20 @@
             <if test="processTitle != null and processTitle != ''">
                 AND SP.process_title like CONCAT('%', #{processTitle}, '%')
             </if>
+            <if test="markCompleted != null">
+                <choose>
+                    <when test="markCompleted == 1">
+                        AND RES.END_TIME_ IS NOT NULL
+                    </when>
+                    <otherwise>
+                        AND RES.END_TIME_ IS NULL
+                    </otherwise>
+                </choose>
+            </if>
+
         </where>
         ORDER BY
-        RES.END_TIME_ DESC
+        RES.START_TIME_ DESC
         LIMIT #{params.pageSize} OFFSET #{params.pageNum}
     </select>
 
@@ -170,6 +184,9 @@
             <if test="params.assignee != null and params.assignee != ''">
                 AND RES.START_USER_ID_ = #{params.assignee}
             </if>
+            <if test="tenantId != null and tenantId != ''">
+                AND RES.TENANT_ID_ = #{tenantId}
+            </if>
             <if test="params.beginTime != null and params.beginTime != ''">
                 AND RES.START_TIME_ &gt;= #{params.beginTime}
             </if>
@@ -181,6 +198,16 @@
             </if>
             <if test="processTitle != null and processTitle != ''">
                 AND SP.process_title like CONCAT('%', #{processTitle}, '%')
+            </if>
+            <if test="markCompleted != null">
+                <choose>
+                    <when test="markCompleted == 1">
+                        AND RES.END_TIME_ IS NOT NULL
+                    </when>
+                    <otherwise>
+                        AND RES.END_TIME_ IS NULL
+                    </otherwise>
+                </choose>
             </if>
         </where>
     </select>
