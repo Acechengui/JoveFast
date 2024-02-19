@@ -228,7 +228,7 @@ import {
 } from "@/api/flowable/definition";
 import { getToken } from "@/utils/auth";
 import { getForm, addDeployForm ,listForm } from "@/api/flowable/form";
-import flow from '@/views/flowable/task/process/send/flow'
+import flow from '@/views/flowable/task/record/flow'
 import Model from './model';
 
 export default {
