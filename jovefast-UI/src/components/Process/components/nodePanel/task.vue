@@ -120,9 +120,9 @@ import taskListenerDialog from './property/taskListener'
 import multiInstanceDialog from './property/multiInstance'
 import { commonParse, userTaskParse } from '../../common/parseElement'
 import {StrUtil} from '@/utils/StrUtil'
-import FlowUser from '@/components/flow/User'
-import FlowRole from '@/components/flow/Role'
-import FlowExp from '@/components/flow/Expression'
+import FlowUser from '@/components/Flow/User'
+import FlowRole from '@/components/Flow/Role'
+import FlowExp from '@/components/Flow/Expression'
 import { listAllForm } from '@/api/flowable/form'
 
 export default {

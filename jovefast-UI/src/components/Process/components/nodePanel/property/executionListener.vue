@@ -32,7 +32,7 @@
 <script>
 import mixinPanel from '../../../common/mixinPanel'
 import listenerParam from './listenerParam'
-import FlowListener from '@/components/flow/Listener'
+import FlowListener from '@/components/Flow/Listener'
 import ListenerList from '@/components/Process/components/nodePanel/property/listenerList'
 export default {
   components: { ListenerList, listenerParam, FlowListener },

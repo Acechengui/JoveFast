@@ -17,7 +17,7 @@
 </template>
 
 <script>
-  import FlowListener from '@/components/flow/Listener'
+  import FlowListener from '@/components/Flow/Listener'
 
   export default {
     name: 'ListentList',

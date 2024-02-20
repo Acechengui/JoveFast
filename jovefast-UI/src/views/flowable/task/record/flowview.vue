@@ -16,7 +16,7 @@
   </div>
 </template>
 <script>
-import { CustomViewer as BpmnViewer } from "@/components/customBpmn";
+import { CustomViewer as BpmnViewer } from "@/components/CustomBpmn";
 
 export default {
   name: "FlowView",
