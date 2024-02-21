@@ -91,6 +91,15 @@ public class FlowTaskController extends BaseController {
         return flowTaskService.finishedList(pageNum, pageSize, params);
     }
 
+    @ApiOperation(value = "获取抄送列表", response = FlowTaskDto.class)
+    @GetMapping(value = "/ccList")
+    @RequiresPermissions("flowable:task:ccList")
+    public Map<String, Object> ccList(@ApiParam(value = "当前页码", required = true) @RequestParam Integer pageNum,
+                                      @ApiParam(value = "每页条数", required = true) @RequestParam Integer pageSize,
+                                      FlowTaskDto params) {
+        return flowTaskService.ccList(pageNum, pageSize, params);
+    }
+
 
     @ApiOperation(value = "流程历史流转记录", response = FlowTaskDto.class)
     @GetMapping(value = "/flowRecord")
@@ -126,6 +135,17 @@ public class FlowTaskController extends BaseController {
         }
         if(flowTaskService.batchComplete(ids)){
             return AjaxResult.success();
+        }
+        return AjaxResult.error();
+    }
+
+    @ApiOperation(value = "抄送任务")
+    @PostMapping(value = "/courtesycopy")
+    @RequiresPermissions("flowable:task:handle")
+    @Log(title = "抄送任务", businessType = BusinessType.UPDATE)
+    public AjaxResult courtesyCopy(@RequestBody FlowTaskVo params) {
+        if(flowTaskService.courtesyCopy(params)){
+            return AjaxResult.success("抄送发送成功");
         }
         return AjaxResult.error();
     }

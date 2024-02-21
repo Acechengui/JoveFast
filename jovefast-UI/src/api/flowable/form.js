@@ -26,11 +26,20 @@ export function listAllForm(query) {
   })
 }
 
-// 查询流程表单详细
+// 查询默认设计的表单模板数据
 export function getForm(formId) {
   return request({
     url: '/flowable/form/' + formId,
     method: 'get'
+  })
+}
+
+// 查询已变更的表单模板数据
+export function getChangeForm(data) {
+  return request({
+    url: '/flowable/form/processParams',
+    method: 'post',
+    data: data
   })
 }
 

@@ -104,16 +104,6 @@ export function getFlowViewer(procInsId, executionId) {
   })
 }
 
-// 流程节点数据
-export function flowXmlAndNode(query) {
-  return request({
-    url: '/flowable/task/flowXmlAndNode',
-    method: 'get',
-    params: query
-  })
-}
-
-
 // 读取xml文件
 export function saveXml(data) {
   return request({

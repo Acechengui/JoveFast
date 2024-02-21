@@ -8,11 +8,13 @@ import com.jovefast.common.core.constant.SecurityConstants;
 import com.jovefast.common.core.domain.R;
 import com.jovefast.common.core.exception.CheckedException;
 import com.jovefast.common.core.utils.DateUtils;
+import com.jovefast.common.core.utils.SpringUtils;
 import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.flowable.common.constant.ProcessConstants;
 import com.jovefast.flowable.common.enums.FlowComment;
 import com.jovefast.flowable.domain.SysForm;
 import com.jovefast.flowable.domain.SysProcessTitle;
+import com.jovefast.flowable.domain.SysTaskCc;
 import com.jovefast.flowable.domain.dto.*;
 import com.jovefast.flowable.domain.vo.FlowTaskVo;
 import com.jovefast.flowable.factory.FlowServiceFactory;
@@ -21,6 +23,7 @@ import com.jovefast.flowable.flow.FindNextNodeUtil;
 import com.jovefast.flowable.flow.FlowableUtils;
 import com.jovefast.flowable.mapper.FlowDeployMapper;
 import com.jovefast.flowable.mapper.FlowHistericTaskMapper;
+import com.jovefast.flowable.mapper.SysTaskCcMapper;
 import com.jovefast.flowable.service.IFlowTaskService;
 import com.jovefast.flowable.service.ISysDeployFormService;
 import com.jovefast.system.api.RemoteUserService;
@@ -63,6 +66,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +91,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
 
     @Resource
     private FlowHistericTaskMapper flowHistericTaskMapper;
+
+    @Resource
+    private SysTaskCcMapper sysTaskCcMapper;
 
 
     /**
@@ -199,6 +206,26 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             taskService.complete(ts);
         }
         return true;
+    }
+
+    /**
+     * 抄送任务
+     *
+     * @param task 请求实体参数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean courtesyCopy(FlowTaskVo task) {
+        //根据任务id匹配,若已存在任务id,便覆盖,不存在,则插入
+        Integer count = sysTaskCcMapper.selectSysTaskCcCountByinstanceId(task.getInstanceId());
+        if(count > 0){
+            sysTaskCcMapper.deleteSysTaskCcByinstanceId(task.getInstanceId());
+        }
+        List<SysTaskCc> ccList= Arrays.stream(task.getUserId().split(",")).map(s -> new SysTaskCc(task.getInstanceId(), s)).toList();
+
+        //在此处可发送企业微信消息等通知,自行结合业务实现
+
+        return sysTaskCcMapper.insertSysTaskCc(ccList) > 0;
     }
 
     /**
@@ -830,6 +857,51 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         Map<String, Object> re=new HashMap<>(2);
         re.put("data",hisTaskList);
         re.put("total",hcount);
+        return re;
+    }
+
+    /**
+     * 抄送列表
+     *
+     * @param pageNum     当前页码
+     * @param pageSize    每页条数
+     * @param flowTaskDto 参数
+     */
+    @Override
+    public Map<String, Object> ccList(Integer pageNum, Integer pageSize, FlowTaskDto flowTaskDto) {
+        Map<String, Object> params = flowTaskDto.getParams();
+        params.put("userId",SecurityUtils.getLoginUser().getSysUser().getUserId());
+        params.put("pageNum",pageSize * (pageNum - 1));
+        params.put("pageSize",pageSize);
+        flowTaskDto.setParams(params);
+        List<CourtesyCopyDTO> copyDTOList = sysTaskCcMapper.selectSysTaskCcList(flowTaskDto);
+        List<FlowTaskDto> ccList = Lists.newArrayList();
+        if(!copyDTOList.isEmpty()){
+            for (CourtesyCopyDTO inst : copyDTOList) {
+                AtomicReference<FlowTaskDto> flowTasks = new AtomicReference<>(new FlowTaskDto());
+                flowTasks.get().setTaskId(inst.getTaskId());
+                flowTasks.get().setCreateTime(inst.getStartTime());
+                flowTasks.get().setProcDefId(inst.getProcDefId());
+                flowTasks.get().setTaskName(inst.getNname());
+                flowTasks.get().setExecutionId(inst.getExecutionId());
+                flowTasks.get().setProcessTitle(inst.getProcessTitle());
+                flowTasks.get().setStartDeptName(inst.getStartDeptName());
+                flowTasks.get().setStartUserId(inst.getStartUserId());
+                flowTasks.get().setStartUserName(inst.getStartUserName());
+                // 流程定义信息
+                FlowProcDefDto pd = flowDeployMapper.selectActReProcDef(inst.getProcDefId());
+                flowTasks.get().setDeployId(pd.getDeploymentId());
+                flowTasks.get().setProcDefName(pd.getName());
+                flowTasks.get().setProcDefVersion(pd.getVersion());
+                flowTasks.get().setProcInsId(inst.getProcInstId());
+                flowTasks.get().setFormId(pd.getFormId());
+                ccList.add(flowTasks.get());
+            }
+        }
+
+        Map<String, Object> re=new HashMap<>(2);
+        re.put("data",ccList);
+        re.put("total",copyDTOList.size());
         return re;
     }
 

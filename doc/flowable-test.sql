@@ -1646,6 +1646,16 @@ INSERT INTO `sys_process_title` VALUES (475, '72f5ca08-6aa6-11ee-b216-00e0123177
 INSERT INTO `sys_process_title` VALUES (476, '0b0a2860-7a63-11ee-a44f-00e012317744', '测试流程001');
 
 -- ----------------------------
+-- Table structure for sys_task_cc
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_task_cc`;
+CREATE TABLE `sys_task_cc`  (
+  `instance_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '任务ID',
+  `cc_uid` int NULL DEFAULT NULL COMMENT '抄送用户ID',
+  INDEX `index_01`(`instance_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '流程实例与抄送人关联表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
 -- Table structure for sys_task_form
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_task_form`;

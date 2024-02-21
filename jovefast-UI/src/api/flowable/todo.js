@@ -1,19 +1,20 @@
 import request from '@/utils/request'
 
+
+// 查询待办任务数量
+export function todoListCount() {
+  return request({
+    url: '/flowable/task/todoListCount',
+    method: 'get',
+  })
+}
+
 // 查询待办任务列表
 export function todoList(query) {
   return request({
     url: '/flowable/task/todoList',
     method: 'get',
     params: query
-  })
-}
-//验证当前处理人是否为发起人
-export function verInItiator(data) {
-  return request({
-    url: '/flowable/task/verification/originator',
-    method: 'post',
-    data: data
   })
 }
 
@@ -29,6 +30,15 @@ export function batchComplete(taskIds) {
 export function complete(data) {
   return request({
     url: '/flowable/task/complete',
+    method: 'post',
+    data: data
+  })
+}
+
+// 抄送任务
+export function courtesyCopy(data) {
+  return request({
+    url: '/flowable/task/courtesycopy',
     method: 'post',
     data: data
   })

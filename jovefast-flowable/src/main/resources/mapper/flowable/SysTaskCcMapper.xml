@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jovefast.flowable.mapper.SysTaskCcMapper">
+
+    <select id="selectSysTaskCcByinstanceId" parameterType="string" resultType="SysTaskCc">
+        select instance_id AS instanceId,cc_uid AS ccUid from sys_task_cc where instance_id= #{instanceId}
+    </select>
+
+    <select id="selectSysTaskCcCountByinstanceId" parameterType="string" resultType="integer">
+        select count(0) from sys_task_cc where instance_id= #{instanceId}
+    </select>
+    
+    <delete id="deleteSysTaskCcByinstanceId" parameterType="string" >
+        delete from sys_task_cc where instance_id = #{instanceId}
+    </delete>
+
+
+    <insert id="insertSysTaskCc" parameterType="java.util.List" >
+        insert into sys_task_cc
+        (instance_id,cc_uid)
+        VALUES
+        <foreach collection="list" item="p" index="index" separator=",">
+            ( #{p.instanceId},#{p.ccUid} )
+        </foreach>
+    </insert>
+
+    <select id="selectSysTaskCcList" parameterType="CourtesyCopyDTO" resultType="CourtesyCopyDTO">
+        SELECT DISTINCT
+        RES.ID_	AS	taskId,
+        RES.PROC_DEF_ID_ AS  procDefId,
+        RES.PROC_INST_ID_ AS	 procInstId,
+        RES.EXECUTION_ID_ AS	  executionId,
+        RES.NAME_	 AS nname,
+        RES.OWNER_	AS owners,
+        RES.ASSIGNEE_	 AS assignee,
+        RES.CREATE_TIME_ AS startTime,
+        RES.CLAIM_TIME_	 AS claimTime,
+        RES.TENANT_ID_	AS tenantId,
+        SPT.process_title AS processTitle,
+        SU.nick_name AS startUserName,
+        SU.user_id AS startUserId,
+        SD.dept_name AS startDeptName
+        FROM
+        sys_task_cc CC
+        LEFT OUTER JOIN
+        (
+        SELECT
+        RES.*
+        FROM
+        act_ru_task RES
+        <where>
+            <if test="tenantId != null and tenantId != ''">
+                AND RES.TENANT_ID_ = #{tenantId}
+            </if>
+            <if test="params.beginTime != null and params.beginTime != ''">
+                AND RES.CREATE_TIME_ &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND RES.CREATE_TIME_ &lt;= #{params.endTime}
+            </if>
+        </where>
+        LIMIT #{params.pageSize} OFFSET #{params.pageNum}
+        ) RES ON RES.PROC_INST_ID_ = CC.instance_id
+        INNER JOIN sys_process_title SPT ON RES.PROC_INST_ID_ = SPT.proc_ins_id
+        INNER JOIN `jove-cloud`.sys_user SU ON CC.cc_uid = SU.user_id
+        INNER JOIN `jove-cloud`.sys_dept SD ON SD.dept_id = SU.dept_id
+        <where>
+            CC.cc_uid = #{params.userId}
+            <if test="processTitle != null and processTitle != ''">
+                AND SPT.process_title like CONCAT('%', #{processTitle}, '%')
+            </if>
+            <if test="startUserName != null and startUserName != ''">
+                AND SU.nick_name like CONCAT('%', #{startUserName}, '%')
+            </if>
+            <if test="startDeptName != null and startDeptName != ''">
+                AND SD.dept_name like CONCAT('%', #{startDeptName}, '%')
+            </if>
+        </where>
+    </select>
+    
+</mapper>

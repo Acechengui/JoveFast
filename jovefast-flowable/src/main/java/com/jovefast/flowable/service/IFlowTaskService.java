@@ -54,6 +54,13 @@ public interface IFlowTaskService {
     Boolean batchComplete(String[] taskIds);
 
     /**
+     * 抄送任务
+     *
+     * @param task 请求实体参数
+     */
+    Boolean courtesyCopy(FlowTaskVo task);
+
+    /**
      * 驳回任务
      *
      */
@@ -149,6 +156,15 @@ public interface IFlowTaskService {
      * @param flowTaskDto 参数
      */
     Map<String, Object> finishedList(Integer pageNum, Integer pageSize,FlowTaskDto flowTaskDto);
+
+    /**
+     * 抄送列表
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页条数
+     * @param flowTaskDto 参数
+     */
+    Map<String, Object> ccList(Integer pageNum, Integer pageSize,FlowTaskDto flowTaskDto);
 
     /**
      * 流程历史流转记录
