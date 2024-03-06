@@ -90,30 +90,30 @@
 
     <!--审批流程-->
     <el-dialog :title="completeTitle" :visible.sync="completeOpen" append-to-body>
-      <CompleteTask @handleCloseComplete="handleCloseComplete" :deptOptions="deptOptions" :checkSendUser="checkSendUser"
+      <CompleteTask :deptOptions="deptOptions" :checkSendUser="checkSendUser"
         :taskForm="taskForm"></CompleteTask>
     </el-dialog>
 
     <!--转办流程-->
     <el-dialog :title="transferTitle" :visible.sync="transferOpen" append-to-body>
-      <TransferTask @handleCloseTransfer="handleCloseTransfer" :deptOptions="deptOptions" :checkSendUser="checkSendUser"
+      <TransferTask :deptOptions="deptOptions" :checkSendUser="checkSendUser"
         :taskForm="taskForm"></TransferTask>
     </el-dialog>
 
     <!--抄送流程-->
     <el-dialog :title="courtesyCopyTitle" :visible.sync="courtesyCopyOpen" append-to-body>
-      <CourtesycopyTask @handleCloseCourtesyCopy="handleCloseCourtesyCopy" :deptOptions="deptOptions" :taskForm="taskForm"></CourtesycopyTask>
+      <CourtesycopyTask :deptOptions="deptOptions" :taskForm="taskForm"></CourtesycopyTask>
     </el-dialog>
 
     <!--退回流程-->
     <el-dialog :title="returnTitle" :visible.sync="returnOpen" append-to-body>
-      <ReturnTask @handleCloseReturn="handleCloseReturn" :returnTaskList="returnTaskList" :taskForm="taskForm">
+      <ReturnTask :returnTaskList="returnTaskList" :taskForm="taskForm">
       </ReturnTask>
     </el-dialog>
 
     <!--驳回流程-->
     <el-dialog :title="rejectTitle" :visible.sync="rejectOpen" append-to-body>
-      <RejectTask @handleCloseReject="handleCloseReject" :taskForm="taskForm"></RejectTask>
+      <RejectTask  :taskForm="taskForm"></RejectTask>
     </el-dialog>
 
     <!-- 返回顶部 -->

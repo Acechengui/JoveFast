@@ -11,6 +11,7 @@ import com.jovefast.common.log.enums.BusinessType;
 import com.jovefast.common.security.annotation.RequiresPermissions;
 import com.jovefast.flowable.domain.SysDeployForm;
 import com.jovefast.flowable.domain.SysForm;
+import com.jovefast.flowable.domain.vo.FlowTaskVo;
 import com.jovefast.flowable.service.ISysDeployFormService;
 import com.jovefast.flowable.service.ISysFormService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,15 @@ public class FlowFormController extends BaseController {
     @GetMapping(value = "/{formId}")
     public AjaxResult getInfo(@PathVariable("formId") Long formId) {
         return AjaxResult.success(sysFormService.selectSysFormById(formId));
+    }
+
+    /**
+     * 根据流程ID和表单ID获取流程表单详细信息
+     */
+    @RequiresPermissions("flowable:form:list")
+    @PostMapping(value = "/processParams")
+    public AjaxResult processParams(@RequestBody FlowTaskVo flowTaskVo) {
+        return AjaxResult.success(sysFormService.selectSysFormByProcInsId(flowTaskVo));
     }
 
     /**

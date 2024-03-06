@@ -54,6 +54,9 @@ public class FlowTaskVo {
     @ApiModelProperty("流程变量信息")
     private Map<String, Object> variables;
 
+    @ApiModelProperty("表单ID")
+    private Long formId;
+
     public String getDeploymentId() {
         return deploymentId;
     }
@@ -164,5 +167,13 @@ public class FlowTaskVo {
 
     public void setCandidateGroups(List<String> candidateGroups) {
         this.candidateGroups = candidateGroups;
+    }
+
+    public Long getFormId() {
+        return formId;
+    }
+
+    public void setFormId(Long formId) {
+        this.formId = formId;
     }
 }

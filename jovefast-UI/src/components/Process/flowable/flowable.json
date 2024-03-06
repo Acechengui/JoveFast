@@ -216,6 +216,16 @@
         {
           "name": "multiInstanceLoopCharacteristics",
           "type": "MultiInstanceLoopCharacteristics"
+        },
+        {
+          "name": "formReadOnly",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "formFieldReadOnly",
+          "isAttr": true,
+          "type": "String"
         }
       ]
     },

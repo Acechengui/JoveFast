@@ -25,6 +25,11 @@ public class SysForm extends BaseEntity
     @Excel(name = "表单内容")
     private String formContent;
 
+    /**
+     * 是否开启预览
+     */
+    private Boolean formPreview;
+
     public void setFormId(Long formId)
     {
         this.formId = formId;
@@ -51,6 +56,14 @@ public class SysForm extends BaseEntity
     public String getFormContent() 
     {
         return formContent;
+    }
+
+    public Boolean getFormPreview() {
+        return formPreview;
+    }
+
+    public void setFormPreview(Boolean formPreview) {
+        this.formPreview = formPreview;
     }
 
     @Override

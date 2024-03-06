@@ -13,6 +13,8 @@ export default {
     async: true,
     priority: true,
     formKey: true,
+    formFieldReadOnly: true,
+    formReadOnly: true,
     skipExpression: true,
     dueDate: true,
     taskListener: true

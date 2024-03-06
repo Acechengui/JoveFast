@@ -158,6 +158,7 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
             SysUser sysUser = SecurityUtils.getLoginUser().getSysUser();
             identityService.setAuthenticatedUserId(sysUser.getUserId().toString());
             variables.put(ProcessConstants.PROCESS_INITIATOR,sysUser.getUserId().toString());
+            variables.put(ProcessConstants.PROCESS_APPROVAL,"");
             ProcessInstance processInstance = runtimeService.startProcessInstanceById(procDefId, variables);
             /**
              * 将流程标题信息存入

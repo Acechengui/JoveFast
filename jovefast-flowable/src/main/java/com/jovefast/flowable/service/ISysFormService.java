@@ -2,6 +2,7 @@ package com.jovefast.flowable.service;
 
 
 import com.jovefast.flowable.domain.SysForm;
+import com.jovefast.flowable.domain.vo.FlowTaskVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -65,4 +66,12 @@ public interface ISysFormService
      * @return 结果
      */
     public int deleteSysFormById(Long formId);
+
+    /**
+     * 根据流程ID和表单ID查询流程表单
+     *
+     * @param flowTaskVo 流程ID和表单ID等参数
+     * @return 流程表单
+     */
+    SysForm selectSysFormByProcInsId(FlowTaskVo flowTaskVo);
 }

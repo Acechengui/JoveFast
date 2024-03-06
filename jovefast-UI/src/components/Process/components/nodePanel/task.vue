@@ -17,34 +17,34 @@
         </el-badge>
       </template>
       <template #checkSingleUser>
-          <el-input placeholder="请选择人员" class="input-with-select" v-model="checkValues">
-              <template slot="append">
-                <!--指定用户-->
-                <el-button style="padding-left: 7px" icon="el-icon-user" @click="singleUserCheck"/>
-                <el-divider direction="vertical"></el-divider>
-                <!--选择表达式-->
-                <el-button style="padding-right: 7px" icon="el-icon-postcard" @click="singleExpCheck('assignee')"/>
-              </template>
-          </el-input>
+        <el-input placeholder="请选择人员" class="input-with-select" v-model="checkValues">
+          <template slot="append">
+            <!--指定用户-->
+            <el-button style="padding-left: 7px" icon="el-icon-user" @click="singleUserCheck"/>
+            <el-divider direction="vertical"></el-divider>
+            <!--选择表达式-->
+            <el-button style="padding-right: 7px" icon="el-icon-postcard" @click="singleExpCheck('assignee')"/>
+          </template>
+        </el-input>
       </template>
       <template #checkMultipleUser>
-          <el-input placeholder="请选择候选用户" class="input-with-select" v-model="checkValues">
-            <template slot="append">
-              <!--候选用户-->
-              <el-button style="padding-left: 7px" icon="el-icon-user" @click="multipleUserCheck"/>
-              <el-divider direction="vertical"></el-divider>
-              <!--选择表达式-->
-              <el-button style="padding-right: 7px" icon="el-icon-postcard" @click="singleExpCheck('candidateUsers')"/>
-            </template>
-          </el-input>
+        <el-input placeholder="请选择候选用户" class="input-with-select" v-model="checkValues">
+          <template slot="append">
+            <!--候选用户-->
+            <el-button style="padding-left: 7px" icon="el-icon-user" @click="multipleUserCheck"/>
+            <el-divider direction="vertical"></el-divider>
+            <!--选择表达式-->
+            <el-button style="padding-right: 7px" icon="el-icon-postcard" @click="singleExpCheck('candidateUsers')"/>
+          </template>
+        </el-input>
       </template>
       <template #checkRole>
         <el-input placeholder="请选择候选角色" class="input-with-select" v-model="checkValues">
           <template slot="append">
-          <!--候选角色-->
+            <!--候选角色-->
             <el-button style="padding-left: 7px" icon="el-icon-user" @click="multipleRoleCheck"/>
             <el-divider direction="vertical"></el-divider>
-              <!--选择表达式-->
+            <!--选择表达式-->
             <el-button style="padding-right: 7px" icon="el-icon-postcard" @click="singleExpCheck('candidateGroups')"/>
           </template>
         </el-input>
@@ -76,8 +76,8 @@
       :close-on-press-escape="false"
       :show-close="false"
     >
-    <flow-user :checkType="checkType" :selectValues="selectValues" @handleUserSelect="handleUserSelect"></flow-user>
-    <span slot="footer" class="dialog-footer">
+      <flow-user :checkType="checkType" :selectValues="selectValues" @handleUserSelect="handleUserSelect"></flow-user>
+      <span slot="footer" class="dialog-footer">
       <el-button @click="userVisible = false">取 消</el-button>
       <el-button type="primary" @click="checkUserComplete">确 定</el-button>
     </span>
@@ -156,6 +156,10 @@ export default {
         { label: '候选人员', value: 'candidateUsers' },
         { label: '候选角色', value: 'candidateGroups' }
       ],
+      formReadOnlyOption: [
+        { label: '是', value: 'Y' },
+        { label: '否', value: 'N' }
+      ],
       dialogName: '',
       executionListenerLength: 0,
       taskListenerLength: 0,
@@ -207,6 +211,23 @@ export default {
             xType: 'input',
             name: 'documentation',
             label: '节点描述'
+          },
+          {
+            xType: 'input',
+            type: 'textarea',
+            name: 'formFieldReadOnly',
+            label: '指定表单字段只读',
+            clearable: true,
+            show: !!_this.showConfig.formFieldReadOnly,
+            placeholder:"格式eg: 字段名1,字段名2"
+          },
+          {
+            xType: 'select',
+            name: 'formReadOnly',
+            label: '整个表单是否只读',
+            dic: _this.formReadOnlyOption,
+            clearable: true,
+            show: !!_this.showConfig.formReadOnly
           },
           {
             xType: 'slot',
@@ -359,13 +380,13 @@ export default {
   watch: {
     'formData.userType': function(val, oldVal) {
       if (StrUtil.isNotBlank(oldVal)) {
-          delete this.element.businessObject.$attrs[`flowable:${oldVal}`]
-          delete this.formData[oldVal]
-          // 清除已选人员数据
-          this.checkValues = '';
-          this.selectValues = null;
-          // 删除xml中已选择数据类型节点
-          delete this.element.businessObject.$attrs[`flowable:dataType`]
+        delete this.element.businessObject.$attrs[`flowable:${oldVal}`]
+        delete this.formData[oldVal]
+        // 清除已选人员数据
+        this.checkValues = '';
+        this.selectValues = null;
+        // 删除xml中已选择数据类型节点
+        delete this.element.businessObject.$attrs[`flowable:dataType`]
       }
       // 写入userType节点信息到xml
       this.updateProperties({'flowable:userType': val})
@@ -386,6 +407,22 @@ export default {
       } else {
         // 删除xml中已选择表单信息
         delete this.element.businessObject[`formKey`]
+      }
+    },
+    'formData.formReadOnly': function(val) {
+      if (StrUtil.isNotBlank(val)) {
+        this.updateProperties({'flowable:formReadOnly': val})
+      } else {
+        // 删除xml中已选择表单信息
+        delete this.element.businessObject[`formReadOnly`]
+      }
+    },
+    'formData.formFieldReadOnly': function(val) {
+      if (StrUtil.isNotBlank(val)) {
+        this.updateProperties({'flowable:formFieldReadOnly': val})
+      } else {
+        // 删除xml中已选择表单信息
+        delete this.element.businessObject[`formFieldReadOnly`]
       }
     },
     'formData.priority': function(val) {
@@ -483,7 +520,6 @@ export default {
       const that = this;
       const attrs = that.element.businessObject.$attrs;
       const businessObject = that.element.businessObject;
-      console.log(that.element.businessObject,"this.element.businessObject")
       // 指定用户
       if (attrs.hasOwnProperty("flowable:assignee")) {
         const val = attrs["flowable:assignee"];
@@ -614,7 +650,7 @@ export default {
     checkRoleComplete(){
       this.roleVisible = false;
       this.checkType = "";
-      },
+    },
     /*表达式选中赋值*/
     checkExpComplete(){
       this.expVisible = false;
