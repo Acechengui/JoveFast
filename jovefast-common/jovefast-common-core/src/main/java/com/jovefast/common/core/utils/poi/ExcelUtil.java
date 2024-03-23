@@ -64,7 +64,7 @@ public class ExcelUtil<T>
     /**
      * Excel sheet最大行数，默认65536
      */
-    public static final int sheetSize = 65536;
+    public static final int sheetSize = 1048576;
 
     /**
      * 工作表名称
@@ -369,7 +369,7 @@ public class ExcelUtil<T>
                     Object val = this.getCellValue(row, entry.getKey());
 
                     // 如果不存在实例则新建.
-                    entity = (entity == null ? clazz.newInstance() : entity);
+                    entity = (entity == null ? clazz.getDeclaredConstructor().newInstance() : entity);
                     // 从map中得到对应列的field.
                     Field field = (Field) entry.getValue()[0];
                     Excel attr = (Excel) entry.getValue()[1];
@@ -669,6 +669,8 @@ public class ExcelUtil<T>
         titleFont.setFontHeightInPoints((short) 16);
         titleFont.setBold(true);
         style.setFont(titleFont);
+        DataFormat dataFormat = wb.createDataFormat();
+        style.setDataFormat(dataFormat.getFormat("@"));
         styles.put("title", style);
 
         style = wb.createCellStyle();
@@ -731,6 +733,9 @@ public class ExcelUtil<T>
                 headerFont.setBold(true);
                 headerFont.setColor(excel.headerColor().index);
                 style.setFont(headerFont);
+                // 设置表格头单元格文本形式
+                DataFormat dataFormat = wb.createDataFormat();
+                style.setDataFormat(dataFormat.getFormat("@"));
                 headerStyles.put(key, style);
             }
         }
@@ -748,32 +753,62 @@ public class ExcelUtil<T>
         Map<String, CellStyle> styles = new HashMap<String, CellStyle>();
         for (Object[] os : fields)
         {
+            Field field = (Field) os[0];
             Excel excel = (Excel) os[1];
-            String key = StringUtils.format("data_{}_{}_{}", excel.align(), excel.color(), excel.backgroundColor());
-            if (!styles.containsKey(key))
+            if (Collection.class.isAssignableFrom(field.getType()))
             {
-                CellStyle style = wb.createCellStyle();
-                style.setAlignment(excel.align());
-                style.setVerticalAlignment(VerticalAlignment.CENTER);
-                style.setBorderRight(BorderStyle.THIN);
-                style.setRightBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-                style.setBorderLeft(BorderStyle.THIN);
-                style.setLeftBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-                style.setBorderTop(BorderStyle.THIN);
-                style.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-                style.setBorderBottom(BorderStyle.THIN);
-                style.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-                style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                style.setFillForegroundColor(excel.backgroundColor().getIndex());
-                Font dataFont = wb.createFont();
-                dataFont.setFontName("Arial");
-                dataFont.setFontHeightInPoints((short) 10);
-                dataFont.setColor(excel.color().index);
-                style.setFont(dataFont);
-                styles.put(key, style);
+                ParameterizedType pt = (ParameterizedType) field.getGenericType();
+                Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
+                List<Field> subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
+                for (Field subField : subFields)
+                {
+                    Excel subExcel = subField.getAnnotation(Excel.class);
+                    annotationDataStyles(styles, subField, subExcel);
+                }
+            }else{
+                annotationDataStyles(styles, field, excel);
             }
         }
         return styles;
+    }
+
+    /**
+     * 根据Excel注解创建表格列样式
+     *
+     * @param styles 自定义样式列表
+     * @param field  属性列信息
+     * @param excel  注解信息
+     */
+    public void annotationDataStyles(Map<String, CellStyle> styles, Field field, Excel excel)
+    {
+        String key = StringUtils.format("data_{}_{}_{}_{}", excel.align(), excel.color(), excel.backgroundColor(), excel.cellType());
+        if (!styles.containsKey(key))
+        {
+            CellStyle style = wb.createCellStyle();
+            style.setAlignment(excel.align());
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setRightBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setLeftBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+            style.setBorderTop(BorderStyle.THIN);
+            style.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            style.setFillForegroundColor(excel.backgroundColor().getIndex());
+            Font dataFont = wb.createFont();
+            dataFont.setFontName("Arial");
+            dataFont.setFontHeightInPoints((short) 10);
+            dataFont.setColor(excel.color().index);
+            style.setFont(dataFont);
+            if (ColumnType.TEXT == excel.cellType())
+            {
+                DataFormat dataFormat = wb.createDataFormat();
+                style.setDataFormat(dataFormat.getFormat("@"));
+            }
+            styles.put(key, style);
+        }
     }
 
     /**
@@ -790,7 +825,8 @@ public class ExcelUtil<T>
         if (isSubList())
         {
             // 填充默认样式，防止合并单元格样式失效
-            sheet.setDefaultColumnStyle(column, styles.get(StringUtils.format("data_{}_{}_{}", attr.align(), attr.color(), attr.backgroundColor())));
+            sheet.setDefaultColumnStyle(column, styles.get(StringUtils.format("data_{}_{}_{}_{}", attr.align(), attr.color(), attr.backgroundColor(),
+                    attr.cellType())));
             if (attr.needMerge())
             {
                 sheet.addMergedRegion(new CellRangeAddress(rownum - 1, rownum, column, column));
@@ -808,7 +844,7 @@ public class ExcelUtil<T>
      */
     public void setCellVo(Object value, Excel attr, Cell cell)
     {
-        if (ColumnType.STRING == attr.cellType())
+        if (ColumnType.STRING == attr.cellType() || ColumnType.TEXT == attr.cellType())
         {
             String cellValue = Convert.toStr(value);
             // 对于任何以表达式触发字符 =-+@开头的单元格，直接使用tab字符作为前缀，防止CSV注入。
@@ -920,8 +956,7 @@ public class ExcelUtil<T>
                     CellRangeAddress cellAddress = new CellRangeAddress(subMergedFirstRowNum, subMergedLastRowNum, column, column);
                     sheet.addMergedRegion(cellAddress);
                 }
-                cell.setCellStyle(styles.get(StringUtils.format("data_{}_{}_{}", attr.align(), attr.color(), attr.backgroundColor())));
-
+                cell.setCellStyle(styles.get(StringUtils.format("data_{}_{}_{}_{}", attr.align(), attr.color(), attr.backgroundColor(), attr.cellType())));
                 // 用于读取对象中的属性
                 Object value = getTargetValue(vo, field, attr);
                 String dateFormat = attr.dateFormat();
@@ -1132,7 +1167,7 @@ public class ExcelUtil<T>
     {
         try
         {
-            Object instance = excel.handler().newInstance();
+            Object instance = excel.handler().getDeclaredConstructor().newInstance();
             Method formatMethod = excel.handler().getMethod("format", new Class[] { Object.class, String[].class, Cell.class, Workbook.class });
             value = formatMethod.invoke(instance, value, excel.args(), cell, this.wb);
         }
@@ -1369,7 +1404,8 @@ public class ExcelUtil<T>
                     val = cell.getNumericCellValue();
                     if (DateUtil.isCellDateFormatted(cell))
                     {
-                        val = DateUtil.getJavaDate((Double) val); // POI Excel 日期格式转换
+                        // POI Excel 日期格式转换
+                        val = DateUtil.getJavaDate((Double) val);
                     }
                     else
                     {
