@@ -65,7 +65,7 @@
       <el-table-column label="流程分类" align="center" prop="category" />
       <el-table-column label="流程名称" align="center" width="120" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <el-button type="text" @click="handleReadImage(scope.row.deploymentId)">
+          <el-button type="text" @click="handleReadImage(scope.row)">
             <span>{{ scope.row.name }}</span>
           </el-button>
         </template>
@@ -108,19 +108,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改流程定义对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="看看" prop="name">
-          <el-input v-model="form.name" placeholder="请输入看看" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">{{ $t('common.determine') }}</el-button>
-        <el-button @click="cancel">{{ $t('common.cancel') }}</el-button>
-      </div>
-    </el-dialog>
 
     <!-- bpmn20.xml导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
@@ -165,13 +152,13 @@
 
     <!-- 流程图 -->
     <el-dialog :title="readImage.title" :visible.sync="readImage.open" width="70%" append-to-body>
-      <flow :flowData="flowData"/>
+      <flow :xmlData="xmlData"/>
     </el-dialog>
 
     <!--表单配置详情-->
     <el-dialog :title="formTitle" :visible.sync="formConfOpen" width="50%" append-to-body>
-      <div class="test-form">
-        <ng-form-build ref="currentFormBuild" :preview="true" :formTemplate="formConf" :config="formBuildConfig"/>
+      <div class="key-form">
+        <ng-form-build ref="currentFormBuild" :preview="false" :disabled="true" :formTemplate="formConf" :config="formBuildConfig"/>
       </div>
     </el-dialog>
 
@@ -207,7 +194,7 @@
         </el-col>
         <el-col :span="14" :xs="24">
           <div v-if="currentRow">
-            <ng-form-build ref="currentFormBuild" :preview="true" :formTemplate="currentRow" :config="formBuildConfig" />
+            <ng-form-build ref="currentFormBuild" :preview="false" :disabled="true" :formTemplate="currentRow" :config="formBuildConfig" />
           </div>
         </el-col>
       </el-row>
@@ -220,23 +207,19 @@ import {
   listDefinition,
   updateState,
   delDeployment,
-  addDeployment,
-  updateDeployment,
   exportDeployment,
   definitionStart,
-  flowXmlAndNode
+  readXml
 } from "@/api/flowable/definition";
 import { getToken } from "@/utils/auth";
 import { getForm, addDeployForm ,listForm } from "@/api/flowable/form";
 import flow from '@/views/flowable/task/record/flow'
-import Model from './model';
 
 export default {
   name: "Definition",
   dicts: ['sys_process_category'],
   components: {
-    flow,
-    Model
+    flow
   },
   data() {
     return {
@@ -255,10 +238,6 @@ export default {
       total: 0,
       // 流程定义表格数据
       definitionList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
       formConfOpen: false,
       formTitle: "",
       formDeployOpen: false,
@@ -311,9 +290,7 @@ export default {
       deployId: '',
       currentRow: null,
       // xml
-      flowData: {},
-      // 表单参数
-      form: {},
+      xmlData:"",
       // 表单校验
       rules: {
       },
@@ -344,36 +321,6 @@ export default {
         this.loading = false;
       });
     },
-    handleClose(done) {
-      this.$confirm('确定要关闭吗？关闭未保存的修改都会丢失？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        done();
-      }).catch(() => {});
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        name: null,
-        category: null,
-        key: null,
-        tenantId: null,
-        deployTime: null,
-        derivedFrom: null,
-        derivedFromRoot: null,
-        parentDeploymentId: null,
-        engineVersion: null
-      };
-      this.resetForm("form");
-    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -390,22 +337,17 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加流程定义";
-    },
     /** 跳转到流程设计页面 */
     handleLoadXml(row){
       this.$router.push({ path: '/flowable/definition/model', query: { deployId: row.deploymentId } })
     },
     /** 流程图查看 */
-    handleReadImage(deployId){
+    handleReadImage(row){
       this.readImage.title = "流程图";
       this.readImage.open = true;
-      flowXmlAndNode({deployId:deployId}).then(res => {
-        this.flowData = res.data;
+      // 发送请求，获取xml
+      readXml(row.deploymentId).then(res =>{
+        this.xmlData = res.data
       })
     },
     /** 表单查看 */
@@ -465,36 +407,6 @@ export default {
         this.getList();
       });
     },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.deploymentId || this.ids
-      getDeployment(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改流程定义";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDeployment(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const deploymentIds = row.deploymentId || this.ids;
@@ -546,3 +458,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.key-form {
+  width: 100%;
+}
+</style>
