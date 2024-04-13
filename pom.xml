@@ -214,6 +214,13 @@
                 <version>${jovefast.version}</version>
             </dependency>
 
+            <!-- 数据脱敏 -->
+            <dependency>
+                <groupId>com.jovefast</groupId>
+                <artifactId>jovefast-common-sensitive</artifactId>
+                <version>${jovefast.version}</version>
+            </dependency>
+
             <!-- 权限范围 -->
             <dependency>
                 <groupId>com.jovefast</groupId>
@@ -304,6 +311,7 @@
         <module>jovefast-common</module>
         <module>jovefast-flowable</module>
         <module>jovefast-mobile</module>
+        <module>jovefast-common/jovefast-common-sensitive</module>
     </modules>
     <packaging>pom</packaging>
 

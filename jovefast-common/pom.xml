@@ -14,6 +14,7 @@
         <module>jovefast-common-redis</module>
         <module>jovefast-common-swagger</module>
         <module>jovefast-common-security</module>
+        <module>jovefast-common-sensitive</module>
         <module>jovefast-common-datascope</module>
 		<module>jovefast-common-datasource</module>
         <module>jovefast-common-seata</module>
