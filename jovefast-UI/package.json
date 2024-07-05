@@ -52,7 +52,7 @@
     "bpmnlint": "^9.2.0",
     "caniuse-lite": "^1.0.30001477",
     "clipboard": "2.0.8",
-    "core-js": "3.25.3",
+    "core-js": "3.37.1",
     "css-loader": "^3.5.3",
     "diagram-js": "^11.4.1",
     "echarts": "4.9.0",
