@@ -198,7 +198,7 @@ export default {
           deployId: row.deployId,
           taskId: row.taskId,
           formId: row.formId,
-          finished: true
+          finished: false
         }})
     },
     /** 批量审批操作 */
