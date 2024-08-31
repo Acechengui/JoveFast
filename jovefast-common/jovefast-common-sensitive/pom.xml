@@ -16,7 +16,6 @@
     </description>
 
     <dependencies>
-
         <!-- jovefast Common Security -->
         <dependency>
             <groupId>com.jovefast</groupId>

@@ -311,7 +311,6 @@
         <module>jovefast-common</module>
         <module>jovefast-flowable</module>
         <module>jovefast-mobile</module>
-        <module>jovefast-common/jovefast-common-sensitive</module>
     </modules>
     <packaging>pom</packaging>
 
