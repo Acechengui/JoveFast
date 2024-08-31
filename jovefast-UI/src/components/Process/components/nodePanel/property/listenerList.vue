@@ -15,10 +15,10 @@
       </span>
     </el-dialog>
   </template>
-
+  
   <script>
     import FlowListener from '@/components/Flow/Listener'
-
+  
     export default {
       name: 'ListentList',
       components: { FlowListener },
@@ -68,5 +68,6 @@
       }
     }
   </script>
-
+  
   <style></style>
+  
