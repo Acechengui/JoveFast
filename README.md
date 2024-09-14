@@ -155,3 +155,9 @@ com.jovefast
 欢迎大家进群交流，本项目将一直开源。
 点击链接加入群聊【Java/Vue摸鱼交流群】：
 [![加入QQ群](https://img.shields.io/badge/603446086-blue.svg)](https://jq.qq.com/?_wv=1027&k=Y2XSJ0BC) ![输入图片说明](doc/preview/mobile01.jpgmobile01.jpg)
+
+## 规划
+1. 后期准备修改部分内容
+- 代码优化
+- 注释追加
+- 。。。
