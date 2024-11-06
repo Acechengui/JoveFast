@@ -1,9 +1,7 @@
 package com.jovefast.system.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.jovefast.common.core.constant.UserConstants;
 import com.jovefast.common.core.domain.R;
 import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.core.utils.poi.ExcelUtil;
@@ -37,6 +34,7 @@ import com.jovefast.common.security.utils.SecurityUtils;
 import com.jovefast.system.api.domain.SysRole;
 import com.jovefast.system.api.domain.SysUser;
 import com.jovefast.system.api.model.LoginUser;
+import com.jovefast.common.security.service.TokenService;
 
 /**
  * 用户信息
@@ -64,6 +62,9 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysConfigService configService;
+
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 获取用户列表
@@ -182,11 +183,17 @@ public class SysUserController extends BaseController
     @GetMapping("getInfo")
     public AjaxResult getInfo()
     {
-        SysUser user = userService.selectUserById(SecurityUtils.getUserId());
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        SysUser user = loginUser.getSysUser();
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合
         Set<String> permissions = permissionService.getMenuPermission(user);
+        if (!loginUser.getPermissions().equals(permissions))
+        {
+            loginUser.setPermissions(permissions);
+            tokenService.refreshToken(loginUser);
+        }
         AjaxResult ajax = AjaxResult.success();
         ajax.put("user", user);
         ajax.put("roles", roles);
