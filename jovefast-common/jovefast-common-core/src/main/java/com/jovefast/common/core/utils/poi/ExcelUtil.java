@@ -1,5 +1,7 @@
 package com.jovefast.common.core.utils.poi;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -7,17 +9,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -31,8 +26,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFDataValidation;
+import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.jovefast.common.core.annotation.Excel;
@@ -45,6 +39,7 @@ import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.core.utils.file.FileTypeUtils;
 import com.jovefast.common.core.utils.file.ImageUtils;
 import com.jovefast.common.core.utils.reflect.ReflectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.alibaba.excel.support.ExcelTypeEnum.XLSX;
 
@@ -152,9 +147,24 @@ public class ExcelUtil<T>
     public Class<T> clazz;
 
     /**
+     * 需要显示列属性
+     */
+    public String[] includeFields;
+
+    /**
      * 需要排除列属性
      */
     public String[] excludeFields;
+
+    /**
+     * 仅在Excel中显示列属性
+     *
+     * @param fields 列属性名 示例[单个"name"/多个"id","name"]
+     */
+    public void showColumn(String... fields)
+    {
+        this.includeFields = fields;
+    }
 
     public ExcelUtil(Class<T> clazz)
     {
@@ -233,6 +243,7 @@ public class ExcelUtil<T>
         book.write(out);
         out.flush();
         out.close();
+
     }
     /**
      * 创建对象的子列表名称
@@ -298,6 +309,32 @@ public class ExcelUtil<T>
     public List<T> importExcel(InputStream is, int titleNum) throws Exception
     {
         return importExcel(StringUtils.EMPTY, is, titleNum);
+    }
+
+    /**
+     * 对excel表单指定索引名转换成list
+     *
+     * @param sheetName 表格索引名
+     * @param is        输入流
+     * @return 转换后集合
+     */
+    public List<T> importExcel(String sheetName, InputStream is)
+    {
+        List<T> list = null;
+        try
+        {
+            list = importExcel(sheetName, is, 0);
+        }
+        catch (Exception e)
+        {
+            log.error("导入Excel异常{}", e.getMessage());
+            throw new UtilException(e.getMessage());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(is);
+        }
+        return list;
     }
 
     /**
@@ -1294,46 +1331,86 @@ public class ExcelUtil<T>
         List<Field> tempFields = new ArrayList<>();
         tempFields.addAll(Arrays.asList(clazz.getSuperclass().getDeclaredFields()));
         tempFields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-        for (Field field : tempFields)
+        if (StringUtils.isNotEmpty(includeFields))
         {
-            if (!ArrayUtils.contains(this.excludeFields, field.getName()))
+            for (Field field : tempFields)
             {
-                // 单注解
-                if (field.isAnnotationPresent(Excel.class))
+                if (ArrayUtils.contains(this.includeFields, field.getName()) || field.isAnnotationPresent(Excels.class))
                 {
-                    Excel attr = field.getAnnotation(Excel.class);
-                    if (attr != null && (attr.type() == Type.ALL || attr.type() == type))
+                    addField(fields, field);
+                }
+            }
+        }
+        else if (StringUtils.isNotEmpty(excludeFields))
+        {
+            for (Field field : tempFields)
+            {
+                if (!ArrayUtils.contains(this.excludeFields, field.getName()))
+                {
+                    addField(fields, field);
+                }
+            }
+        }
+        else
+        {
+            for (Field field : tempFields)
+            {
+                addField(fields, field);
+            }
+        }
+        return fields;
+    }
+
+    /**
+     * 添加字段信息
+     */
+    public void addField(List<Object[]> fields, Field field)
+    {
+        // 单注解
+        if (field.isAnnotationPresent(Excel.class))
+        {
+            Excel attr = field.getAnnotation(Excel.class);
+            if (attr != null && (attr.type() == Type.ALL || attr.type() == type))
+            {
+                field.setAccessible(true);
+                fields.add(new Object[] { field, attr });
+            }
+            if (Collection.class.isAssignableFrom(field.getType()))
+            {
+                subMethod = getSubMethod(field.getName(), clazz);
+                ParameterizedType pt = (ParameterizedType) field.getGenericType();
+                Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
+                this.subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
+            }
+        }
+
+        // 多注解
+        if (field.isAnnotationPresent(Excels.class))
+        {
+            Excels attrs = field.getAnnotation(Excels.class);
+            Excel[] excels = attrs.value();
+            for (Excel attr : excels)
+            {
+                if (StringUtils.isNotEmpty(includeFields))
+                {
+                    if (ArrayUtils.contains(this.includeFields, field.getName() + "." + attr.targetAttr())
+                            && (attr != null && (attr.type() == Type.ALL || attr.type() == type)))
                     {
                         field.setAccessible(true);
                         fields.add(new Object[] { field, attr });
                     }
-                    if (Collection.class.isAssignableFrom(field.getType()))
-                    {
-                        subMethod = getSubMethod(field.getName(), clazz);
-                        ParameterizedType pt = (ParameterizedType) field.getGenericType();
-                        Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
-                        this.subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
-                    }
                 }
-
-                // 多注解
-                if (field.isAnnotationPresent(Excels.class))
+                else
                 {
-                    Excels attrs = field.getAnnotation(Excels.class);
-                    Excel[] excels = attrs.value();
-                    for (Excel attr : excels)
+                    if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr())
+                            && (attr != null && (attr.type() == Type.ALL || attr.type() == type)))
                     {
-                        if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr())
-                                && (attr != null && (attr.type() == Type.ALL || attr.type() == type)))
-                        {
-                            field.setAccessible(true);
-                            fields.add(new Object[] { field, attr });
-                        }
+                        field.setAccessible(true);
+                        fields.add(new Object[] { field, attr });
                     }
                 }
             }
         }
-        return fields;
     }
 
     /**
@@ -1553,4 +1630,5 @@ public class ExcelUtil<T>
         }
         return method;
     }
+
 }
