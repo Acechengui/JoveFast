@@ -1,7 +1,5 @@
 package com.jovefast.common.core.utils.poi;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -9,7 +7,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -39,7 +36,6 @@ import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.core.utils.file.FileTypeUtils;
 import com.jovefast.common.core.utils.file.ImageUtils;
 import com.jovefast.common.core.utils.reflect.ReflectUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import static com.alibaba.excel.support.ExcelTypeEnum.XLSX;
 
@@ -175,7 +171,6 @@ public class ExcelUtil<T>
      * 隐藏Excel中列属性
      *
      * @param fields 列属性名 示例[单个"name"/多个"id","name"]
-     * @throws Exception
      */
     public void hideColumn(String... fields)
     {
