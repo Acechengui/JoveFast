@@ -139,7 +139,7 @@ export default {
   data() {
     return {
       // 版本号
-      version: "3.6.2",
+      version: "3.6.5",
     };
   },
   methods: {

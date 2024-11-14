@@ -1,5 +1,5 @@
 
-<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">JoveFast v3.6.4</h1>
+<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">JoveFast v3.6.5</h1>
 <h4 align="center">基于若依Cloud的 Vue/Element UI 和 Spring Boot/Spring Cloud & Alibaba 前后端分离的分布式微服务架构</h4>
 <a href='https://gitee.com/wxjstudy/jove-fast'><img src='https://gitee.com/wxjstudy/jove-fast/widgets/widget_4.svg' alt='Fork me on Gitee'></img></a>
 
@@ -132,6 +132,7 @@ com.jovefast
 │       └── jovefast-common-redis                        // 缓存服务
 │       └── jovefast-common-seata                        // 分布式事务
 │       └── jovefast-common-security                     // 安全模块
+│       └── jovefast-common-sensitive                    // 数据脱敏
 │       └── jovefast-common-swagger                      // 系统接口
 ├── jovefast-modules         // 业务模块
 │       └── jovefast-system                              // 系统模块 
