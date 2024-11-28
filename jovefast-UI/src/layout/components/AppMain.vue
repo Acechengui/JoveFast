@@ -21,6 +21,22 @@ export default {
     key() {
       return this.$route.path
     }
+  },
+  watch: {
+    $route() {
+      this.addIframe()
+    }
+  },
+  mounted() {
+    this.addIframe()
+  },
+  methods:{
+    addIframe() {
+      const {name} = this.$route
+      if (name && this.$route.meta.link) {
+        this.$store.dispatch('tagsView/addIframeView', this.$route)
+      }
+    }
   }
 }
 </script>
@@ -48,7 +64,6 @@ export default {
   }
 }
 </style>
-
 <style lang="scss">
 // fix css style bug in open el-dialog
 .el-popup-parent--hidden {
@@ -57,10 +72,10 @@ export default {
   }
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+// ::-webkit-scrollbar {
+//   width: 6px;
+//   height: 6px;
+// }
 
 ::-webkit-scrollbar-track {
   background-color: #f1f1f1;
@@ -71,4 +86,3 @@ export default {
   border-radius: 3px;
 }
 </style>
-
