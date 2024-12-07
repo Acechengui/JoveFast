@@ -1,5 +1,6 @@
 package com.jovefast.file.service;
 
+import com.alibaba.nacos.common.utils.IoUtils;
 import com.jovefast.file.utils.MinioFileInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -40,16 +41,28 @@ public class MinioSysFileServiceImpl implements ISysFileService
     @Override
     public String uploadFile(MultipartFile file) throws Exception
     {
-        String fileName = FileUploadUtils.extractFilename(file);
-        InputStream inputStream = file.getInputStream();
-        PutObjectArgs args = PutObjectArgs.builder()
-                .bucket(minioConfig.getBucketName())
-                .object(fileName)
-                .stream(inputStream, file.getSize(), -1)
-                .contentType(file.getContentType())
-                .build();
-        client.putObject(args);
-        return minioConfig.getUrl() + "/" + minioConfig.getBucketName() + "/" + fileName;
+        InputStream inputStream = null;
+        try
+        {
+            String fileName = FileUploadUtils.extractFilename(file);
+            inputStream = file.getInputStream();
+            PutObjectArgs args = PutObjectArgs.builder()
+                    .bucket(minioConfig.getBucketName())
+                    .object(fileName)
+                    .stream(inputStream, file.getSize(), -1)
+                    .contentType(file.getContentType())
+                    .build();
+            client.putObject(args);
+            return minioConfig.getUrl() + "/" + minioConfig.getBucketName() + "/" + fileName;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Minio Failed to upload file", e);
+        }
+        finally
+        {
+            IoUtils.closeQuietly(inputStream);
+        }
     }
 
     /**
