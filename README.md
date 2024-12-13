@@ -110,8 +110,6 @@
 
 ## 移动端效果
 ![输入图片说明](doc/preview/mobile01.jpg)
-![输入图片说明](doc/preview/mobile02.jpg)
-![输入图片说明](doc/preview/mobile03.jpg)
 
 ## 目录结构
 
@@ -146,16 +144,16 @@ com.jovefast
 ├──pom.xml                // 公共依赖
 ~~~
 
-## 架构图
 
-<img src="http://processon.com/chart_image/62ad7ff21efad41af041a1d6.png?_=1655888519650"/>
 
+## 更多支持
+捐赠 <br>
+<img src="https://20210331.oss-cn-shenzhen.aliyuncs.com/%E6%94%B6%E6%AC%BE%E7%A0%81/%E5%BE%AE%E4%BF%A1%E6%94%B6%E6%AC%BE%E7%A0%81.png" width = "300" height = "300" align=left/>
 
 ## 摸鱼交流
 本人普通码农一枚，产生了想搞开源项目的想法，虽能力有限，但竭尽所能，说干就干~~
-欢迎大家进群交流，本项目将一直开源。
-点击链接加入群聊【Java/Vue摸鱼交流群】：
-[![加入QQ群](https://img.shields.io/badge/603446086-blue.svg)](https://jq.qq.com/?_wv=1027&k=Y2XSJ0BC) ![输入图片说明](doc/preview/mobile01.jpgmobile01.jpg)
+欢迎大家进群交流，本项目将一直开源,需要技术支持的,也可以加群咨询。
+点击链接加入群聊【Java/Vue摸鱼交流群】：603446086
 
 ## 推荐
 大家在使用本项目时，推荐结合贺波老师的书
