@@ -145,13 +145,17 @@ under the License.
    | server for that repository.
    |-->
   <mirrors>
-       <mirror>
-            <id>nexus-aliyun</id>
-            <mirrorOf>*,!jeecg,!jeecg-snapshots,!getui-nexus</mirrorOf>
-            <name>Nexus aliyun</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
-        </mirror> 
-
+    <mirror>
+        <id>aliyunmaven</id>
+        <mirrorOf>central</mirrorOf>
+        <url>https://maven.aliyun.com/repository/central</url>
+    </mirror>
+	<mirror>
+        <id>nexus-aliyun</id>
+        <mirrorOf>*,!jeecg,!jeecg-snapshots,!getui-nexus</mirrorOf>
+        <name>Nexus aliyun</name>
+        <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+     </mirror>
   </mirrors>
 
   <!-- profiles
