@@ -1,6 +1,7 @@
 package com.jovefast.system.controller;
 
 import java.util.Arrays;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.jovefast.common.core.constant.UserConstants;
 import com.jovefast.common.core.domain.R;
 import com.jovefast.common.core.utils.StringUtils;
 import com.jovefast.common.core.utils.file.FileTypeUtils;
@@ -94,11 +94,13 @@ public class SysProfileController extends BaseController
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
-    public AjaxResult updatePwd(String oldPassword, String newPassword)
+    public AjaxResult updatePwd(@RequestBody Map<String, String> params)
     {
-        String username = SecurityUtils.getUsername();
-        SysUser user = userService.selectUserByUserName(username);
-        String password = user.getPassword();
+        String oldPassword = params.get("oldPassword");
+        String newPassword = params.get("newPassword");
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        String userName = loginUser.getUsername();
+        String password = loginUser.getSysUser().getPassword();
         if (!SecurityUtils.matchesPassword(oldPassword, password))
         {
             return error("修改密码失败，旧密码错误");
@@ -108,10 +110,9 @@ public class SysProfileController extends BaseController
             return error("新密码不能与旧密码相同");
         }
         newPassword = SecurityUtils.encryptPassword(newPassword);
-        if (userService.resetUserPwd(username, newPassword) > 0)
+        if (userService.resetUserPwd(userName, newPassword) > 0)
         {
             // 更新缓存用户密码
-            LoginUser loginUser = SecurityUtils.getLoginUser();
             loginUser.getSysUser().setPassword(newPassword);
             tokenService.setLoginUser(loginUser);
             return success();
